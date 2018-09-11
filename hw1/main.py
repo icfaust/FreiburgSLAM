@@ -1,6 +1,4 @@
 import scipy
-import scipy.io
-from __builtin__ import int
 
 ################################
 #    Data Reading Scripts      #
@@ -78,20 +76,32 @@ class FburgData(object):
             # find sensor data which matches said unique index, and store as
             # a list
         
+    def __len__(self):
+        return len(self._odometry)
+        
     def timestep(self, t):
         self._idx = t
         return self
         
     @property
     def odometry(self):
-        return {'r1':self._odometry['r1'][self._idx],
-                't':self._odometry['t'][self._idx],
-                'r2':self._odometry['r2'][self._idx]}
+        if self._idx == None:
+            return self._odometry
+        else:
+            output = {'r1':self._odometry['r1'][self._idx],
+                      't':self._odometry['t'][self._idx],
+                      'r2':self._odometry['r2'][self._idx]}
+            self._idx = None
+            return output
         
     @property
     def sensor(self):
-        return self._sensor[self._idx]
-    
+        if self._idx == None:
+            return self._sensor
+        else:
+            output = self._sensor[self._idx]
+            self._idx = None
+            return output
     
 class WorldData(object):
     """Class containing landmark data in the Freiburg SLAM course format
