@@ -33,7 +33,7 @@ def read_world(filename_):
         NameError: incorrect filepath
 
     """
-    return FburgData(filename_)
+    return WorldData(filename_)
 
 ################################
 #        Data Objects          #
@@ -50,24 +50,24 @@ class FburgData(object):
         tempdata = scipy.genfromtxt(name, dtype='object')
         self._data = tempdata[:,1:].astype(float)
         
-        idx = tempdata[:,0] =='ODOMETRY'
+        idx = scipy.squeeze(tempdata[:,0] =='ODOMETRY')
         self._odometry = {'r1':self._data[idx,0],
                           't':self._data[idx,1],
                           'r2':self._data[idx,2]} #dicts work best in this case
         self._sensor = []
         self._idx = None
         idxarray = scipy.where(idx)
-        idxarray = scipy.append(idxarray,[len(idxarray)-1])
+        idxarray = scipy.append(idxarray,[len(idx)])
         
         # this was done purely to match the MATLAB code (which is suboptimal)
-        for i in xrange(len(idxarray)-2):
+        for i in xrange(len(idxarray)-1):
             temp = []
-            print(scipy.arange(idxarray[i]+1,idxarray[i+1]))
+            
             for j in scipy.arange(idxarray[i]+1,idxarray[i+1]):
-                temp += [{'id':self._data[j,0],
+                temp += [{'id':self._data[j,0].astype(int) - 1,
                           'range':self._data[j,1],
                           'bearing':self._data[j,2]}]
-            
+                
             self._sensor += [temp]  
         
         #for i in scipy.unique(tempdata[idx,1].astype(int)):
@@ -77,7 +77,7 @@ class FburgData(object):
             # a list
         
     def __len__(self):
-        return len(self._odometry)
+        return len(self._odometry['r1'])
         
     def timestep(self, t):
         self._idx = t
@@ -85,7 +85,7 @@ class FburgData(object):
         
     @property
     def odometry(self):
-        if self._idx == None:
+        if self._idx is None:
             return self._odometry
         else:
             output = {'r1':self._odometry['r1'][self._idx],
@@ -96,7 +96,7 @@ class FburgData(object):
         
     @property
     def sensor(self):
-        if self._idx == None:
+        if self._idx is None:
             return self._sensor
         else:
             output = self._sensor[self._idx]
@@ -110,13 +110,14 @@ class WorldData(object):
     """ 
     def __init__(self, name):
         # data loader
-        self._data = scipy.genfromtxt(name, dtype=float)
+        self._data = scipy.genfromtxt(name, dtype=float).T
             
         self._id = self._data[0]
         self._x = self._data[1]
         self._y = self._data[2]
     
     def __call__(self, t):
+        (t)
         return {'id':self._id[t],
                 'x':self._x[t],
                 'y':self._y[t]}

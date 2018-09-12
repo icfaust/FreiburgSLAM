@@ -23,10 +23,11 @@ def motion_command(x, u):
      """
 
     #TODO: update x according to the motion represented by u
-    x[0] += u[1]*scipy.cos(x[2] + u[0])
-    x[1] += u[1]*scipy.sin(x[2] + u[0])
+    
+    x[0] += u['t']*scipy.cos(x[2] + u['r1'])
+    x[1] += u['t']*scipy.sin(x[2] + u['r1'])
     #TODO: remember to normalize theta by calling normalize_angle for x[2]
-    x[2] = (((x[2] + u[0] + u[2])/scipy.pi + 1.) % 2. - 1.)*scipy.pi
+    x[2] = (((x[2] + u['r1'] + u['r2'])/scipy.pi + 1.) % 2. - 1.)*scipy.pi
     
     return x
 

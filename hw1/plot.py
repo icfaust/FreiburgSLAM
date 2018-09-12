@@ -22,18 +22,18 @@ def plot_state(mu, landmarks, timestep, z):
 
     plt.grid('on')
     #figure(1, "visible", "off");
-    plt.plot(landmarks['x'], landmarks['y'], 'k+', ms=10, lw=5.);
+    plt.plot(landmarks.x, landmarks.y, 'k+', ms=10, lw=5.);
 
-    for i in xrange(len(shape)):
-        id = z[i].id;
-        mX = landmarks(id)['x'];
-        mY = landmarks(id)['y'];
+    for i in xrange(len(z)):
+        id = z[i]['id']
+        mX = landmarks(id)['x']
+        mY = landmarks(id)['y']
         plt.plot([mu[0], mX],[mu[1], mY], color='b', lw=1.)
 
     drawrobot(mu[0:3], 'r', 3, 0.3, 0.3);
     plt.xlim([-2., 12.])
     plt.ylim([-2., 12.])
-    plt.show()
+    #plt.show()
     #filename = sprintf('../plots/odom_%03d.png', timestep);
     #print(filename, '-dpng');
     #hold off

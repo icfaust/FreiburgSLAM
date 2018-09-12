@@ -31,7 +31,7 @@ x = scipy.zeros((3,))
 
 # Iterate over odometry commands and update the robot pose
 # according to the motion model
-for t = xrange(len(data)):
+for t in xrange(len(data)):
     #distinctly python2.7
 
     # Update the pose of the robot based on the motion model
