@@ -33,7 +33,11 @@ def plot_state(mu, landmarks, timestep, z):
     drawrobot(mu[0:3], 'r', 3, 0.3, 0.3);
     plt.xlim([-2., 12.])
     plt.ylim([-2., 12.])
-    #plt.show()
+    plt.show()
+    
+    
+    #modify this if you want to make the pngs and generate the video
+    
     #filename = sprintf('../plots/odom_%03d.png', timestep);
     #print(filename, '-dpng');
     #hold off
