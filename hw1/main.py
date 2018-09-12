@@ -116,7 +116,11 @@ class WorldData(object):
         self._x = self._data[1]
         self._y = self._data[2]
     
-    
+    def __call__(self, t):
+        return {'id':self._id[t],
+                'x':self._x[t],
+                'y':self._y[t]}
+        
     def landmarks(self, t):
         return {'id':self._id[t],
                 'x':self._x[t],

@@ -2,6 +2,7 @@ import scipy
 from main import read_world
 from main import read_data
 from plot import plot_state
+from motion_command import motion_command
 
 # This script runs the main loop and calls all the required
 # functions in the correct order.
