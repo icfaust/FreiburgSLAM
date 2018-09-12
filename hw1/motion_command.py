@@ -66,3 +66,14 @@ def t2v(R):
         p (3x1 numpy array): the robot pose in cartesian [x, y, theta]
     """
     return scipy.squeeze(scipy.arctan2(R[1,0],R[0,0])*R[:,2])
+
+# Answer b) : the difference p2-p1 can be transformed into a homogeneous
+# transform using delta x, delta y and delta theta
+
+# Answer c): the answer to b can be recast to answer this problem. Relative
+# pose means that R is essentially the identity matrix in the homogenous
+# transform and z=t. This the homogeneous transform is fully specified.  Thus:
+#
+#  [[0,1,2/pi],     [[4/pi],    [[2/pi],                  [[1],
+#   [1,0,2/pi],  x   [0],    =   [6/pi], == (in (x,y))==   [3]]
+#   [0,0,1]]         [1]]        [1]]
