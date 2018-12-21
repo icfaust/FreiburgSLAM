@@ -1,5 +1,4 @@
 import scipy
-from scipy.stats import chi2
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 from matplotlib.patches import Rectangle
@@ -181,21 +180,7 @@ def drawrobot(xvec, color, type=2, W=.2, L=.6):
         
     else:
         raise ValueError('type out of bounds')
-    
-def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
-
-    b24ac = scipy.sqrt(pow(covar[0,0]-covar[1,1],2) + 4*covar[0,1])
-    c2inv = chi2.ppf(alpha,2.)/1e2
-    
-    a = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0]+covar[1,1]+b24ac)))
-    b = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0]-covar[1,1]+b24ac)))
-
-    theta = .5*scipy.arctan2(2*covar[0,1],covar[0,0]-covar[1,1])
-    
-    temp = Ellipse(xy, a, b, angle=theta, color=color, **kwargs)
-
-
-    
+        
 def _rot(theta, vec):
     """ there are a number of vector rotations in draw robot that are 
     not necessary to individually program.

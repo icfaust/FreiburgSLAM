@@ -16,8 +16,8 @@ from motion_command import motion_command
 # 
 
 #location of data sources
-world_loc = 'world.dat'
-data_loc = 'sensor_data.dat'
+world_loc = '../world.dat'
+data_loc = '../sensor_data.dat'
 
 # Read world data, i.e. landmarks.
 landmarks = read_world(world_loc)
