@@ -2,7 +2,7 @@ import scipy
 from unscented import compute_sigma_points
 from unscented import recover_gaussian
 from unscented import transform
-from plot import drawprobellipse
+from plot import draw_probe_ellipse
 import matplotlib.pyplot as plt 
 
 # This is the main script for computing a transformed distribution according 
@@ -35,7 +35,7 @@ sigma_points, w_m, w_c = compute_sigma_points(mu, sigma, lamb, alpha, beta);
 # Plot original distribution with sampled sigma points
 plt.plot(mu[0], mu[1], 'ro', 'markersize', 12,'linewidth', 3)
 plt.legend('original distribution')
-drawprobellipse(mu, sigma, 0.9, 'r')
+draw_probe_ellipse(mu, sigma, 0.9, 'r')
 plt.plot(sigma_points[0], sigma_points[1], 'kx',
          'markersize', 10, 'linewidth', 3)
 
@@ -48,7 +48,7 @@ mu_trans, sigma_trans = recover_gaussian(sigma_points_trans, w_m, w_m)
 # Plot transformed sigma points with corresponding mu and sigma
 plt.plot(mu_trans[0], mu_trans[1], 'bo','markersize', 12, 'linewidth', 3)
 plt.legend('transformed distribution')
-drawprobellipse(mu_trans, sigma_trans, 0.9, 'b')
+draw_probe_ellipse(mu_trans, sigma_trans, 0.9, color='b')
 plt.plot(sigma_points_trans[0], sigma_points_trans[1], 'kx',
          'markersize', 10, 'linewidth', 3)
 
