@@ -7,6 +7,7 @@ Files of use:
 hw1.py - code to be run to test homework output
 
 main.py - loads the datasets in the octave style (with some pythonic things)
+  this replaces the tools/ framework of the original octave implementation
 
 motion_command.py - python file with function motion_command
   which is used in question 2

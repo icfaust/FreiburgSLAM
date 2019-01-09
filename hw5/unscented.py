@@ -12,7 +12,7 @@ def compute_sigma_points(mu, sigma, lamb, alpha, beta):
        covariance respectively."""
 
     n = length(mu)
-    sigma_points = scipy.zeros((n, 2*n+1))
+    sigma_points = scipy.zeros((n, 2*n + 1))
     
     #TODO: compute all sigma points
     
@@ -57,7 +57,7 @@ def transform(points):
     # Computes the polar coordinates corresponding to [x; y]
     x = points[0, :]
     y = points[1, :]
-    r = scipy.sqrt(scipy.sum([pow(x,2), pow(y,2)]))
+    r = scipy.sqrt(scipy.sum([pow(x, 2), pow(y, 2)]))
     theta = scipy.atan2(y, x)
     points = scipy.array([r, theta])
     #####
