@@ -1,7 +1,6 @@
 import scipy
 import hw7
 import main
-import plot
 
 # Load laser scans and robot poses.
 #load("../data/laser")
@@ -65,5 +64,5 @@ for t in xrange(len(laser.pose)):
     mapout += mapUpdate
     
     # Plot current map and robot trajectory so far.
-    plot.plot_map(mapout, mapBox, robPoseMapFrame, laser.pose, laserEndPntsMapFrame, gridSize, offset, t)
+    hw7.plot_map(mapout, mapBox, robPoseMapFrame, laser.pose, laserEndPntsMapFrame, gridSize, offset, t)
     
