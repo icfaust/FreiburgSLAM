@@ -172,3 +172,26 @@ class RobotLaser(object):
             self.laser_offset[i] = t2v(scipy.dot(scipy.linalg.inv(v2t(self._pose[i])),
                                         v2t(tempdata[i, idx1:idx1 + 3].astype(float))))
             self.t[i] = tempdata[i, idx1 + 11]
+
+
+#### PLOTTING FUNCTIONS ####
+
+def plot_map(mapout, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t):
+
+    #	figure 
+    figure(1, "visible", "off");
+    plt.axis(mapBox);
+    hold on;
+    mapout = mapout.T
+    imshow(ones(size(map)) - log_odds_to_prob(map))
+    s = size(map)(1:2); 
+    set(plt.gcf(), "position", [50 50 s*5]) 
+    set(plt.gca(), "position", [.05 .05 .9 .9]) 
+    traj = [poses(1:t,1)';poses(1:t,2)'];
+    traj = world_to_map_coordinates(traj, gridSize, offset);
+    plt.plot(traj(1,:),traj(2,:),'g')
+    plt.plot(robPoseMapFrame(1),robPoseMapFrame(2),'bo','markersize',5,'linewidth',4)
+    plt.plot(laserEndPntsMapFrame(1,:),laserEndPntsMapFrame(2,:),'ro','markersize',2)
+    #filename = sprintf('../plots/gridmap_%03d.png', t);
+    #print(filename, '-dpng');
+    #close all;

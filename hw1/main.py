@@ -1,4 +1,5 @@
 import scipy
+import maptlotlib.pyplot as plt
 
 ################################
 #    Data Reading Scripts      #
@@ -138,6 +139,7 @@ class WorldData(object):
     @property
     def y(self):
         return self._y
+
     
     
     
