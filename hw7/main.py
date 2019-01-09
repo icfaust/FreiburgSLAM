@@ -149,26 +149,26 @@ class RobotLaser(object):
         idx = tempdata[:,0] == 'ROBOTLASER1'
         tempdata = tempdata[idx, 1:]
         
-        self._start = tempdata[:, 1].astype(float)
-        self._ang_res = tempdata[:, 4].astype(float)
-        self._max_range = tempdata[:, 5].astype(float)
+        self.start = tempdata[:, 1].astype(float)
+        self.ang_res = tempdata[:, 4].astype(float)
+        self.max_range = tempdata[:, 5].astype(float)
 
         #next two are accuracies
         self._num_readings = tempdata[:, 7].astype(int)
 
         #force object to int necessary for slicing
-        self._ranges = []
+        self.scan = []
         self.pose = scipy.zeros((len(idx), 3))
-        self._laser_offset = scipy.zeros((len(idx), 3))
-        self._t = scipy.zeros((len(idx),))
+        self.laser_offset = scipy.zeros((len(idx), 3))
+        self.t = scipy.zeros((len(idx),))
         
         for i in range(len(tempdata)):
             idx1 = self._num_readings[i] + 8
-            self._ranges += [tempdata[i,8:idx1].astype(float)]
+            self.scan += [tempdata[i,8:idx1].astype(float)]
 
             offset = int(tempdata[i, idx1]) + 1
             idx1 += offset
             self.pose[i] = tempdata[i, idx1 + 3:idx1 + 6].astype(float)
-            self._laser_offset[i] = t2v(scipy.dot(scipy.linalg.inv(v2t(self._pose[i])),
+            self.laser_offset[i] = t2v(scipy.dot(scipy.linalg.inv(v2t(self._pose[i])),
                                         v2t(tempdata[i, idx1:idx1 + 3].astype(float))))
-            self._t[i] = tempdata[i, idx1 + 11]
+            self.t[i] = tempdata[i, idx1 + 11]

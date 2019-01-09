@@ -1,6 +1,7 @@
 import scipy
 import hw7
 import main
+import plot
 
 # Load laser scans and robot poses.
 #load("../data/laser")
@@ -54,14 +55,15 @@ for t in xrange(len(laser.pose)):
                            laser.pose[t,1],
                            laser.pose[t,2]])
 	
-	# Laser scan made at time t.
-	sc = laser(1, t);
-	# Compute the mapUpdate, which contains the log odds values to add to the map.
-	mapUpdate, robPoseMapFrame, laserEndPntsMapFrame = hw7.inv_sensor_model(mapout, sc, robPose, gridSize, offset, probOcc, probFree)
-
-	mapUpdate -= logOddsPrior*scipy.ones(mapout.shape)
-	# Update the occupancy values of the affected cells.
-	mapout += mapUpdate
-	
-	# Plot current map and robot trajectory so far.
-        plot_map(mapout, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t)
+    # Laser scan made at time t.
+    sc = laser.scan[t]
+    # Compute the mapUpdate, which contains the log odds values to add to the map.
+    mapUpdate, robPoseMapFrame, laserEndPntsMapFrame = hw7.inv_sensor_model(mapout, sc, robPose, gridSize, offset, probOcc, probFree)
+    
+    mapUpdate -= logOddsPrior*scipy.ones(mapout.shape)
+    # Update the occupancy values of the affected cells.
+    mapout += mapUpdate
+    
+    # Plot current map and robot trajectory so far.
+    plot.plot_map(mapout, mapBox, robPoseMapFrame, laser.pose, laserEndPntsMapFrame, gridSize, offset, t)
+    
