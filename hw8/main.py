@@ -58,3 +58,65 @@ def prediction_step(particles, u, noise):
         particles['pose'][i,2] = normalize_angle(particles['pose'][i,2] + r1 + r2);
         
     return particles
+
+
+################################
+#    Data Reading Scripts      #
+################################
+
+
+def read_data(filename_, flag=True):
+    """Reads the odometry and sensor readings from a file.
+    
+    Args:
+        filename_: string containing file location
+    
+    Returns:
+        output: A FburgData class which contains the odometry
+        and/or sensor data
+        
+    Raises:
+        NameError: incorrect filepath
+
+    """
+    output = {'sensor':[],'odometry':[]}
+        
+    data = scipy.genfromtxt(filename_, dtype='object')
+    idx = scipy.squeeze(data[:,0] == 'ODOMETRY')
+    for inp in data[idx,1:].astype(float):
+        output['odometry'] += [{'r1':inp[0],
+                                    't':inp[1],
+                                    'r2':inp[2]}]
+
+    idxarray = scipy.where(idx)
+    idxarray = scipy.append(idxarray,[len(idx)])
+    for i in xrange(len(idxarray) - 1):
+        temp = []
+        
+        for j in scipy.arange(idxarray[i] + 1, idxarray[i + 1]):
+            temp += [{'id':int(data[j,1]) - 1,
+                      'range':float(data[j,2]),
+                      'bearing':float(data[j,3])}]
+                
+        output['sensor'] += [temp]
+    return output
+
+def read_world(filename_):
+    """Reads the world definitionodometry and sensor readings from a file.
+    
+    Args:
+        filename_: string containing file location
+    
+    Returns:
+        output: A WorldData class which contains the cartesian data and id
+        
+    Raises:
+        NameError: incorrect filepath
+
+    """
+    #instead of trying to match the matlab object, return a dict
+    data = scipy.genfromtxt(filename_, dtype=float).T
+    output = {'id':data[0,:],
+              'x':data[1,:],
+              'y':data[2,:]}
+    return output

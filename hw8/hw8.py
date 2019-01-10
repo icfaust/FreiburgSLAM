@@ -48,18 +48,18 @@ showGui = False # plot to files instead
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in xrange(data.timestep.shape[1]):# 1:size(data.timestep, 2)
+for t in xrange(len(data['odometry']):# 1:size(data.timestep, 2)
 #for t = 1:50
     print('timestep = %d\n', t)
 
     # Perform the prediction step of the particle filter
-    particles = fastslam.prediction_step(particles, data.timestep[t].odometry, noise)
+    particles = fastslam.prediction_step(particles, data['odometry'][t], noise)
 
     # Perform the correction step of the particle filter
-    particles = fastslam.correction_step(particles, data.timestep[t].sensor)
+    particles = fastslam.correction_step(particles, data['sensor'][t])
 
     # Generate visualization plots of the current state of the filter
-    main.plot_state(particles, landmarks, t, data.timestep(t).sensor, showGui)
+    main.plot_state(particles, landmarks, t, data['sensor'][t], showGui)
 
     # Resample the particle set
     particles = fastslam.resample(particles)
