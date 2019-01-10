@@ -19,4 +19,4 @@ Table of homework contents:
 
 Note that some of the code is very un-pythonic and is a vestige of the original Octave/MATLAB style (especially sensor and world data readers). The code extensively uses the scipy and matplotlib packages for the mathematical programming, analysis, and plotting.
 
-Thanks so much to Cyrill Stachiss and Albert-Ludwigs-Universität Freiburg for making their course materials freely available. This github was for my learning purposes and its reuse does not rest with me, rather is dependent on Cyrill and the university.
+Thanks so much to Cyrill Stachniss and Albert-Ludwigs-Universität Freiburg for making their course materials freely available. This github was for my learning purposes and its reuse does not rest with me, rather is dependent on Cyrill and the university.
