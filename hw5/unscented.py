@@ -1,65 +1,70 @@
 import scipy
-from hw5 import compute_sigma_points
-from hw5 import recover_gaussian
-from hw5 import transform
-from plot import draw_probe_ellipse
-import matplotlib.pyplot as plt 
 
-# This is the main script for computing a transformed distribution according 
-# to the unscented transform. This script calls all the required
-# functions in the correct order.
-# If you are unsure about the input and return values of functions you
-# should read their documentation which tells you the expected dimensions.
 
-# Turn off pagination and open a new figure for plotting
-#more off
-#close all
-#figure
-#hold on
-#grid
+def compute_sigma_points(mu, sigma, lamb, alpha, beta):
+    """This function samples 2n+1 sigma points from the distribution given by mu
+       and sigma according to the unscented transform, where n is the 
+       dimensionality of mu. Each column of sigma_points should represent one 
+       sigma point (i.e. sigma_points has a dimensionality of nx2n+1). The
+       corresponding weights w_m and w_c of the points are computed using lamb,
+       alpha, and beta: w_m = [w_m_0, ..., w_m_2n], w_c = [w_c_0, ..., w_c_2n]
+       (i.e. each of size 1x2n+1) They are later used to recover the mean and 
+       covariance respectively."""
 
-# Initial distribution
-sigma = 0.1*scipy.eye(2)
-mu = [1, 2]
-n = len(mu)
+    n = length(mu)
+    sigma_points = scipy.zeros((n, 2*n + 1))
+    
+    #TODO: compute all sigma points
+    
+    
+    #TODO compute weight vectors w_m and w_c
+    
+    return sigma_points, w_m, w_c
 
-# Compute lambda
-alpha = 0.9
-beta = 2.
-kappa = 1.
-lamb = pow(alpha,2)*(n+kappa) - n
+def recover_gaussian(sigma_points, w_m, w_c):
+    """This function computes the recovered Gaussian distribution (mu and sigma)
+       given the sigma points (size: nx2n+1) and their weights w_m and w_c:
+       w_m = [w_m_0, ..., w_m_2n], w_c = [w_c_0, ..., w_c_2n].
+       The weight vectors are each 1x2n+1 in size,
+       where n is the dimensionality of the distribution.
+    
+       Try to vectorize your operations as much as possible"""
+    
+    # TODO: compute mu
 
-# Compute the sigma points corresponding to mu and sigma
-sigma_points, w_m, w_c = compute_sigma_points(mu, sigma, lamb, alpha, beta);
+    
+    # TODO: compute sigma
 
-# Plot original distribution with sampled sigma points
-plt.plot(mu[0], mu[1], 'ro', 'markersize', 12,'linewidth', 3)
-plt.legend('original distribution')
-draw_probe_ellipse(mu, sigma, 0.9, 'r')
-plt.plot(sigma_points[0], sigma_points[1], 'kx',
-         'markersize', 10, 'linewidth', 3)
+    return mu, sigma
 
-# Transform sigma points
-sigma_points_trans = transform(sigma_points)
+def transform(points):
+    """This function applies a transformation to a set of points.
+       Each column in points is one point, 
+       i.e. points = [[x1, y1], [x2, y2], ...]
+       Select which function you want to use by uncommenting it
+       (deleting the corresponding %{...%})
+       while keeping all other functions commented."""
 
-# Recover mu and sigma of the transformed distribution
-mu_trans, sigma_trans = recover_gaussian(sigma_points_trans, w_m, w_m)
+    #####
+    # Function 1 (linear)
+    # Applies a translation to [x; y]
+    points[0, :] = points[0, :] + 1
+    points[1, :] = points[1, :] + 2
+    #####
 
-# Plot transformed sigma points with corresponding mu and sigma
-plt.plot(mu_trans[0], mu_trans[1], 'bo','markersize', 12, 'linewidth', 3)
-plt.legend('transformed distribution')
-draw_probe_ellipse(mu_trans, sigma_trans, 0.9, color='b')
-plt.plot(sigma_points_trans[0], sigma_points_trans[1], 'kx',
-         'markersize', 10, 'linewidth', 3)
+    #####
+    # Function 2 (nonlinear)
+    # Computes the polar coordinates corresponding to [x; y]
+    x = points[0, :]
+    y = points[1, :]
+    r = scipy.sqrt(scipy.sum([pow(x, 2), pow(y, 2)]))
+    theta = scipy.atan2(y, x)
+    points = scipy.array([r, theta])
+    #####
 
-# Figure axes setup
-plt.title('Unscented Transform', 'fontsize', 20)
-x_min = scipy.min(mu[0], mu_trans[0])
-x_max = scipy.max(mu[0], mu_trans[0])
-y_min = scipy.min(mu[1], mu_trans[1])
-y_max = scipy.max(mu[1], mu_trans[1])
-plt.axis([x_min-3, x_max+3, y_min-3, y_max+3])
-plt.axis('equal')
+    #####
+    # Function 3 (nonlinear)
+    points = points*scipy.cos(points)*scipy.sin(points)
+    #####
 
-# Print and save plot
-#print('../plots/unscented.png', '-dpng')
+    return points
