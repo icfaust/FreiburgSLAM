@@ -1,68 +1,119 @@
 import scipy
-import hw8
+import scipy.stats
 import main
 
-# This is the main FastSLAM loop. This script calls all the required
-# functions in the correct order.
-#
-# You can disable the plotting or change the number of steps the filter
-# runs for to ease the debugging. You should however not change the order
-# or calls of any of the other lines, as it might break the framework.
-#
-# If you are unsure about the input and return values of functions you
-# should read their documentation which tells you the expected dimensions.
-# Read world data, i.e. landmarks. The true landmark positions are not given
-# to the robot
+def correction_step(particles, z):
+    """ Weight the particles according to the current map of the particle
+    and the landmark observations z.
+    z: struct array containing the landmark observations.
+    Each observation z(j) has an id z(j).id, a range z(j).range, and a bearing z(j).bearing
+    The vector observedLandmarks indicates which landmarks have been observed
+    at some point by the robot."""
+    
+    # Number of particles
+    numParticles = len(particles)
+    
+    # Number of measurements in this time step
+    m = z.shape[1]
+    
+    # TODO: Construct the sensor noise matrix Q_t (2 x 2)
+    
+    # process each particle
+    for i in xrange(numParticles): #particle loop
+        robot = particles(i).pose;
+        # process each measurement
+        for j in xrange(m): #measurement loop
+            # Get the id of the landmark corresponding to the j-th observation
+            # particles(i).landmarks(l) is the EKF for this landmark
+            l = z[j].id;
 
-landmarks = main.read_world('../world.dat')
-# Read sensor readings, i.e. odometry and range-bearing sensor
-data = main.read_data('../sensor_data.dat')
+            # The (2x2) EKF of the landmark is given by
+            # its mean particles(i).landmarks(l).mu
+            # and by its covariance particles(i).landmarks(l).sigma
 
-# Get the number of landmarks in the map
-N = len(landmarks,2);
+            # If the landmark is observed for the first time:
+            if particles[i].landmarks(l).observed == False:
 
-noise = scipy.array([0.005, 0.01, 0.005])
+                # TODO: Initialize its position based on the measurement and the current robot pose:
+            
+                # get the Jacobian with respect to the landmark position
+                [h, H] = main.measurement_model(particles(i), z(j));
 
-# how many particles
-numParticles = 100
+                # TODO: initialize the EKF for this landmark
 
-# THIS IS VERY MATLABED I NEED TO REDO THIS AGAIN
-# initialize the particles dict
-particles = {'weight':scipy.zeros((numParticles,)),
-             'pose':scipy.zeros((numParticles, 3)),
-             'history':scipy.zeros((numParticles, 3))}
-for i in xrange(numParticles):# = 1:numParticles
-    particles['weight'][i] = 1. / numParticles;
-    #particles(i).pose = zeros(3, 1);
-    #particles(i).history = cell();
-    for l in xrange(N):# = 1:N % initialize the landmarks aka the map
-        particles(i).landmarks(l).observed = False
-        #% 2D position of the landmark
-        particles(i).landmarks(l).mu = scipy.zeros(2,1)
-        #covariance of the landmark
-        particles(i).landmarks(l).sigma = scipy.zeros(2,2)
+                # Indicate that this landmark has been observed
+                particles(i).landmarks(l).observed = true;
+                
+            else:
+
+                # get the expected measurement
+                [expectedZ, H] = measurement_model(particles(i), z(j));
+
+                # TODO: compute the measurement covariance
+                
+                # TODO: calculate the Kalman gain
+                
+                # TODO: compute the error between the z and expectedZ (remember to normalize the angle)
+                
+                # TODO: update the mean and covariance of the EKF for this landmark
+                
+                # TODO: compute the likelihood of this observation, multiply with the former weight
+                #       to account for observing several features in one time step
 
 
+    return particles
 
-# toogle the visualization type
-#showGui = True;  % show a window while the algorithm runs
-showGui = False % plot to files instead
 
-# Perform filter update for each odometry-observation pair read from the
-# data file.
-for t in xrange(data.timestep.shape[1]):# 1:size(data.timestep, 2)
-#for t = 1:50
-    print('timestep = %d\n', t)
+def resample(particles):
+    """ resample the set of particles.
+    A particle has a probability proportional to its weight to get
+    selected. A good option for such a resampling method is the so-called low
+    variance sampling, Probabilistic Robotics pg. 109"""
+    
+    numParticles = len(particles)
+    
+    w = particles.weight
 
-    # Perform the prediction step of the particle filter
-    particles = hw8.prediction_step(particles, data.timestep[t].odometry, noise)
+    # normalize the weight
+    w = w / scipy.sum(w)
 
-    # Perform the correction step of the particle filter
-    particles = hw8.correction_step(particles, data.timestep[t].sensor)
+    # consider number of effective particles, to decide whether to resample or not
+    useNeff = False
+    #useNeff = True
+    if useNeff:
+        neff = 1. / sum(w.^2);
+        if neff > 0.5*numParticles:
+            newParticles = particles
+            for i in xrange(numParticles):
+                newParticles[i].weight = w[i]
+            return;
 
-    # Generate visualization plots of the current state of the filter
-    plot_state(particles, landmarks, t, data.timestep(t).sensor, showGui)
 
-    # Resample the particle set
-    particles = resample(particles)
+    #newParticles = struct;
+    
+    # TODO: implement the low variance re-sampling
+
+    # the cummulative sum
+    cs = scipy.cumsum(w)
+    weightSum = cs[(len(cs)]
+
+    # initialize the step and the current position on the roulette wheel
+    step = weightSum / numParticles
+    position = scipy.stats.uniform.rvs(0, scale=weightSum)
+    idx = 0
+
+    # walk along the wheel to select the particles
+    for i in xrange(numParticles):# 1:numParticles
+        position += step;
+        if position > weightSum: #Is this necessary???
+            position -= weightSum; #I have a feeling this was
+                   #dubiously programmed...
+            idx = 0
+        while position > cs[idx]:
+            idx++
+
+        newParticles[i] = particles[idx]
+        newParticles[i].weight = 1/numParticles
+
+return newParticles
 
