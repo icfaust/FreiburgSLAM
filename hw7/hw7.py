@@ -1,5 +1,5 @@
 import scipy
-import hw7
+import gridmap
 import main
 
 # Load laser scans and robot poses.
@@ -36,7 +36,7 @@ mapSize = scipy.ceil(mapSizeMeters/gridSize)
 
 # Used when updating the map. Assumes that prob_to_log_odds.m
 # has been implemented correctly.
-logOddsPrior = hw7.prob_to_log_odds(prior)
+logOddsPrior = gridmap.prob_to_log_odds(prior)
 
 # The occupancy value of each cell in the map is initialized with the prior.
 mapout = logOddsPrior*scipy.ones((mapSize, mapSize))
@@ -57,12 +57,12 @@ for t in xrange(len(laser.pose)):
     # Laser scan made at time t.
     sc = laser.scan[t]
     # Compute the mapUpdate, which contains the log odds values to add to the map.
-    mapUpdate, robPoseMapFrame, laserEndPntsMapFrame = hw7.inv_sensor_model(mapout, sc, robPose, gridSize, offset, probOcc, probFree)
+    mapUpdate, robPoseMapFrame, laserEndPntsMapFrame = gridmap.inv_sensor_model(mapout, sc, robPose, gridSize, offset, probOcc, probFree)
     
     mapUpdate -= logOddsPrior*scipy.ones(mapout.shape)
     # Update the occupancy values of the affected cells.
     mapout += mapUpdate
     
     # Plot current map and robot trajectory so far.
-    hw7.plot_map(mapout, mapBox, robPoseMapFrame, laser.pose, laserEndPntsMapFrame, gridSize, offset, t)
+    main.plot_map(mapout, mapBox, robPoseMapFrame, laser.pose, laserEndPntsMapFrame, gridSize, offset, t)
     
