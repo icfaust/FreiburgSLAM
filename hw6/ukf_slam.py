@@ -73,7 +73,7 @@ def correction(mu, sigma, z, mapout, scale):
     #global scale;
 
     # Number of measurements in this time step
-    m = z.shape[1]
+    m = len(z['id'])
 
     # Measurement noise
     Q = 0.01*scipy.eye(2)
@@ -138,7 +138,7 @@ def correction(mu, sigma, z, mapout, scale):
             
             
 	    # Get the actual measurement as a vector (for computing the difference to the observation)
-	    z_actual = [z[i].range, z[i].bearing]
+	    z_actual = [z[i]['range'], z[i]['bearing']]
             
 	    # TODO: Update mu and sigma, line 12 + 13 on slide 32
             # normalize the relative bearing
