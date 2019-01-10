@@ -1,67 +1,117 @@
 import scipy
-from main import read_world
-from main import read_data
-from plot import plot_state
-from hw4 import correction
-from hw4 import prediction
 
-# This is the main extended Kalman filter SLAM loop. This script calls all the required
-# functions in the correct order.
-#
-# You can disable the plotting or change the number of steps the filter
-# runs for to ease the debugging. You should however not change the order
-# or calls of any of the other lines, as it might break the framework.
-#
-# If you are unsure about the input and return values of functions you
-# should read their documentation which tells you the expected dimensions.
 
-# Read world data, i.e. landmarks. The true landmark positions are not given to the robot
-landmarks = read_world('../world.dat')
-# load landmarks;
-# Read sensor readings, i.e. odometry and range-bearing sensor
-data = read_data('../sensor_data.dat')
-#load data
+def prediction(mu, sigma, u):
+    """Updates the belief concerning the robot pose according to 
+       the motion model (From the original MATLAB code: Use u.r1,
+       u.t, and u.r2 to access the rotation and translation values)
+       In this case u['r1'], u['t'] and u['r2'] to access values
 
-infty = 1000.
-# Get the number of landmarks in the map
-n = landmarks.shape[1] #size(landmarks,2) this must be changed
+       Args:
+           mu ((2N+3, 1) numpy float array): state mean matrix
+               mean. N in this case is the number of landmarks
+           sigma ((2N+3, 2N+3) numpy float array): covariance matrix
+           u (dictionary): odometry reading (r1, t, r2)
 
-# observedLandmarks is a vector that keeps track of which landmarks have been observed so far.
-# observedLandmarks(i) will be true if the landmark with id = i has been observed at some point by the robot
-observedLandmarks = scipy.zeros((1, N)).astype(bool)#repmat(false,1,N);
+       Returns:
+           mu (numpy float array): updated mu by u
+           sigma (numpy float array): updated sigma by u
+       """
 
-# Initialize belief:
-# mu: 2N+3x1 vector representing the mean of the normal distribution
-# The first 3 components of mu correspond to the pose of the robot,
-# and the landmark poses (xi, yi) are stacked in ascending id order.
-# sigma: (2N+3)x(2N+3) covariance matrix of the normal distribution
-mu = scipy.zeros((2*n + 3, 1))#repmat([0.0], (2*n + 3), 1);
-robSigma = scipy.zeros((3, 3))
-robMapSigma = scipy.zeros((3, 2*n))
-mapSigma = infty*scipy.eye(2*n)
-sigma = scipy.array([[robSigma, robMapSigma],
-                     [robMapSigma.T, mapSigma]])#change
+    # TODO: Compute the new mu based on the noise-free (odometry-based) motion model
+    # Remember to normalize theta after the update (hint: use the function normalize_angle available in tools)
 
-# toogle the visualization type
-#showGui = True # show a window while the algorithm runs
-showGui = False # plot to files instead
+    # TODO: Compute the 3x3 Jacobian Gx of the motion model
 
-# Perform filter update for each odometry-observation pair read from the
-# data file.
-for t in xrange(len(data.timestep)):#1:size(data.timestep, 2):
-#for t in xrange(80):
 
-   # Perform the prediction step of the EKF
-   mu, sigma = prediction(mu, sigma, data.timestep(t).odometry)
+    # TODO: Construct the full Jacobian G
 
-   # Perform the correction step of the EKF
-   mu, sigma, observedLandmarks = correction(mu, sigma, data.timestep(t).sensor, observedLandmarks)
 
-   #Generate visualization plots of the current state of the filter
-   plot_state(mu, sigma, landmarks, t, observedLandmarks, data.timestep(t).sensor, showGui)
-   print(r'Current state vector: \n mu = %f', mu)
+    # Motion noise
+    motionNoise = 0.1
+    R3 = scipy.array([[motionNoise, 0., 0.], 
+                      [0., motionNoise, 0.], 
+                      [0., 0., motionNoise/10.]])
+    
+    R = scipy.zeros((sigma.shape[0],sigma.shape[0]))
+    R[0:3,0:3] = R3
 
-print("Final system covariance matrix: %f", sigma)
-# Display the final state estimate
-print("Final robot pose:")
-print("mu_robot = %f sigma_robot = %f", mu[0:3], sigma[0:3,0:3])
+    # TODO: Compute the predicted sigma after incorporating the motion
+    
+    return mu, sigma
+
+
+def correction(mu, sigma, z, observedLandmarks):
+    """Updates the belief, i. e., mu and sigma after observing
+       landmarks, according to the sensor model. The employed sensor
+       model measures the range and bearing of a landmark.
+
+       Args:
+           mu ((2N+3, 1) numpy float array): state mean matrix
+              The first 3 components of mu correspond to the current
+              estimate of the robot pose [x, y, theta] The current
+              pose estimate of the landmark with id = j is:
+              [mu[2*j+2], mu[2*j+3]]
+           sigma ((2N+3, 2N+3) numpy float array): covariance matrix
+           z: landmark observations.
+              Each observation z(i) has an id z(i).id, a range z(i).
+              range, and a bearing z(i).bearing. The vector observed
+              Landmarks indicates which landmarks have been observed
+              at some point by the robot.
+           observedLandmarks (boolean numpy array): new landmark 
+              signifier. False if the landmark with id = j has never
+              been observed before.
+
+       Returns:
+           mu (numpy float array): updated mu
+           sigma (numpy float array): updated sigma
+           observedLandmarks (boolean numpy array): updated landmark              signifier. 
+"""
+
+
+    # Number of measurements in this time step
+    m = z.shape[1]
+
+    # Z: vectorized form of all measurements made in this time step: [range_1; bearing_1; range_2; bearing_2; ...; range_m; bearing_m]
+    # ExpectedZ: vectorized form of all expected measurements in the same form.
+    # They are initialized here and should be filled out in the for loop below
+    Z = scipy.zeros((2*m, 1))
+    expectedZ = scipy.zeros((2*m, 1))
+
+    # Iterate over the measurements and compute the H matrix
+    # (stacked Jacobian blocks of the measurement function)
+    # H will be 2m x 2N+3
+    H = []
+
+    for i = xrange(m):
+	# Get the id of the landmark corresponding to the i-th observation
+	landmarkId = z(i).id
+	# If the landmark is obeserved for the first time:
+	if observedLandmarks[landmarkId] == False:
+		# TODO: Initialize its pose in mu based on the measurement and the current robot pose:
+		
+		# Indicate in the observedLandmarks vector that this landmark has been observed
+		observedLandmarks[landmarkId] = True
+
+	# TODO: Add the landmark measurement to the Z vector
+	 
+	# TODO: Use the current estimate of the landmark pose
+	# to compute the corresponding expected measurement in expectedZ:
+
+	# TODO: Compute the Jacobian Hi of the measurement function h for this observation
+	
+	# Augment H with the new Hi
+	H += [Hi]	
+
+    #TODO: Construct the sensor noise matrix Q
+
+    # TODO: Compute the Kalman gain
+
+    # TODO: Compute the difference between the expected and recorded measurements.
+    # Remember to normalize the bearings after subtracting!
+    # (hint: use the normalize_all_bearings function available in tools)
+
+    # TODO: Finish the correction step by computing the new mu and sigma.
+    # Normalize theta in the robot pose.
+
+    return mu, sigma, observedLandmarks
