@@ -1,2 +1,20 @@
 # FreiburgSLAM
 Python translation of the 2013/2014 Freiburg SLAM course
+
+The videos for the course are available on [Youtube](https://www.youtube.com/playlist?list=PLgnQpQtFTOGQrZ4O5QzbIHgl3b1JHimN_ "Youtube").
+
+The slides and original Octave/MATLAB problem sets are available via a [Albert-Ludwigs-Universität Freiburg website](http://ais.informatik.uni-freiburg.de/teaching/ws13/mapping/ "Robot Mapping - Uni Freiburg").
+
+Table of homework contents:
+* HW1 - Homogeneous Coordinates
+* HW2 - Bayes Filter
+* HW3 - Extended Kalman Filter Theory
+* HW4 - Extended Kalman Filter SLAM
+* HW5 - Unscented Kalman Filter Transform
+* HW6 - Unscented Kalman Filter SLAM
+* HW7 - Grid Maps
+* HW8 - FastSLAM
+* HW9 - Least Squares Odometry Calibration
+* HW10 - Least Squares Graph-Based SLAM
+
+Thanks so much to Cyrill Stachiss and Albert-Ludwigs-Universität Freiburg for making their course materials freely available. This github was for my learning purposes and its reuse does not rest with me, rather is dependent on Cyrill and the university.
