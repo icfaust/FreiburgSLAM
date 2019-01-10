@@ -1,75 +1,5 @@
 import scipy
-from main import add_landmark_to_map, compute_sigma_points, normalize_angle, read_world, read_data
-import plot 
-
-# This is the main unscented Kalman filter SLAM loop. This script calls all the required
-# functions in the correct order.
-#
-# You can disable the plotting or change the number of steps the filter
-# runs for to ease the debugging. You should however not change the order
-# or calls of any of the other lines, as it might break the framework.
-#
-# If you are unsure about the input and return values of functions you
-# should read their documentation which tells you the expected dimensions.
-
-# Turn off pagination:
-#close all
-#clear all
-#more off;
-
-#format long
-
-# Make tools available
-#addpath('tools');
-
-# Read world data, i.e. landmarks. The true landmark positions are not given to the robot
-landmarks = read_world('../data/world.dat');
-#load landmarks
-# Read sensor readings, i.e. odometry and range-bearing sensor
-data = read_data('../data/sensor_data.dat');
-# load data
-# Initialize belief
-mu = scipy.zeros(3,1)
-sigma = 0.001*scipy.eye(3)
-mapout = []
-
-# For computing lambda
-# scale = lam + dimensionality
-#global scale;
-scale = 3.0
-
-# toogle the visualization type
-#showGui = True;  # show a window while the algorithm runs
-showGui = False # plot to files instead
-
-# Perform filter update for each odometry-observation pair read from the
-# data file.
-for t in 1:data.timestep.shape[1]:
-    print('Time step t = %f',t)
-
-    # Perform the prediction step of the UKF
-    mu, sigma = prediction_step(mu, sigma, data.timestep(t).odometry)
-
-    # Perform the correction step of the UKF
-    mu, sigma, mapout = correction_step(mu, sigma, data.timestep(t).sensor, mapout)
-
-    #Generate visualization plots of the current state of the filter
-    plot.plot_state(mu, sigma, landmarks, t, mapout, data.timestep(t).sensor, showGui)
-
-    print("Current state vector mu ="),
-    print(mu)
-    print("Map contains the following landmarks:"),
-    print(mapout)
-
-
-#disp("Final system covariance matrix:"), disp(sigma)
-# Display the final state estimate
-print("Final robot pose:")
-print("mu_robot = "),
-print(mu[0:2]),
-print("sigma_robot = "),
-print(sigma[0:2,0:2])
-
+import main
 
 def prediction(mu, sigma, u):
     """Updates the belief concerning the robot pose according to 
@@ -155,20 +85,20 @@ def correction(mu, sigma, z, mapout, scale):
 	# If the landmark is observed for the first time:
 	if (scipy.sum(mapout == z[i].id) == 0):
             # Add new landmark to the map
-            [mu, sigma, mapout] = add_landmark_to_map(mu,
-                                                      sigma,
-                                                      z[i],
-                                                      mapout,
-                                                      Q,
-                                                      scale)
+            [mu, sigma, mapout] = main.add_landmark_to_map(mu,
+                                                           sigma,
+                                                           z[i],
+                                                           mapout,
+                                                           Q,
+                                                           scale)
 	    # The measurement has been incorporated so we quit the correction step
             i = lm
         else:
 	    # Compute sigma points from the predicted mean and covariance
             # This corresponds to line 6 on slide 32
-	    sigma_points = compute_sigma_points(mu, sigma, scale)
+	    sigma_points = main.compute_sigma_points(mu, sigma, scale)
             # Normalize!
-	    sigma_points[2,:] = normalize_angle(sigma_points[2,:])
+	    sigma_points[2,:] = main.normalize_angle(sigma_points[2,:])
             
 	    # Compute lambda
 	    n = len(mu)
