@@ -1,68 +1,93 @@
 import scipy
-import hw7
 import main
 
-# Load laser scans and robot poses.
-#load("../data/laser")
-laser = main.read_robotlaser('csail.log')
 
-# Extract robot poses: Nx3 matrix where each row is in the form: [x y theta]
-#poses = laser.pose;
-#poses = reshape(poses,3,size(poses,2)/3)';
+def inv_sensor_model(mapout, scan, robPose, gridSize, offset, probOcc, probFree):
+    """ Compute the log odds values that should be added to the map based on the inverse sensor model
+    of a laser range finder.
 
-# Initial cell occupancy probability.
-prior = 0.50
-# Probabilities related to the laser range finder sensor model.
-probOcc = 0.9
-probFree = 0.35
-
-# Map grid size in meters. Decrease for better resolution.
-gridSize = 0.5
-
-# Set up map boundaries and initialize map.
-border = 30
-robXMin = laser.pose[:,0].min()
-robXMax = laser.pose[:,0].max()
-robYMin = laser.pose[:,1].min()
-robYMax = laser.pose[:,1].max()
-mapBox = sciyp.array([robXMin - border,
-                      robXMax + border,
-                      robYMin - border,
-                      robYMax + border])
-offsetX = mapBox[0]
-offsetY = mapBox[2]
-mapSizeMeters = scipy.array([mapBox[1] - offsetX, mapBox[3] - offsetY])
-mapSize = scipy.ceil(mapSizeMeters/gridSize)
-
-# Used when updating the map. Assumes that prob_to_log_odds.m
-# has been implemented correctly.
-logOddsPrior = hw7.prob_to_log_odds(prior)
-
-# The occupancy value of each cell in the map is initialized with the prior.
-mapout = logOddsPrior*scipy.ones((mapSize, mapSize))
-print('Map initialized. Map size:'),
-print(mapout.shape)
-
-# Map offset used when converting from world to map coordinates.
-offset = scipy.array([offsetX, offsetY])
-
-# Main loop for updating map cells.
-# You can also take every other point when debugging to speed up the loop (t=1:2:size(poses,1))
-for t in xrange(len(laser.pose)):
-    # Robot pose at time t.
-    robPose = scipy.array([laser.pose[t,0],
-                           laser.pose[t,1],
-                           laser.pose[t,2]])
-	
-    # Laser scan made at time t.
-    sc = laser.scan[t]
-    # Compute the mapUpdate, which contains the log odds values to add to the map.
-    mapUpdate, robPoseMapFrame, laserEndPntsMapFrame = hw7.inv_sensor_model(mapout, sc, robPose, gridSize, offset, probOcc, probFree)
+    map is the matrix containing the occupancy values (IN LOG ODDS) of each cell in the map.
+    scan is a laser scan made at this time step. Contains the range readings of each laser beam.
+    robPose is the robot pose in the world coordinates frame.
+    gridSize is the size of each grid in meters.
+    offset = [offsetX; offsetY] is the offset that needs to be subtracted from a point
+    when converting to map coordinates.
+    probOcc is the probability that a cell is occupied by an obstacle given that a
+    laser beam endpoint hit that cell.
+    probFree is the probability that a cell is occupied given that a laser beam passed through it.
     
-    mapUpdate -= logOddsPrior*scipy.ones(mapout.shape)
-    # Update the occupancy values of the affected cells.
-    mapout += mapUpdate
+    mapUpdate is a matrix of the same size as map. It has the log odds values that need to be added for the cells
+    affected by the current laser scan. All unaffected cells should be zeros.
+    robPoseMapFrame is the pose of the robot in the map coordinates frame.
+    laserEndPntsMapFrame are map coordinates of the endpoints of each laser beam (also used for visualization purposes)."""
+
+    # Initialize mapUpdate.
+    mapUpdate = scipy.zeros(mapout.shape)
+
+    # Robot pose as a homogeneous transformation matrix.
+    robTrans = main.v2t(robPose)
+
+    # TODO: compute robPoseMapFrame. Use your world_to_map_coordinates implementation.
+
+
+    # Compute the Cartesian coordinates of the laser beam endpoints.
+    # Set the third argument to 'true' to use only half the beams for speeding up the algorithm when debugging.
+    laserEndPnts = main.robotlaser_as_cartesian(scan, 30, False)
     
-    # Plot current map and robot trajectory so far.
-    hw7.plot_map(mapout, mapBox, robPoseMapFrame, laser.pose, laserEndPntsMapFrame, gridSize, offset, t)
+    # Compute the endpoints of the laser beams in the world coordinates frame.
+    laserEndPnts = scipy.dot(robTrans,laserEndPnts)
+    # TODO: compute laserEndPntsMapFrame from laserEndPnts. Use your world_to_map_coordinates implementation.
+
+
+    # freeCells are the map coordinates of the cells through which the laser beams pass.
+    freeCells = [];
     
+    # Iterate over each laser beam and compute freeCells.
+    # Use the bresenham method available to you in tools for computing the X and Y
+    # coordinates of the points that lie on a line.
+    # Example use for a line between points p1 and p2:
+    # [X,Y] = bresenham(map,[p1_x, p1_y; p2_x, p2_y]);
+    # You only need the X and Y outputs of this function.
+    for sc in xrange(laserEndPntsMapFrame.shape[1]):
+        #TODO: compute the XY map coordinates of the free cells along the laser beam ending in laserEndPntsMapFrame(:,sc)
+
+
+        #TODO: add them to freeCells
+
+
+
+    #TODO: update the log odds values in mapUpdate for each free cell according to probFree.
+
+
+    #TODO: update the log odds values in mapUpdate for each laser endpoint according to probOcc.
+
+    return mapUpdate, robPoseMapFrame, laserEndPntsMapFrame
+
+def world_to_map_coordinates(pntsWorld, gridSize, offset):
+    """ Convert points from the world coordinates frame to the map frame.
+    pntsWorld is a matrix of N points with each column representing a point in world coordinates (meters).
+    gridSize is the size of each grid in meters.
+    offset = [offsetX; offsetY] is the offset that needs to be subtracted from a point
+    when converting to map coordinates.
+    pntsMap is a 2xN matrix containing the corresponding points in map coordinates."""
+
+# TODO: compute pntsMap
+
+return pntsMap
+
+
+def log_odds_to_prob(l):
+    """ Convert log odds l to the corresponding probability values p.
+    l could be a scalar or a matrix."""
+
+    # TODO: compute p.
+
+    return p
+
+def prob_to_log_odds(p):
+    """ Convert proability values p to the corresponding log odds l.
+    p could be a scalar or a matrix."""
+
+    # TODO: compute l.
+
+    return l
