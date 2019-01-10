@@ -1,5 +1,5 @@
 import scipy
-import hw8
+import fastslam
 import main
 
 # This is the main FastSLAM loop. This script calls all the required
@@ -55,13 +55,13 @@ for t in xrange(data.timestep.shape[1]):# 1:size(data.timestep, 2)
     print('timestep = %d\n', t)
 
     # Perform the prediction step of the particle filter
-    particles = hw8.prediction_step(particles, data.timestep[t].odometry, noise)
+    particles = fastslam.prediction_step(particles, data.timestep[t].odometry, noise)
 
     # Perform the correction step of the particle filter
-    particles = hw8.correction_step(particles, data.timestep[t].sensor)
+    particles = fastslam.correction_step(particles, data.timestep[t].sensor)
 
     # Generate visualization plots of the current state of the filter
-    plot_state(particles, landmarks, t, data.timestep(t).sensor, showGui)
+    main.plot_state(particles, landmarks, t, data.timestep(t).sensor, showGui)
 
     # Resample the particle set
     particles = resample(particles)
