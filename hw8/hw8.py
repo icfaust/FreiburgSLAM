@@ -64,5 +64,5 @@ for t in xrange(data.timestep.shape[1]):# 1:size(data.timestep, 2)
     main.plot_state(particles, landmarks, t, data.timestep(t).sensor, showGui)
 
     # Resample the particle set
-    particles = resample(particles)
+    particles = fastslam.resample(particles)
 
