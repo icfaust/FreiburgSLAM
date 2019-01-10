@@ -23,12 +23,12 @@ def plot_state(mu, landmarks, timestep, z):
 
     plt.grid('on')
     #figure(1, "visible", "off");
-    plt.plot(landmarks.x, landmarks.y, 'k+', ms=10, lw=5.);
+    plt.plot(landmarks['x'], landmarks['y'], 'k+', ms=10, lw=5.);
 
     for i in xrange(len(z)):
-        id = z[i]['id']
-        mX = landmarks(id)['x']
-        mY = landmarks(id)['y']
+        idx = z[i]['id']
+        mX = landmarks['x'][idx]
+        mY = landmarks['y'][idx]
         plt.plot([mu[0], mX],[mu[1], mY], color='b', lw=1.)
 
     drawrobot(mu[0:3], 'r', 3, 0.3, 0.3);

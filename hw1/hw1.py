@@ -31,18 +31,21 @@ x = scipy.zeros((3,))
 
 # Iterate over odometry commands and update the robot pose
 # according to the motion model
-for t in xrange(len(data)):
+for t in xrange(len(data['sensor'])):
     #distinctly python2.7
 
     # Update the pose of the robot based on the motion model
-    x = motion_command(x, data.timestep(t).odometry);
+    #x = motion_command(x, data.timestep(t).odometry);
+    x = motion_command(x, data['odometry'][t]);
 
+    
     #Generate visualization plots of the current state
-    plot_state(x, landmarks, t, data.timestep(t).sensor);
+    #plot_state(x, landmarks, t, data.timestep(t).sensor);
+    plot_state(x, landmarks, t, data['sensor'][t]);
 
     print("Current robot pose:")
-    print("x = ",x)
+    print("x = ", x)
 
 # Display the final state estimate
 print("Final robot pose:")
-print("x = ",x)
+print("x = ", x)

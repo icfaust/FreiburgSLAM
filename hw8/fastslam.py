@@ -47,7 +47,7 @@ def correction_step(particles, z):
             else:
 
                 # get the expected measurement
-                [expectedZ, H] = measurement_model(particles(i), z(j));
+                [expectedZ, H] = main.measurement_model(particles(i), z(j));
 
                 # TODO: compute the measurement covariance
                 
@@ -72,7 +72,7 @@ def resample(particles):
     
     numParticles = len(particles)
     
-    w = particles.weight
+    w = particles['weight']
 
     # normalize the weight
     w = w / scipy.sum(w)
@@ -85,7 +85,7 @@ def resample(particles):
         if neff > 0.5*numParticles:
             newParticles = particles
             for i in xrange(numParticles):
-                newParticles[i].weight = w[i]
+                newParticles['weight'][i] = w[i]
             return;
 
 
@@ -113,7 +113,7 @@ def resample(particles):
             idx++
 
         newParticles[i] = particles[idx]
-        newParticles[i].weight = 1/numParticles
+        newParticles['weight'][i] = 1/numParticles
 
 return newParticles
 

@@ -24,7 +24,7 @@ data = read_data('../sensor_data.dat')
 
 infty = 1000.
 # Get the number of landmarks in the map
-n = landmarks.shape[1] #size(landmarks,2) this must be changed
+n = len(landmarks['id']) #size(landmarks,2) this must be changed
 
 # observedLandmarks is a vector that keeps track of which landmarks have been observed so far.
 # observedLandmarks(i) will be true if the landmark with id = i has been observed at some point by the robot
@@ -48,17 +48,17 @@ showGui = False # plot to files instead
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in xrange(len(data.timestep)):#1:size(data.timestep, 2):
+for t in xrange(len(data['sensor'])):#1:size(data.timestep, 2):
 #for t in xrange(80):
 
    # Perform the prediction step of the EKF
-   mu, sigma = prediction(mu, sigma, data.timestep(t).odometry)
+   mu, sigma = prediction(mu, sigma, data['odometry'][t])
 
    # Perform the correction step of the EKF
-   mu, sigma, observedLandmarks = correction(mu, sigma, data.timestep(t).sensor, observedLandmarks)
+   mu, sigma, observedLandmarks = correction(mu, sigma, data['sensor'][t], observedLandmarks)
 
    #Generate visualization plots of the current state of the filter
-   plot_state(mu, sigma, landmarks, t, observedLandmarks, data.timestep(t).sensor, showGui)
+   plot_state(mu, sigma, landmarks, t, observedLandmarks, data['sensor'][t], showGui)
    print(r'Current state vector: \n mu = %f', mu)
 
 print("Final system covariance matrix: %f", sigma)

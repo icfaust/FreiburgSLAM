@@ -28,13 +28,11 @@ numParticles = 100
 
 # THIS IS VERY MATLABED I NEED TO REDO THIS AGAIN
 # initialize the particles dict
-particles = {'weight':scipy.zeros((numParticles,)),
+particles = {'weight':scipy.ones((numParticles,))/numParticles,
              'pose':scipy.zeros((numParticles, 3)),
              'history':scipy.zeros((numParticles, 3))}
-for i in xrange(numParticles):# = 1:numParticles
-    particles['weight'][i] = 1. / numParticles;
-    #particles(i).pose = zeros(3, 1);
-    #particles(i).history = cell();
+
+for i in xrange(numParticles):
     for l in xrange(N):# = 1:N % initialize the landmarks aka the map
         particles(i).landmarks(l).observed = False
         #% 2D position of the landmark
@@ -45,8 +43,8 @@ for i in xrange(numParticles):# = 1:numParticles
 
 
 # toogle the visualization type
-#showGui = True;  % show a window while the algorithm runs
-showGui = False % plot to files instead
+#showGui = True;  # show a window while the algorithm runs
+showGui = False # plot to files instead
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.

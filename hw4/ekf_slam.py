@@ -65,12 +65,13 @@ def correction(mu, sigma, z, observedLandmarks):
        Returns:
            mu (numpy float array): updated mu
            sigma (numpy float array): updated sigma
-           observedLandmarks (boolean numpy array): updated landmark              signifier. 
-"""
+           observedLandmarks (boolean numpy array): updated landmark
+           signifier. 
+    """
 
 
     # Number of measurements in this time step
-    m = z.shape[1]
+    m = len(z['id'])
 
     # Z: vectorized form of all measurements made in this time step: [range_1; bearing_1; range_2; bearing_2; ...; range_m; bearing_m]
     # ExpectedZ: vectorized form of all expected measurements in the same form.
@@ -85,7 +86,7 @@ def correction(mu, sigma, z, observedLandmarks):
 
     for i = xrange(m):
 	# Get the id of the landmark corresponding to the i-th observation
-	landmarkId = z(i).id
+	landmarkId = z[i].id
 	# If the landmark is obeserved for the first time:
 	if observedLandmarks[landmarkId] == False:
 		# TODO: Initialize its pose in mu based on the measurement and the current robot pose:
