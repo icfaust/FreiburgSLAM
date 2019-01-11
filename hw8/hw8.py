@@ -30,17 +30,10 @@ numParticles = 100
 # initialize the particles dict
 particles = {'weight':scipy.ones((numParticles,))/numParticles,
              'pose':scipy.zeros((numParticles, 3)),
-             'history':scipy.zeros((numParticles, 3))}
-
-for i in xrange(numParticles):
-    for l in xrange(N):# = 1:N % initialize the landmarks aka the map
-        particles(i).landmarks(l).observed = False
-        #% 2D position of the landmark
-        particles(i).landmarks(l).mu = scipy.zeros(2,1)
-        #covariance of the landmark
-        particles(i).landmarks(l).sigma = scipy.zeros(2,2)
-
-
+             'history':scipy.zeros((numParticles, 3)),
+             'landmarks':[{'observed':False,
+                           'mu':scipy.zeros((2,1)),
+                           'sigma':scipy.zeros((2,2))} for x in range(numParticles)]}
 
 # toogle the visualization type
 #showGui = True;  # show a window while the algorithm runs

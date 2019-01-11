@@ -15,9 +15,9 @@ def motion():
     numParticles = 100
 
     # initialize the particles array
-    particles = {'weight':scipy.ones((numParticles,))/numParticles,
-                 'pose':scipy.zeros((numParticles, 3)),
-                 'history':[[]]*numParticles}
+    particles = [{'weight':1./numParticles,
+                 'pose':scipy.zeros((3,)),
+                 'history':[]} for x in range(numParticles)]
 
     
     #for i = 1:numParticles
@@ -43,9 +43,14 @@ def resampling():
     numParticles = 1000;
 
     # initialize the particles array
-    p = {'weight':scipy.ones((numParticles,))/numParticles,
-         'pose':scipy.stats.norm.rvs([0., 0.], [1., 2.]),
-         'history':[[]]*numParticles}
+
+    particles = [{'weight':1./numParticles,
+                  'pose':scipy.stats.norm.rvs([0., 0.], [1., 2.])
+                  'history':[]} for in range(numParticles)]
+    
+    #p = {'weight':scipy.ones((numParticles,))/numParticles,
+    #     'pose':scipy.stats.norm.rvs([0., 0.], [1., 2.]),
+    #     'history':[[]]*numParticles}
 
     #for i = 1:numParticles
     #    particles(i).weight = 1. / numParticles;
@@ -56,8 +61,10 @@ def resampling():
 
     # re-weight the particles according to their distance to [0 0]
     sigma = .2*scipy.eye(2)
-    p['weight'] = scipy.exp(-.5*scipy.sum(p['pose']*(scipy.dot(inv(sigma),
-                                                               p['pose'].T).T),axis=0))
+    sinv = inv(sigma)
+    
+    for p in particles:
+        p['weight'] = scipy.exp(-.5*scipy.dot(p['pose'], scipy.dot(sinv, p['pose'])))
     #for i = 1:numParticles
     #particles(i).weight = exp(-1/2 * particles(i).pose' * inv(sigma) * particles(i).pose);
     #end

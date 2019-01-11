@@ -14,40 +14,40 @@ def correction_step(particles, z):
     numParticles = len(particles)
     
     # Number of measurements in this time step
-    m = z.shape[1] #I think this is wrong, but this problem set needs a lot of work
+    m = len(z['x'])
     
     # TODO: Construct the sensor noise matrix Q_t (2 x 2)
     
     # process each particle
     for i in xrange(numParticles): #particle loop
-        robot = particles['pose'][i]
+        robot = particles[i]['pose']
         # process each measurement
         for j in xrange(m): #measurement loop
             # Get the id of the landmark corresponding to the j-th observation
             # particles(i).landmarks(l) is the EKF for this landmark
-            l = z['id'][j];
+            l = z['id'][j]
 
             # The (2x2) EKF of the landmark is given by
             # its mean particles(i).landmarks(l).mu
             # and by its covariance particles(i).landmarks(l).sigma
 
             # If the landmark is observed for the first time:
-            if particles[i].landmarks[l].observed == False:
+            if particles[i]['landmarks']['observed'] == False:
 
                 # TODO: Initialize its position based on the measurement and the current robot pose:
             
                 # get the Jacobian with respect to the landmark position
-                [h, H] = main.measurement_model(particles[i], z[j]);
+                [h, H] = main.measurement_model(particles[i], z[j])
 
                 # TODO: initialize the EKF for this landmark
 
                 # Indicate that this landmark has been observed
-                particles[i].landmarks[l].observed = True;
+                particles[i]['landmarks']['observed'] = True
                 
             else:
 
                 # get the expected measurement
-                [expectedZ, H] = main.measurement_model(particles[i], z[j]);
+                [expectedZ, H] = main.measurement_model(particles[i], z[j])
 
                 # TODO: compute the measurement covariance
                 
@@ -72,7 +72,7 @@ def resample(particles):
     
     numParticles = len(particles)
     
-    w = particles['weight']
+    w = scipy.array([p['weight'] for p in particles])
 
     # normalize the weight
     w = w / scipy.sum(w)
@@ -82,13 +82,14 @@ def resample(particles):
     #useNeff = True
     if useNeff:
         neff = 1. / scipy.sum(pow(w, 2))
+        print(neff)
         if neff > 0.5*numParticles:
-            newParticles = particles
+            newParticles = particles.copy()
             for i in xrange(numParticles):
-                newParticles['weight'][i] = w[i]
+                newParticles[i]['weight'] = w[i]
             return newParticles
 
-    #newParticles = struct;
+    newParticles = [[]]*numParticles
     
     # TODO: implement the low variance re-sampling
 
@@ -112,7 +113,7 @@ def resample(particles):
             idx++
 
         newParticles[i] = particles[idx]
-        newParticles['weight'][i] = 1/numParticles
+        newParticles[i]['weight'] = 1./numParticles
 
-return newParticles
+    return newParticles
 

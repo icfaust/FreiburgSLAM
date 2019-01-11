@@ -20,7 +20,7 @@ def prediction_step(particles, u, noise):
     for i in xrange(numParticles):#= 1:numParticles
     
         # append the old position to the history of the particle
-        particles['history'][i] += [particles['pose'][i]]
+        particles[i]['history'] += [particles[i]['pose']]
     
         # TODO: sample a new pose for the particle
         
@@ -34,7 +34,7 @@ def resample(particles):
     variance sampling, Probabilistic Robotics pg. 109"""
     numParticles = len(particles)
 
-    w = particles['weight']
+    w = scipy.array([p['weight'] for p in particles])
 
     # normalize the weight
     w = w / scipy.sum(w)
@@ -46,13 +46,12 @@ def resample(particles):
         neff = 1. / scipy.sum(pow(w, 2))
         print(neff)
         if neff > 0.5*numParticles:
-            newParticles = particles
-            newParticles['weight'] = w
+            newParticles = particles.copy()
+            for i in xrange(numParticles):
+                newParticles[i]['weight'] = w[i]
             return newParticles
     
-    newParticles = {'weight':[],
-                    'pose':[],
-                    'history':[]}#struct;
+    newParticles = [[]]*numParticles
 
     # TODO: implement the low variance re-sampling
     
