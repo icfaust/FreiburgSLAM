@@ -72,6 +72,6 @@ def resampling():
     resampledParticles = motion.resample(p)
 
     # plot the particles before (red) and after resampling (blue)
-    plt.plot(p['pose'][:,0], p['pose'][:,1], 'r+', 'markersize', 5)
-    plt.plot(resampledParticles['pose'][:,0], resampledParticles['pose'][:,1], 'b*', 'markersize', 5)
+    plt.plot(p['pose'][:,0], p['pose'][:,1], 'r+', markersize=5.)
+    plt.plot(resampledParticles['pose'][:,0], resampledParticles['pose'][:,1], 'b*', markersize=5.)
     plt.show()

@@ -1,6 +1,7 @@
 import scipy
 import scipy.linalg
 import matplotlib.pyplot as plt
+from gridmap import world_to_map_coordinates #this is really really ugly
 
 def bresenham(mycoords):
     """ BRESENHAM: Generate a line profile of a 2d image 
@@ -21,16 +22,16 @@ def bresenham(mycoords):
     
     See also: tut_line_algorithm"""
     
-    x = round(mycoords[:, 0])
-    y = round(mycoords[:, 1])
+    x = scipy.round(mycoords[:, 0])
+    y = scipy.round(mycoords[:, 1])
     steep = (abs(y[1]-y[0]) > abs(x[1]-x[0]))
 
     if steep:
         x, y = _swap(x,y)
         
     if x[0] > x[1]: 
-        [x[0], x[1]] = _swap(x[0], x[1])
-        [y[0], y[1]] = _swap(y[0], y[1])
+        x[0], x[1] = _swap(x[0], x[1])
+        y[0], y[1] = _swap(y[0], y[1])
 
     delx = x[1] - x[0]
     dely = abs(y[1] - y[0])
@@ -53,7 +54,7 @@ def bresenham(mycoords):
 
     x_n += 1
     error += dely
-    if bitshift(error, 1) >= delx: #same as -> if 2*error >= delx, 
+    if (error << 1) >= delx: #same as -> if 2*error >= delx, 
         y_n += ystep
         error -= delx
 
@@ -61,7 +62,7 @@ def bresenham(mycoords):
     X = Y
     Y = temp
 
-    return X,Y
+    return X, Y
     
 def _swap(s,t):
     # function SWAP
@@ -187,23 +188,21 @@ class RobotLaser(object):
 
 def plot_map(mapout, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t):
 
-    #	figure 
     figure(1, "visible", "off");
     plt.axis(mapBox);
-    hold on;
     mapout = mapout.T
-    imshow(ones(size(map)) - log_odds_to_prob(map))
-    s = size(map)(1:2); 
-    set(plt.gcf(), "position", [50 50 s*5]) 
-    set(plt.gca(), "position", [.05 .05 .9 .9]) 
+    
+    plt.imshow(scipy.ones(mapout.shape) - log_odds_to_prob(mapout))
+    s = mapout.shape[1] 
+    #set(plt.gcf(), "position", [50 50 s*5]) 
+    plt.subplots_adjust(.05, .05, .9, .9) 
     traj = [poses(1:t,1)';poses(1:t,2)'];
     traj = world_to_map_coordinates(traj, gridSize, offset);
     plt.plot(traj(1,:),traj(2,:),'g')
-    plt.plot(robPoseMapFrame(1),robPoseMapFrame(2),'bo','markersize',5,'linewidth',4)
-    plt.plot(laserEndPntsMapFrame(1,:),laserEndPntsMapFrame(2,:),'ro','markersize',2)
-    #filename = sprintf('../plots/gridmap_%03d.png', t);
-    #print(filename, '-dpng');
-    #close all;
+    plt.plot(robPoseMapFrame(1),robPoseMapFrame(2),'bo',markersize=5., linewidth=4.)
+    plt.plot(laserEndPntsMapFrame(1,:),laserEndPntsMapFrame(2,:),'ro',markersize=2.)
+    #filename = 'gridmap_%03d.png'.format(t)
+    #plt.savefig(filename)
 
 def plot_state(particles, timestep):
     """ Visualizes the state of the particles"""
@@ -212,7 +211,7 @@ def plot_state(particles, timestep):
     
     # Plot the particles
     ppos = scipy.array([p['pose'] for p in particles])
-    plt.plot(ppos[:,0], ppos[:,1], 'g.', 'markersize', 10, 'linewidth', 3.5);
+    plt.plot(ppos[:,0], ppos[:,1], 'g.', markersize=10., linewidth=3.5);
 
     plt.title('t= '+str(timestep))
     plt.xlim([-2, 12])

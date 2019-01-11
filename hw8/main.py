@@ -200,7 +200,7 @@ def plot_state(particles, landmarks, timestep, z, window):
     plt.clf()
     plt.grid("on")
 
-    plt.plot(landmarks['x'], landmarks['y'], 'k+', 'markersize'=10, 'linewidth'=5)
+    plt.plot(landmarks['x'], landmarks['y'], 'k+', markersize=10., linewidth=5.)
     
     # Plot the particles
     ppos = scipy.array([p['pose'] for p in particles])
@@ -213,7 +213,7 @@ def plot_state(particles, landmarks, timestep, z, window):
     for in xrange(len(particles[idx]['landmarks'])):
         if particles[idx]['landmarks'][i]['observed']:
             l = particles[idx]['landmarks'][i]['mu']
-            plt.plot(l[0], l[1], 'bo', 'markersize', 3);
+            plt.plot(l[0], l[1], 'bo', markersize=3.);
             plot.draw_probe_ellipse(l, particles[idx]['landmarks'][i]['sigma'], 0.95, 'b')
 
     # draw the observations
@@ -221,12 +221,12 @@ def plot_state(particles, landmarks, timestep, z, window):
       l = particles[idx]['landmarks'][z['id'][i]]['mu']
       plt.plot([particles[idx]['pose'][0], l[0]],
                [particles[idx]['pose'][1], l[1]],
-               'color'='k',
-               'linewidth'=1.)
+               color='k',
+               linewidth=1.)
 
     # draw the trajectory as estimated by the currently best particle
     trajectory = scipy.array(particles[idx]['history'])
-    plt.plot(trajectory[:,0], trajectory[:,1], 'color'='r', 'linewidth'=3)
+    plt.plot(trajectory[:,0], trajectory[:,1], color='r', linewidth=3.)
 
     plot.drawrobot(particles[idx]['pose'], 'r', 3, 0.3, 0.3);
     plt.xlim([-2, 12])
