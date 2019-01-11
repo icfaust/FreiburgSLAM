@@ -12,11 +12,11 @@ Table of homework contents:
 * HW4 - Extended Kalman Filter SLAM
 * HW5 - Unscented Kalman Filter Transform
 * HW6 - Unscented Kalman Filter SLAM
-* HW7 - Grid Maps
+* HW7 - Grid Maps and Particle Filters
 * HW8 - FastSLAM
 * HW9 - Least Squares Odometry Calibration
 * HW10 - Least Squares Graph-Based SLAM
 
-Note that some of the code is very un-pythonic and is a vestige of the original Octave/MATLAB style (especially sensor and world data readers). The code extensively uses the scipy and matplotlib packages for the mathematical programming, analysis, and plotting.
+Note that some of the code is very un-pythonic and is a vestige of the original Octave/MATLAB style. The code extensively uses the scipy and matplotlib packages for the mathematical programming, analysis, and plotting.
 
 Thanks so much to Cyrill Stachniss and Albert-Ludwigs-Universität Freiburg for making their course materials freely available. This github was for my learning purposes and its reuse does not rest with me, rather is dependent on Cyrill and the university.

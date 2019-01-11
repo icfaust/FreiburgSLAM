@@ -1,4 +1,5 @@
 import scipy
+import scipy.stats
 
 def measurement_model(particle, z):
     """ compute the expected measurement for a landmark
@@ -10,14 +11,17 @@ def measurement_model(particle, z):
     landmarkPos = particle.landmarks(landmarkId).mu;
     
     # TODO: use the current state of the particle to predict the measurment
-    landmarkX = landmarkPos[0];
-    landmarkY = landmarkPos[1];
+    landmarkX = landmarkPos[0]
+    landmarkY = landmarkPos[1]
+    
     expectedRange = scipy.sqrt(pow(landmarkX - particle.pose[0], 2) + pow(landmarkY - particle.pose[1], 2))
     expectedBearing = normalize_angle(scipy.arctan2(landmarkY-particle.pose[1], landmarkX-particle.pose[0]) - particle.pose[2])
+
     h = scipy.array([expectedRange, expectedBearing])
     
     # TODO: Compute the Jacobian H of the measurement function h wrt the landmark location
     H = scipy.zeros(2,2)
+
     H[0,0] = (landmarkX - particle.pose[0])/expectedRange;
     H[0,1] = (landmarkY - particle.pose[1])/expectedRange;
     H[1,0] = (particle.pose[1] - landmarkY)/pow(expectedRange, 2);
@@ -30,10 +34,10 @@ def normalize_angle(inp):
 
 def prediction_step(particles, u, noise):
     """ Updates the particles by drawing from the motion model
-      Use u.r1, u.t, and u.r2 to access the rotation and translation values
+      Use u['r1'], u['t'], and u['r2'] to access the rotation and translation values
      which have to be pertubated with Gaussian noise.
     The position of the i-th particle is given by the 3D vector
-     particles(i).pose which represents (x, y, theta).
+     particles['pose'][i] which represents [x, y, theta].
     
      noise parameters
      Assume Gaussian noise in each of the three parameters of the motion model.
@@ -50,12 +54,12 @@ def prediction_step(particles, u, noise):
         particles['history'] += [particles['pose'][i]]
         
         # sample a new pose for the particle
-        r1 = normrnd(u['r1'], r1Noise)
-        r2 = normrnd(u['r2'], r2Noise);
-        trans = normrnd(u['t'], transNoise)
-        particles['pose'][i,0] = particles['pose'][i,0] + trans*scipy.cos(particles['pose'][i,2] + r1);
-        particles['pose'][i,1] = particles['pose'][i,1] + trans*scipy.sin(particles['pose'][i,2] + r1);
-        particles['pose'][i,2] = normalize_angle(particles['pose'][i,2] + r1 + r2);
+        r1 = scipy.stats.norm.rvs(loc=u['r1'], scale=r1Noise)
+        r2 = scipy.stats.norm.rvs(loc=u['r2'], scale=r2Noise)
+        trans = scipy.stats.norm.rvs(loc=u['t'], scale=transNoise)
+        particles['pose'][i,0] = particles['pose'][i,0] + trans*scipy.cos(particles['pose'][i,2] + r1)
+        particles['pose'][i,1] = particles['pose'][i,1] + trans*scipy.sin(particles['pose'][i,2] + r1)
+        particles['pose'][i,2] = normalize_angle(particles['pose'][i,2] + r1 + r2)
         
     return particles
 
