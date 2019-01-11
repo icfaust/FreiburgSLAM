@@ -17,17 +17,19 @@ import matplotlib.pyplot as plt
 #figure
 #hold on
 #grid
+plt.clf()
+plt.grid('on')
 
 # Initial distribution
 sigma = 0.1*scipy.eye(2)
-mu = [1, 2]
+mu = scipy.array([1., 2.])
 n = len(mu)
 
 # Compute lambda
 alpha = 0.9
 beta = 2.
 kappa = 1.
-lamb = pow(alpha,2)*(n+kappa) - n
+lamb = pow(alpha, 2)*(n + kappa) - n
 
 # Compute the sigma points corresponding to mu and sigma
 sigma_points, w_m, w_c = compute_sigma_points(mu, sigma, lamb, alpha, beta);
