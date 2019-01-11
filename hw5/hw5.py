@@ -35,11 +35,11 @@ lamb = pow(alpha, 2)*(n + kappa) - n
 sigma_points, w_m, w_c = compute_sigma_points(mu, sigma, lamb, alpha, beta);
 
 # Plot original distribution with sampled sigma points
-plt.plot(mu[0], mu[1], 'ro', 'markersize', 12,'linewidth', 3)
+plt.plot(mu[0], mu[1], 'ro', 'markersize'=12., 'linewidth'=3.)
 plt.legend('original distribution')
 draw_probe_ellipse(mu, sigma, 0.9, 'r')
 plt.plot(sigma_points[0], sigma_points[1], 'kx',
-         'markersize', 10, 'linewidth', 3)
+         'markersize'=10., 'linewidth'=3.)
 
 # Transform sigma points
 sigma_points_trans = transform(sigma_points)
@@ -48,11 +48,11 @@ sigma_points_trans = transform(sigma_points)
 mu_trans, sigma_trans = recover_gaussian(sigma_points_trans, w_m, w_m)
 
 # Plot transformed sigma points with corresponding mu and sigma
-plt.plot(mu_trans[0], mu_trans[1], 'bo','markersize', 12, 'linewidth', 3)
+plt.plot(mu_trans[0], mu_trans[1], 'bo','markersize'=12., 'linewidth'=3.)
 plt.legend('transformed distribution')
 draw_probe_ellipse(mu_trans, sigma_trans, 0.9, color='b')
 plt.plot(sigma_points_trans[0], sigma_points_trans[1], 'kx',
-         'markersize', 10, 'linewidth', 3)
+         'markersize'=10., 'linewidth'=3.)
 
 # Figure axes setup
 plt.title('Unscented Transform', 'fontsize', 20)
@@ -64,4 +64,4 @@ plt.axis([x_min-3, x_max+3, y_min-3, y_max+3])
 plt.axis('equal')
 plt.show()
 # Print and save plot
-#print('../plots/unscented.png', '-dpng')
+#plt.savefig('unscented.png')
