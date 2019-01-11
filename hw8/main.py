@@ -214,7 +214,7 @@ def plot_state(particles, landmarks, timestep, z, window):
         if particles[idx]['landmarks'][i]['observed']:
             l = particles[idx]['landmarks'][i]['mu']
             plt.plot(l[0], l[1], 'bo', 'markersize', 3);
-            plot.draw_prob_ellipse(l, particles[idx]['landmarks'][i]['sigma'], 0.95, 'b')
+            plot.draw_probe_ellipse(l, particles[idx]['landmarks'][i]['sigma'], 0.95, 'b')
 
     # draw the observations
     for i in xrange(len(z['id'])): #(i=1:size(z,2))
@@ -238,6 +238,7 @@ def plot_state(particles, landmarks, timestep, z, window):
     if window:
         plt.pause(0.1);
     else:
+        plt.draw()
         filename = 'fastslam_%03d.png'.format(timestep)
         plt.savefig(filename)
 

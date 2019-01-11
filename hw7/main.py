@@ -225,7 +225,7 @@ def plot_state(particles, timestep):
         plt.pause(.5)
     else:
         plt.draw()
-        filename = sprintf('../plots/pf_%03d.png', timestep);
+        filename = 'pf_%03d.png'.format(timestep)
         plt.savefig(filename)
         
     
