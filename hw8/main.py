@@ -22,10 +22,10 @@ def measurement_model(particle, z):
     # TODO: Compute the Jacobian H of the measurement function h wrt the landmark location
     H = scipy.zeros(2,2)
 
-    H[0,0] = (landmarkX - particle.pose[0])/expectedRange;
-    H[0,1] = (landmarkY - particle.pose[1])/expectedRange;
-    H[1,0] = (particle.pose[1] - landmarkY)/pow(expectedRange, 2);
-    H[1,1] = (landmarkX - particle.pose[0])/pow(expectedRange, 2);
+    H[0,0] = (landmarkX - particle.pose[0])/expectedRange
+    H[0,1] = (landmarkY - particle.pose[1])/expectedRange
+    H[1,0] = (particle.pose[1] - landmarkY)/pow(expectedRange, 2)
+    H[1,1] = (landmarkX - particle.pose[0])/pow(expectedRange, 2)
     
     return h, H
 
