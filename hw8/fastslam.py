@@ -5,7 +5,7 @@ import main
 def correction_step(particles, z):
     """ Weight the particles according to the current map of the particle
     and the landmark observations z.
-    z: struct array containing the landmark observations.
+    z: dict containing the landmark observations.
     Each observation z(j) has an id z(j).id, a range z(j).range, and a bearing z(j).bearing
     The vector observedLandmarks indicates which landmarks have been observed
     at some point by the robot."""
@@ -14,7 +14,7 @@ def correction_step(particles, z):
     numParticles = len(particles)
     
     # Number of measurements in this time step
-    m = len(z['x'])
+    m = len(z['id'])
     
     # TODO: Construct the sensor noise matrix Q_t (2 x 2)
     
@@ -24,30 +24,35 @@ def correction_step(particles, z):
         # process each measurement
         for j in xrange(m): #measurement loop
             # Get the id of the landmark corresponding to the j-th observation
-            # particles(i).landmarks(l) is the EKF for this landmark
+            # particles[i]['landmarks][l] is the EKF for this landmark
             l = z['id'][j]
 
             # The (2x2) EKF of the landmark is given by
-            # its mean particles(i).landmarks(l).mu
-            # and by its covariance particles(i).landmarks(l).sigma
+            # its mean particles[i]['landmarks'][l]['mu']
+            # and by its covariance particles[i]['landmarks'][l]['sigma']
 
             # If the landmark is observed for the first time:
-            if particles[i]['landmarks']['observed'] == False:
+            
+            tempLandmark = {'id':l,
+                            'x':z['x'][j],
+                            'y':z['y'][j]}
+            if particles[i]['landmarks'][j]['observed'] == False:
 
                 # TODO: Initialize its position based on the measurement and the current robot pose:
             
                 # get the Jacobian with respect to the landmark position
-                [h, H] = main.measurement_model(particles[i], z[j])
+
+                [h, H] = main.measurement_model(particles[i], tempLandmark)
 
                 # TODO: initialize the EKF for this landmark
 
                 # Indicate that this landmark has been observed
-                particles[i]['landmarks']['observed'] = True
+                particles[i]['landmarks'][j]['observed'] = True
                 
             else:
 
                 # get the expected measurement
-                [expectedZ, H] = main.measurement_model(particles[i], z[j])
+                [expectedZ, H] = main.measurement_model(particles[i], tempLandmark)
 
                 # TODO: compute the measurement covariance
                 

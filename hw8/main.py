@@ -61,16 +61,16 @@ def measurement_model(particle, z):
     and the Jacobian with respect to the landmark"""
 
     # extract the id of the landmark
-    landmarkId = z['id'];
+    landmarkId = z['id']
     # two 2D vector for the position (x,y) of the observed landmark
-    landmarkPos = particle['landmarks'][landmarkId]['mu'];
+    landmarkPos = particle['landmarks'][landmarkId]['mu']
     
     # TODO: use the current state of the particle to predict the measurment
     landmarkX = landmarkPos[0]
     landmarkY = landmarkPos[1]
     
     expectedRange = scipy.sqrt(pow(landmarkX - particle.pose[0], 2) + pow(landmarkY - particle.pose[1], 2))
-    expectedBearing = normalize_angle(scipy.arctan2(landmarkY-particle.pose[1], landmarkX-particle.pose[0]) - particle.pose[2])
+    expectedBearing = normalize_angle(scipy.arctan2(landmarkY - particle.pose[1], landmarkX - particle.pose[0]) - particle.pose[2])
 
     h = scipy.array([expectedRange, expectedBearing])
     
