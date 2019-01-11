@@ -60,6 +60,6 @@ y_min = scipy.min(mu[1], mu_trans[1])
 y_max = scipy.max(mu[1], mu_trans[1])
 plt.axis([x_min-3, x_max+3, y_min-3, y_max+3])
 plt.axis('equal')
-
+plt.show()
 # Print and save plot
 #print('../plots/unscented.png', '-dpng')
