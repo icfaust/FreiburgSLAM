@@ -19,7 +19,7 @@ landmarks = main.read_world('../world.dat')
 data = main.read_data('../sensor_data.dat')
 
 # Get the number of landmarks in the map
-N = len(landmarks['id']);
+N = len(landmarks['id'])
 
 noise = scipy.array([0.005, 0.01, 0.005])
 
@@ -34,14 +34,6 @@ particles = [{'weight':1./numParticles,
               'landmarks':[{'observed':False,
                             'mu':scipy.zeros((2,1)),
                             'sigma':scipy.zeros((2,2))} for i in N]} for x in range(numParticles)]
-
-
-#particles = {'weight':scipy.ones((numParticles,))/numParticles,
-#             'pose':scipy.zeros((numParticles, 3)),
-#             'history':scipy.zeros((numParticles, 3)),
-#             'landmarks':[{'observed':False,
-#                           'mu':scipy.zeros((2,1)),
-#                           'sigma':scipy.zeros((2,2))} for x in range(numParticles)]}
 
 # toogle the visualization type
 #showGui = True;  # show a window while the algorithm runs
