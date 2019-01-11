@@ -1,5 +1,6 @@
 import scipy
 import scipy.stats
+import matplotlib.pyplot as plt
 
 
 def resample(particles):
@@ -179,3 +180,33 @@ def read_world(filename_):
               'x':data[1,:],
               'y':data[2,:]}
     return output
+
+
+################################
+#       Plotting Scripts       #
+################################
+
+def plot_state(particles, timestep):
+    """ Visualizes the state of the particles"""
+
+    plt.grid("on")
+    
+    # Plot the particles
+    ppos = scipy.array([p['pose'] for p in particles])
+    plt.plot(ppos[:,0], ppos[:,1], 'g.', 'markersize', 10, 'linewidth', 3.5);
+
+    plt.title('t= '+str(timestep))
+    plt.xlim([-2, 12])
+    plt.ylim([-2, 12])
+    
+    #dump to a file or show the window
+    #window = False
+    window = True
+    if window:
+        plt.pause(.5)
+    else:
+        plt.draw()
+        filename = sprintf('../plots/pf_%03d.png', timestep);
+        plt.savefig(filename)
+        
+

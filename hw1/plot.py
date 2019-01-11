@@ -21,6 +21,7 @@ def plot_state(mu, landmarks, timestep, z):
         z (list): sensor data at timestep    
     """
 
+    plt.clf()
     plt.grid('on')
     #figure(1, "visible", "off");
     plt.plot(landmarks['x'], landmarks['y'], 'k+', ms=10, lw=5.);
@@ -34,7 +35,7 @@ def plot_state(mu, landmarks, timestep, z):
     drawrobot(mu[0:3], 'r', 3, 0.3, 0.3);
     plt.xlim([-2., 12.])
     plt.ylim([-2., 12.])
-    plt.show()
+    plt.pause(.05)
     
     
     #modify this if you want to make the pngs and generate the video

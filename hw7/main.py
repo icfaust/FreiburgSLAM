@@ -1,5 +1,6 @@
 import scipy
 import scipy.linalg
+import matplotlib.pyplot as plt
 
 def bresenham(mycoords):
     """ BRESENHAM: Generate a line profile of a 2d image 
@@ -125,6 +126,11 @@ def robotlaser_as_cartesian(rl, maxRange=15, subsample=False):
 
     return points
 
+
+################################
+#    Data Reading Scripts      #
+################################
+
 def read_robotlaser(filename_):
     """Reads the robot laser readings from a file.
     
@@ -174,7 +180,10 @@ class RobotLaser(object):
             self.t[i] = tempdata[i, idx1 + 11]
 
 
-#### PLOTTING FUNCTIONS ####
+################################
+#       Plotting Scripts       #
+################################
+
 
 def plot_map(mapout, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t):
 
@@ -195,3 +204,28 @@ def plot_map(mapout, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridS
     #filename = sprintf('../plots/gridmap_%03d.png', t);
     #print(filename, '-dpng');
     #close all;
+
+def plot_state(particles, timestep):
+    """ Visualizes the state of the particles"""
+
+    plt.grid("on")
+    
+    # Plot the particles
+    ppos = scipy.array([p['pose'] for p in particles])
+    plt.plot(ppos[:,0], ppos[:,1], 'g.', 'markersize', 10, 'linewidth', 3.5);
+
+    plt.title('t= '+str(timestep))
+    plt.xlim([-2, 12])
+    plt.ylim([-2, 12])
+    
+    #dump to a file or show the window
+    #window = False
+    window = True
+    if window:
+        plt.pause(.5)
+    else:
+        plt.draw()
+        filename = sprintf('../plots/pf_%03d.png', timestep);
+        plt.savefig(filename)
+        
+    
