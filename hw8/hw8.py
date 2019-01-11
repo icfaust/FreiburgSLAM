@@ -32,7 +32,7 @@ particles = [{'weight':1./numParticles,
               'pose':scipy.zeros((3,)),
               'history':[],
               'landmarks':[{'observed':False,
-                           'mu':scipy.zeros((2,1)),
+                            'mu':scipy.zeros((2,1)),
                             'sigma':scipy.zeros((2,2))} for i in N]} for x in range(numParticles)]
 
 
