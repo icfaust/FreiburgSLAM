@@ -1,7 +1,7 @@
 import scipy
 import scipy.stats
 import matplotlib.pyplot as plt
-
+import plot
 
 def resample(particles):
     """ resample the set of particles.
@@ -186,27 +186,58 @@ def read_world(filename_):
 #       Plotting Scripts       #
 ################################
 
-def plot_state(particles, timestep):
-    """ Visualizes the state of the particles"""
 
+def plot_state(particles, landmarks, timestep, z, window):
+    """ Visualizes the state of the FastSLAM algorithm.
+    
+     The resulting plot displays the following information:
+     - map ground truth (black +'s)
+     - currently best particle (red)
+     - particle set in green
+     - current landmark pose estimates (blue)
+     - visualization of the observations made at this time step (line between robot and landmark)"""
+
+    plt.clf()
     plt.grid("on")
+
+    plt.plot(landmarks['x'], landmarks['y'], 'k+', 'markersize'=10, 'linewidth'=5)
     
     # Plot the particles
     ppos = scipy.array([p['pose'] for p in particles])
-    plt.plot(ppos[:,0], ppos[:,1], 'g.', 'markersize', 10, 'linewidth', 3.5);
+    plt.plot(ppos[:,0], ppos[:,1], 'g.')
 
-    plt.title('t= '+str(timestep))
+    # determine the currently best particle
+    idx = scipy.argmax(scipy.array([p['weight'] for p in particles]))
+
+    # draw the landmark locations along with the ellipsoids
+    for in xrange(len(particles[idx]['landmarks'])):
+        if particles[idx]['landmarks'][i]['observed']:
+            l = particles[idx]['landmarks'][i]['mu']
+            plt.plot(l[0], l[1], 'bo', 'markersize', 3);
+            plot.draw_prob_ellipse(l, particles[idx]['landmarks'][i]['sigma'], 0.95, 'b')
+
+    # draw the observations
+    for i in xrange(len(z['id'])): #(i=1:size(z,2))
+      l = particles[idx]['landmarks'][z['id'][i]]['mu']
+      plt.plot([particles[idx]['pose'][0], l[0]],
+               [particles[idx]['pose'][1], l[1]],
+               'color'='k',
+               'linewidth'=1.)
+
+    # draw the trajectory as estimated by the currently best particle
+    trajectory = scipy.array(particles[idx]['history'])
+    plt.plot(trajectory[:,0], trajectory[:,1], 'color'='r', 'linewidth'=3)
+
+    plot.drawrobot(particles[idx]['pose'], 'r', 3, 0.3, 0.3);
     plt.xlim([-2, 12])
     plt.ylim([-2, 12])
-    
-    #dump to a file or show the window
-    #window = False
-    window = True
+
+    hold off
+
+    # dump to a file or show the window
     if window:
-        plt.pause(.5)
+        plt.pause(0.1);
     else:
-        plt.draw()
-        filename = sprintf('../plots/pf_%03d.png', timestep);
+        filename = 'fastslam_%03d.png'.format(timestep)
         plt.savefig(filename)
-        
 

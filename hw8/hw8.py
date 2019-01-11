@@ -36,8 +36,8 @@ particles = [{'weight':1./numParticles,
                             'sigma':scipy.zeros((2,2))} for i in N]} for x in range(numParticles)]
 
 # toogle the visualization type
-#showGui = True;  # show a window while the algorithm runs
-showGui = False # plot to files instead
+showGui = True  # show a window while the algorithm runs
+#showGui = False # plot to files instead
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
