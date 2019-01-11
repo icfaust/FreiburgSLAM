@@ -1,6 +1,61 @@
 import scipy
 import scipy.stats
 
+
+def resample(particles):
+    """ resample the set of particles.
+    A particle has a probability proportional to its weight to get
+    selected. A good option for such a resampling method is the so-called low
+    variance sampling, Probabilistic Robotics pg. 109"""
+    
+    numParticles = len(particles)
+    
+    w = scipy.array([p['weight'] for p in particles])
+
+    # normalize the weight
+    w = w / scipy.sum(w)
+
+    # consider number of effective particles, to decide whether to resample or not
+    useNeff = False
+    #useNeff = True
+    if useNeff:
+        neff = 1. / scipy.sum(pow(w, 2))
+        print(neff)
+        if neff > 0.5*numParticles:
+            newParticles = particles.copy()
+            for i in xrange(numParticles):
+                newParticles[i]['weight'] = w[i]
+            return newParticles
+
+    newParticles = [[]]*numParticles
+    
+    # TODO: implement the low variance re-sampling
+
+    # the cumulative sum
+    cs = scipy.cumsum(w)
+    weightSum = cs[-1]#cs[len(cs)]
+
+    # initialize the step and the current position on the roulette wheel
+    step = weightSum / numParticles
+    position = scipy.stats.uniform.rvs(0, scale=weightSum)
+    idx = 0
+
+    # walk along the wheel to select the particles
+    for i in xrange(numParticles):# 1:numParticles
+        position += step;
+        if position > weightSum: #Is this necessary???
+            position -= weightSum; #I have a feeling this was
+                   #dubiously programmed...
+            idx = 0
+        while position > cs[idx]:
+            idx += 1
+
+        newParticles[i] = particles[idx]
+        newParticles[i]['weight'] = 1./numParticles
+
+    return newParticles
+
+
 def measurement_model(particle, z):
     """ compute the expected measurement for a landmark
     and the Jacobian with respect to the landmark"""
@@ -8,7 +63,7 @@ def measurement_model(particle, z):
     # extract the id of the landmark
     landmarkId = z['id'];
     # two 2D vector for the position (x,y) of the observed landmark
-    landmarkPos = particle.landmarks(landmarkId).mu;
+    landmarkPos = particle['landmarks'][landmarkId]['mu'];
     
     # TODO: use the current state of the particle to predict the measurment
     landmarkX = landmarkPos[0]
@@ -120,7 +175,7 @@ def read_world(filename_):
     """
     #instead of trying to match the matlab object, return a dict
     data = scipy.genfromtxt(filename_, dtype=float).T
-    output = {'id':data[0,:],
+    output = {'id':data[0,:] - 1,
               'x':data[1,:],
               'y':data[2,:]}
     return output

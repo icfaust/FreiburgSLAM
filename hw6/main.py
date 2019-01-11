@@ -131,7 +131,7 @@ def read_world(filename_):
     """
     #instead of trying to match the matlab object, return a dict
     data = scipy.genfromtxt(filename_, dtype=float).T
-    output = {'id':data[0,:],
+    output = {'id':data[0,:] - 1,
               'x':data[1,:],
               'y':data[2,:]}
     return output

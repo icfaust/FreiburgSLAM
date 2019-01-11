@@ -19,7 +19,7 @@ landmarks = main.read_world('../world.dat')
 data = main.read_data('../sensor_data.dat')
 
 # Get the number of landmarks in the map
-N = len(landmarks,2);
+N = len(landmarks['id']);
 
 noise = scipy.array([0.005, 0.01, 0.005])
 
@@ -28,12 +28,20 @@ numParticles = 100
 
 # THIS IS VERY MATLABED I NEED TO REDO THIS AGAIN
 # initialize the particles dict
-particles = {'weight':scipy.ones((numParticles,))/numParticles,
-             'pose':scipy.zeros((numParticles, 3)),
-             'history':scipy.zeros((numParticles, 3)),
-             'landmarks':[{'observed':False,
+particles = [{'weight':1./numParticles,
+              'pose':scipy.zeros((3,)),
+              'history':[],
+              'landmarks':[{'observed':False,
                            'mu':scipy.zeros((2,1)),
-                           'sigma':scipy.zeros((2,2))} for x in range(numParticles)]}
+                            'sigma':scipy.zeros((2,2))} for i in N]} for x in range(numParticles)]
+
+
+#particles = {'weight':scipy.ones((numParticles,))/numParticles,
+#             'pose':scipy.zeros((numParticles, 3)),
+#             'history':scipy.zeros((numParticles, 3)),
+#             'landmarks':[{'observed':False,
+#                           'mu':scipy.zeros((2,1)),
+#                           'sigma':scipy.zeros((2,2))} for x in range(numParticles)]}
 
 # toogle the visualization type
 #showGui = True;  # show a window while the algorithm runs
@@ -55,5 +63,5 @@ for t in xrange(len(data['odometry']):# 1:size(data.timestep, 2)
     main.plot_state(particles, landmarks, t, data['sensor'][t], showGui)
 
     # Resample the particle set
-    particles = fastslam.resample(particles)
+    particles = main.resample(particles)
 
