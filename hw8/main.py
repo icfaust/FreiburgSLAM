@@ -5,23 +5,23 @@ def measurement_model(particle, z):
     and the Jacobian with respect to the landmark"""
 
     # extract the id of the landmark
-    landmarkId = z.id;
+    landmarkId = z['id'];
     # two 2D vector for the position (x,y) of the observed landmark
     landmarkPos = particle.landmarks(landmarkId).mu;
     
     # TODO: use the current state of the particle to predict the measurment
     landmarkX = landmarkPos[0];
     landmarkY = landmarkPos[1];
-    expectedRange = scipy.sqrt(pow(landmarkX - particle.pose[0]),2) + pow(landmarkY - particle.pose[1],2));
-    expectedBearing = normalize_angle(scipy.arctan2(landmarkY-particle.pose[1], landmarkX-particle.pose[0]) - particle.pose[2]);
+    expectedRange = scipy.sqrt(pow(landmarkX - particle.pose[0], 2) + pow(landmarkY - particle.pose[1], 2))
+    expectedBearing = normalize_angle(scipy.arctan2(landmarkY-particle.pose[1], landmarkX-particle.pose[0]) - particle.pose[2])
     h = scipy.array([expectedRange, expectedBearing])
     
     # TODO: Compute the Jacobian H of the measurement function h wrt the landmark location
     H = scipy.zeros(2,2)
-    H(1,1) = (landmarkX - particle.pose[0])/expectedRange;
-    H(1,2) = (landmarkY - particle.pose[1])/expectedRange;
-    H(2,1) = (particle.pose[1] - landmarkY)/pow(expectedRange,2);
-    H(2,2) = (landmarkX - particle.pose[0])/pow(expectedRange,2);
+    H[0,0] = (landmarkX - particle.pose[0])/expectedRange;
+    H[0,1] = (landmarkY - particle.pose[1])/expectedRange;
+    H[1,0] = (particle.pose[1] - landmarkY)/pow(expectedRange, 2);
+    H[1,1] = (landmarkX - particle.pose[0])/pow(expectedRange, 2);
     
     return h, H
 
@@ -44,15 +44,15 @@ def prediction_step(particles, u, noise):
 
     numParticles = len(particles)
 
-    for i = xrange(numParticles):#1:numParticles
+    for i in xrange(numParticles):#1:numParticles
 
         # append the old position to the history of the particle
         particles['history'] += [particles['pose'][i]]
         
         # sample a new pose for the particle
-        r1 = normrnd(u.r1, r1Noise)
-        r2 = normrnd(u.r2, r2Noise);
-        trans = normrnd(u.t, transNoise)
+        r1 = normrnd(u['r1'], r1Noise)
+        r2 = normrnd(u['r2'], r2Noise);
+        trans = normrnd(u['t'], transNoise)
         particles['pose'][i,0] = particles['pose'][i,0] + trans*scipy.cos(particles['pose'][i,2] + r1);
         particles['pose'][i,1] = particles['pose'][i,1] + trans*scipy.sin(particles['pose'][i,2] + r1);
         particles['pose'][i,2] = normalize_angle(particles['pose'][i,2] + r1 + r2);
@@ -85,9 +85,9 @@ def read_data(filename_, flag=True):
     idx = scipy.squeeze(data[:,0] == 'ODOMETRY')
     for inp in data[idx,1:].astype(float):
         output['odometry'] += [{'r1':inp[0],
-                                    't':inp[1],
-                                    'r2':inp[2]}]
-
+                                't':inp[1],
+                                'r2':inp[2]}]
+        
     idxarray = scipy.where(idx)
     idxarray = scipy.append(idxarray,[len(idx)])
     for i in xrange(len(idxarray) - 1):
