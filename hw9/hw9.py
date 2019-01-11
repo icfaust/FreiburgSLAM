@@ -9,7 +9,7 @@ odom_motions = scipy.loadtxt('odom_motions.dat')
 scanmatched_motions = scipy.loadtxt('scanmatched_motions.dat')
 
 # create our measurements vector z
-z = scipy.vstack((scanmatched_motions, odom_motions))
+z = scipy.hstack((scanmatched_motions, odom_motions))
 
 # perform the calibration
 X = calibrate.ls_calibrate_odometry(z)
