@@ -4,14 +4,14 @@ best match the Octave scripts.  Some of this may be modified for
 use on future homework assigments.
 
 Files of use:
-hw1.py - code to be run to test homework output
+* hw1.py - code to be run to test homework output
 
-main.py - loads the datasets in a pythonic style using scipy and dictionaries
+* main.py - loads the datasets in a pythonic style using scipy and dictionaries
   this replaces the tools/ framework of the original octave implementation
 
-motion_command.py - python file with function motion_command
+* motion_command.py - python file with function motion_command
   which is used in question 2
   
-plot.py contains the plotting routines called in hw1 guided by objects
+* plot.py - contains the plotting routines called in hw1 guided by objects
   generated in main.py - currently does not save pngs, but could be done
   at a later point (also to generate the video)
