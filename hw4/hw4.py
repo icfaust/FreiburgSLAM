@@ -48,8 +48,8 @@ showGui = False # plot to files instead
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in xrange(len(data['sensor'])):#1:size(data.timestep, 2):
-#for t in xrange(80):
+for t in range(len(data['sensor'])):#1:size(data.timestep, 2):
+#for t in range(80):
 
    # Perform the prediction step of the EKF
    mu, sigma = prediction(mu, sigma, data['odometry'][t])

@@ -29,7 +29,7 @@ def read_data(filename_, flag=True):
 
     idxarray = scipy.where(idx)
     idxarray = scipy.append(idxarray,[len(idx)])
-    for i in xrange(len(idxarray) - 1):
+    for i in range(len(idxarray) - 1):
         temp = []
         
         for j in scipy.arange(idxarray[i] + 1, idxarray[i + 1]):
@@ -85,7 +85,7 @@ class FburgData(object):
         idxarray = scipy.append(idxarray,[len(idx)])
         
         # this was done purely to match the MATLAB code (which is suboptimal)
-        for i in xrange(len(idxarray)-1):
+        for i in range(len(idxarray)-1):
             temp = []
             
             for j in scipy.arange(idxarray[i]+1,idxarray[i+1]):

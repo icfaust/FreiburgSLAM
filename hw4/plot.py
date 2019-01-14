@@ -25,7 +25,7 @@ def plot_state(mu, landmarks, timestep, z):
     #figure(1, "visible", "off");
     plt.plot(landmarks.x, landmarks.y, 'k+', ms=10, lw=5.);
 
-    for i in xrange(len(z)):
+    for i in range(len(z)):
         id = z[i]['id']
         mX = landmarks(id)['x']
         mY = landmarks(id)['y']
