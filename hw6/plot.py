@@ -5,43 +5,49 @@ from matplotlib.patches import Ellipse
 from matplotlib.patches import Rectangle
 from matplotlib.patches import Arrow
 
-def plot_state(mu, landmarks, timestep, z):
-    """Visualizes the robot in the map.
-    - The resulting plot displays the following information:
-        the landmarks in the map (black +'s)
-    - current robot pose (red)
-    - observations made at this time step (line between robot
-         and landmark)
-   
-    Args:
-        mu (3x1 array): robot position and direction
-        landmarks (WorldData obj): contains landmark
-            positions
-        timestep (integer): timestep index as an integer
-        z (list): sensor data at timestep    
-    """
-
-    plt.grid('on')
-    #figure(1, "visible", "off");
-    plt.plot(landmarks.x, landmarks.y, 'k+', ms=10, lw=5.);
-
-    for i in xrange(len(z)):
-        id = z[i]['id']
-        mX = landmarks(id)['x']
-        mY = landmarks(id)['y']
-        plt.plot([mu[0], mX],[mu[1], mY], color='b', lw=1.)
-
-    drawrobot(mu[0:3], 'r', 3, 0.3, 0.3);
-    plt.xlim([-2., 12.])
-    plt.ylim([-2., 12.])
-    plt.show()
     
+def plot_state(mu, sigma, landmarks, timestep, mapout, z, window)
+    """ Visualizes the state of the UKF SLAM algorithm.
     
-    #modify this if you want to make the pngs and generate the video
+     The resulting plot displays the following information:
+     - map ground truth (black +'s)
+     - current robot pose estimate (red)
+     - current landmark pose estimates (blue)
+     - visualization of the observations made at this time step (line between robot and landmark)"""
+
+    plt.clf()
+    plt.grid("on")
     
-    #filename = sprintf('../plots/odom_%03d.png', timestep);
-    #print(filename, '-dpng');
-    #hold off
+    L = struct2cell(landmarks); 
+    plot.draw_probe_ellipse(land(1:3), sigma[0:3,0:3], 0.95, 'r'); #I don't know how to fix this here, will have to come back an
+    plt.plot(cell2mat(L(2,:)), cell2mat(L(3,:)), 'k+', markersize=10., linewidth=5.)
+
+    for i in xrange(len(mapout)):
+	plt.plot(mu[2*i+ 1],mu[2*i+ 2], 'bo', markersize=10., linewidth=5.)
+	plot.draw_prob_ellipse(mu[2*i+ 1:2*i+ 3],
+                               sigma[2*i+ 1:2*i+ 2,2*i+ 1:2*i+ 2],
+                               0.95,
+                               'b');
+
+    for in xrange(len(z)):
+	loc = scipy.where(mapout == z['id'][i])
+	mX = mu[2*loc];
+	mY = mu[2*loc + 1]
+    	plt.plot([mu[0], mX],[mu[1], mY], color='k', linewidth=1.)
+
+    plot.drawrobot(mu[0:2], 'r', 3, 0.3, 0.3)
+    plt.xlim([-2, 12])
+    plt.ylim([-2, 12])
+
+    #plot(sig_pnts(1:2,1),sig_pnts(1:2,2),'gx','linewidth',3);
+
+    if window:
+        plt.pause(0.1);
+    else:
+        plt.draw()
+        filename = '../plots/ukf_%03d.png'.format(timestep)
+        plt.savefig(filename)
+
     
 def drawrobot(xvec, color, type=2, W=.2, L=.6):
     """Draws a robot at a set pose using matplotlib in current plot
@@ -192,7 +198,6 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
    
     Kwargs:   
         color (string): matplotlib color convention
-
     Returns:
          (matplotlib Ellipse Object): Ellipse object for drawing
  
@@ -219,4 +224,3 @@ def _rot(theta, vec):
     return scipy.dot(rmat,vec)
     
     
-

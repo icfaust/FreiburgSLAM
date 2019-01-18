@@ -1,9 +1,7 @@
 import scipy
-from main import read_world
-from main import read_data
-from plot import plot_state
-from ekf_slam import correction
-from ekf_slam import prediction
+import main
+import plot
+import ekf_slam
 
 # This is the main extended Kalman filter SLAM loop. This script calls all the required
 # functions in the correct order.
@@ -16,10 +14,10 @@ from ekf_slam import prediction
 # should read their documentation which tells you the expected dimensions.
 
 # Read world data, i.e. landmarks. The true landmark positions are not given to the robot
-landmarks = read_world('../world.dat')
+landmarks = main.read_world('../world.dat')
 # load landmarks;
 # Read sensor readings, i.e. odometry and range-bearing sensor
-data = read_data('../sensor_data.dat')
+data = main.read_data('../sensor_data.dat')
 #load data
 
 infty = 1000.
@@ -46,8 +44,8 @@ sigma[3:,:3] = robMapSigma.T
 sigma[3:,3:] = mapSigma
 
 # toogle the visualization type
-#showGui = True # show a window while the algorithm runs
-showGui = False # plot to files instead
+showGui = True # show a window while the algorithm runs
+#showGui = False # plot to files instead
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
@@ -55,14 +53,14 @@ showGui = False # plot to files instead
 for t in range(8):
 
    # Perform the prediction step of the EKF
-   mu, sigma = prediction(mu, sigma, data['odometry'][t])
+   mu, sigma = ekf_slam.prediction(mu, sigma, data['odometry'][t])
 
    # Perform the correction step of the EKF
-   mu, sigma, observedLandmarks = correction(mu, sigma, data['sensor'][t], observedLandmarks)
+   mu, sigma, observedLandmarks = ekf_slam.correction(mu, sigma, data['sensor'][t], observedLandmarks)
 
    #Generate visualization plots of the current state of the filter
-   #plot_state(mu, sigma, landmarks, t, observedLandmarks, data['sensor'][t], showGui)
-   #print(r'Current state vector: \n mu = %f', mu)
+   plot.plot_state(mu, sigma, landmarks, t, observedLandmarks, data['sensor'][t], showGui)
+   print(r'Current state vector: \n mu = %f', mu)
 
 print("Final system covariance matrix: %f", sigma)
 # Display the final state estimate
