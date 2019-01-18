@@ -110,8 +110,8 @@ def correction(mu, sigma, z, observedLandmarks):
 	# If the landmark is obeserved for the first time:
 	if observedLandmarks[landmarkId] == False:
 	    # TODO: Initialize its pose in mu based on the measurement and the current robot pose:
-            mu[2*i + 3] = mu[0] + z[i]['range']*scipy.cos(z[i]['bearing'] + mu[2]) #x position of landmark
-            mu[2*i + 4] = mu[1] + z[i]['range']*scipy.sin(z[i]['bearing'] + mu[2]) #y position of landmark
+            mu[2*landmarkId + 3] = mu[0] + z[i]['range']*scipy.cos(z[i]['bearing'] + mu[2]) #x position of landmark
+            mu[2*landmarkId + 4] = mu[1] + z[i]['range']*scipy.sin(z[i]['bearing'] + mu[2]) #y position of landmark
                                                                                      
 	    # Indicate in the observedLandmarks vector that this landmark has been observed
 	    observedLandmarks[landmarkId] = True
@@ -124,35 +124,41 @@ def correction(mu, sigma, z, observedLandmarks):
 	# TODO: Use the current estimate of the landmark pose
 	# to compute the corresponding expected measurement in expectedZ:
         expectedZ[2*i] = scipy.sqrt(pow(mu[2*i + 3], 2)+pow(mu[2*i + 4], 2)) #again, this could have been vectorized with a different approach to the landmarks
-        expectedZ[2*i + 1] = main.normalize_angle(scipy.arctan2(mu[2*i + 3], mu[2*i + 4]) - mu[2])
+        expectedZ[2*i + 1] = scipy.arctan2(mu[2*i + 3], mu[2*i + 4]) - mu[2]
         
 	# TODO: Compute the Jacobian Hi of the measurement function h for this observation
         Hi = scipy.zeros((2, len(mu)))
-        ux = mu[2*i + 3] - mu[0] - z[i]['range']*scipy.cos(z[i]['bearing'] + mu[2])
-        uy = mu[2*i + 4] - mu[1] - z[i]['range']*scipy.sin(z[i]['bearing'] + mu[2])
+        ux = mu[2*landmarkId + 3] - mu[0] - z[i]['range']*scipy.cos(z[i]['bearing'] + mu[2])
+        uy = mu[2*landmarkId + 4] - mu[1] - z[i]['range']*scipy.sin(z[i]['bearing'] + mu[2])
         r = scipy.sqrt(pow(ux,2) + pow(uy,2))
 
         Hi[:,0] = scipy.array([-ux*r, uy])
         Hi[:,1] = scipy.array([-uy*r, -ux])
         Hi[:,2] = scipy.array([0., -r])
-        Hi[:,2*m + 3] = scipy.array([ux*r, -uy])
-	Hi[:,2*m + 4] = scipy.array([uy*r, ux])
+        Hi[:,2*landmarkId + 3] = scipy.array([ux*r, -uy])
+	Hi[:,2*landmarkId + 4] = scipy.array([uy*r, ux])
 	# Augment H with the new Hi
 	H += [Hi]	
 
         
     H = scipy.vstack(H)
 
-    
     #TODO: Construct the sensor noise matrix Q
-
+    Q = .01*scipy.eye(2*m)
+    
     # TODO: Compute the Kalman gain
-
+    inv = scipy.linalg.inv(scipy.dot(H, scipy.dot(sigma,
+                                                  H.T)) + Q)
+    K = scipy.dot(sigma, scipy.dot(H.T,inv))
     # TODO: Compute the difference between the expected and recorded measurements.
     # Remember to normalize the bearings after subtracting!
     # (hint: use the normalize_all_bearings function available in tools)
+    delta = main.normalize_all_bearings(Z - expectedZ)
 
     # TODO: Finish the correction step by computing the new mu and sigma.
     # Normalize theta in the robot pose.
+    mu += scipy.dot(K, delta)
+    sigma += scipy.dot(scipy.eye(len(sigma)) - scipy.dot(K, H),
+                       sigma)
 
     return mu, sigma, observedLandmarks
