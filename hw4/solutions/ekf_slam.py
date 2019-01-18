@@ -1,5 +1,6 @@
 import scipy
-
+import scipy.linalg
+import main
 
 def prediction(mu, sigma, u):
     """Updates the belief concerning the robot pose according to 
@@ -54,10 +55,10 @@ def correction(mu, sigma, z, observedLandmarks):
               [mu[2*j+2], mu[2*j+3]]
            sigma ((2N+3, 2N+3) numpy float array): covariance matrix
            z: landmark observations.
-              Each observation z(i) has an id z(i).id, a range z(i).
-              range, and a bearing z(i).bearing. The vector observed
-              Landmarks indicates which landmarks have been observed
-              at some point by the robot.
+              Each observation z(i) has an id z[i]['id'], a range of
+              z[i]['range'], and a bearing z[i]['bearing']. The 
+              vector observed Landmarks indicates which landmarks 
+              have been observed at some point by the robot.
            observedLandmarks (boolean numpy array): new landmark 
               signifier. False if the landmark with id = j has never
               been observed before.
@@ -76,22 +77,22 @@ def correction(mu, sigma, z, observedLandmarks):
     # Z: vectorized form of all measurements made in this time step: [range_1; bearing_1; range_2; bearing_2; ...; range_m; bearing_m]
     # ExpectedZ: vectorized form of all expected measurements in the same form.
     # They are initialized here and should be filled out in the for loop below
-    Z = scipy.zeros((2*m, 1))
-    expectedZ = scipy.zeros((2*m, 1))
+    Z = scipy.zeros((2*m, ))
+    expectedZ = scipy.zeros((2*m, ))
 
     # Iterate over the measurements and compute the H matrix
     # (stacked Jacobian blocks of the measurement function)
     # H will be 2m x 2N+3
     H = []
 
-    for i = xrange(m):
+    for i = range(m):
 	# Get the id of the landmark corresponding to the i-th observation
-	landmarkId = z[i].id
+	landmarkId = z[i]['id']
 	# If the landmark is obeserved for the first time:
 	if observedLandmarks[landmarkId] == False:
-		# TODO: Initialize its pose in mu based on the measurement and the current robot pose:
+	    # TODO: Initialize its pose in mu based on the measurement and the current robot pose:
 		
-		# Indicate in the observedLandmarks vector that this landmark has been observed
+	    # Indicate in the observedLandmarks vector that this landmark has been observed
 		observedLandmarks[landmarkId] = True
 
 	# TODO: Add the landmark measurement to the Z vector
@@ -104,7 +105,7 @@ def correction(mu, sigma, z, observedLandmarks):
 	# Augment H with the new Hi
 	H += [Hi]	
 
-    #TODO: Construct the sensor noise matrix Q
+    # TODO: Construct the sensor noise matrix Q
 
     # TODO: Compute the Kalman gain
 

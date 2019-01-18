@@ -86,6 +86,15 @@ def measurement_model(particle, z):
     return h, H
 
 def normalize_angle(inp):
+    """casts all angles into [-pi to pi]
+    
+    Args:
+        inp (numpy array or float): numeric with elements which are angles
+    
+    Returns:
+        inp (numpy array or float): array or value between -pi and pi
+
+    """
     return (inp + scipy.pi % 2*scipy.pi) - scipy.pi
 
 def prediction_step(particles, u, noise):

@@ -78,6 +78,15 @@ def compute_sigma_points(mu, sigma, scale):
 
 
 def normalize_angle(inp):
+    """casts all angles into [-pi to pi]
+    
+    Args:
+        inp (numpy array or float): numeric with elements which are angles
+    
+    Returns:
+        inp (numpy array or float): array or value between -pi and pi
+
+    """
     return (inp + scipy.pi % 2*scipy.pi) - scipy.pi
 
 

@@ -28,19 +28,22 @@ n = len(landmarks['id']) #size(landmarks,2) this must be changed
 
 # observedLandmarks is a vector that keeps track of which landmarks have been observed so far.
 # observedLandmarks(i) will be true if the landmark with id = i has been observed at some point by the robot
-observedLandmarks = scipy.zeros((1, N)).astype(bool)#repmat(false,1,N);
+observedLandmarks = scipy.zeros((n,)).astype(bool)#repmat(false,1,N);
 
 # Initialize belief:
 # mu: 2N+3x1 vector representing the mean of the normal distribution
 # The first 3 components of mu correspond to the pose of the robot,
 # and the landmark poses (xi, yi) are stacked in ascending id order.
 # sigma: (2N+3)x(2N+3) covariance matrix of the normal distribution
-mu = scipy.zeros((2*n + 3, 1))#repmat([0.0], (2*n + 3), 1);
+mu = scipy.zeros((2*n + 3,))#repmat([0.0], (2*n + 3), 1);
 robSigma = scipy.zeros((3, 3))
 robMapSigma = scipy.zeros((3, 2*n))
 mapSigma = infty*scipy.eye(2*n)
-sigma = scipy.array([[robSigma, robMapSigma],
-                     [robMapSigma.T, mapSigma]])#change
+sigma = scipy.zeros((2*n + 3, 2*n + 3))
+sigma[:3,:3] = robSigma
+sigma[:3,3:] = robMapSigma
+sigma[3:,:3] = robMapSigma.T
+sigma[3:,3:] = mapSigma
 
 # toogle the visualization type
 #showGui = True # show a window while the algorithm runs
@@ -48,8 +51,8 @@ showGui = False # plot to files instead
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in range(len(data['sensor'])):#1:size(data.timestep, 2):
-#for t in range(80):
+#for t in range(len(data['sensor'])):#1:size(data.timestep, 2):
+for t in range(8):
 
    # Perform the prediction step of the EKF
    mu, sigma = prediction(mu, sigma, data['odometry'][t])
@@ -58,8 +61,8 @@ for t in range(len(data['sensor'])):#1:size(data.timestep, 2):
    mu, sigma, observedLandmarks = correction(mu, sigma, data['sensor'][t], observedLandmarks)
 
    #Generate visualization plots of the current state of the filter
-   plot_state(mu, sigma, landmarks, t, observedLandmarks, data['sensor'][t], showGui)
-   print(r'Current state vector: \n mu = %f', mu)
+   #plot_state(mu, sigma, landmarks, t, observedLandmarks, data['sensor'][t], showGui)
+   #print(r'Current state vector: \n mu = %f', mu)
 
 print("Final system covariance matrix: %f", sigma)
 # Display the final state estimate

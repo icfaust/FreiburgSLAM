@@ -40,6 +40,33 @@ def read_data(filename_, flag=True):
         output['sensor'] += [temp]
     return output
 
+def normalize_angle(inp):
+    """casts all angles into [-pi to pi]
+    
+    Args:
+        inp (numpy array or float): numeric with elements which are angles
+    
+    Returns:
+        inp (numpy array or float): array or value between -pi and pi
+
+    """
+    return (inp + scipy.pi % 2*scipy.pi) - scipy.pi
+
+def normalize_all_bearings(z):
+    """casts all angles within a vector z array into [-pi to pi]
+    
+    Args:
+        z (numpy array size (N,)): vector with angles at positions
+          [1::2]
+    
+    Returns:
+        z (numpy array size (N,)): vector with normalized angles
+
+    """
+    z[1::2] = normalize_angle(z[1::2])
+    return z
+
+
 def read_world(filename_):
     """Reads the world definitionodometry and sensor readings from a file.
     
