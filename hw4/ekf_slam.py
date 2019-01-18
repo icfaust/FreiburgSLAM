@@ -140,11 +140,10 @@ def correction(mu, sigma, z, observedLandmarks):
 	# Augment H with the new Hi
 	H += [Hi]	
 
-
-    #I need some sort of concatenate step here, either a vstack or hstack
+        
     H = scipy.vstack(H)
-    print(H.shape)
 
+    
     #TODO: Construct the sensor noise matrix Q
 
     # TODO: Compute the Kalman gain

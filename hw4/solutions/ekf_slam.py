@@ -35,7 +35,7 @@ def prediction(mu, sigma, u):
                       [0., 0., motionNoise/10.]])
     
     R = scipy.zeros((sigma.shape[0],sigma.shape[0]))
-    R[0:3,0:3] = R3
+    R[:3,:3] = R3
 
     # TODO: Compute the predicted sigma after incorporating the motion
     
@@ -72,13 +72,13 @@ def correction(mu, sigma, z, observedLandmarks):
 
 
     # Number of measurements in this time step
-    m = len(z['id'])
+    m = len(z)
 
     # Z: vectorized form of all measurements made in this time step: [range_1; bearing_1; range_2; bearing_2; ...; range_m; bearing_m]
     # ExpectedZ: vectorized form of all expected measurements in the same form.
     # They are initialized here and should be filled out in the for loop below
-    Z = scipy.zeros((2*m, ))
-    expectedZ = scipy.zeros((2*m, ))
+    Z = scipy.zeros((2*m,))
+    expectedZ = scipy.zeros((2*m,))
 
     # Iterate over the measurements and compute the H matrix
     # (stacked Jacobian blocks of the measurement function)
@@ -104,6 +104,8 @@ def correction(mu, sigma, z, observedLandmarks):
 	
 	# Augment H with the new Hi
 	H += [Hi]	
+
+    H = scipy.vstack(H)
 
     # TODO: Construct the sensor noise matrix Q
 
