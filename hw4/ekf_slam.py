@@ -26,6 +26,7 @@ def prediction(mu, sigma, u):
     mu[:3] += scipy.array([u['t']*scipy.cos(u['t'] + u['r1']),
                            u['t']*scipy.sin(u['t'] + u['r1']),
                            u['r1'] + u['r2']])
+    mu[2] = main.normalize_angle(mu[2])
     
     # TODO: Compute the 3x3 Jacobian Gx of the motion model
     Gx = scipy.eye(3)
@@ -41,8 +42,8 @@ def prediction(mu, sigma, u):
                       [0., motionNoise, 0.], 
                       [0., 0., motionNoise/10.]])
     
-    R = scipy.zeros((sigma.shape[0],sigma.shape[0]))
-    R[:3,:3] = R3
+    #R = scipy.zeros((sigma.shape[0],sigma.shape[0]))
+    #R[:3,:3] = R3
 
     # TODO: Compute the predicted sigma after incorporating the motion
 
@@ -107,6 +108,7 @@ def correction(mu, sigma, z, observedLandmarks):
     for i in range(m):
 	# Get the id of the landmark corresponding to the i-th observation
 	landmarkId = z[i]['id']
+        print(landmarkId)
 	# If the landmark is obeserved for the first time:
 	if observedLandmarks[landmarkId] == False:
 	    # TODO: Initialize its pose in mu based on the measurement and the current robot pose:
@@ -118,18 +120,19 @@ def correction(mu, sigma, z, observedLandmarks):
 
 	# TODO: Add the landmark measurement to the Z vector
 	Z[2*i] = z[i]['range']
-        Z[2*i + 1] = z[i]['bearing'] #this is really inefficient code brought on by the hw designer
+        Z[2*i + 1] = main.normalize_angle(z[i]['bearing']) #this is really inefficient code brought on by the hw designer
 
         
 	# TODO: Use the current estimate of the landmark pose
 	# to compute the corresponding expected measurement in expectedZ:
-        expectedZ[2*i] = scipy.sqrt(pow(mu[2*i + 3], 2)+pow(mu[2*i + 4], 2)) #again, this could have been vectorized with a different approach to the landmarks
-        expectedZ[2*i + 1] = scipy.arctan2(mu[2*i + 3], mu[2*i + 4]) - mu[2]
+
+        expectedZ[2*i] = scipy.sqrt(pow(mu[0] - mu[2*landmarkId + 3], 2) + pow(mu[1] - mu[2*landmarkId + 4], 2)) #again, this could have been vectorized with a different approach to the landmarks
+        expectedZ[2*i + 1] = main.normalize_angle(scipy.arctan2(mu[2*landmarkId + 4] - mu[1], mu[2*landmarkId + 3] - mu[0]) - mu[2])
         
 	# TODO: Compute the Jacobian Hi of the measurement function h for this observation
         Hi = scipy.zeros((2, len(mu)))
-        ux = mu[2*landmarkId + 3] - mu[0] - z[i]['range']*scipy.cos(z[i]['bearing'] + mu[2])
-        uy = mu[2*landmarkId + 4] - mu[1] - z[i]['range']*scipy.sin(z[i]['bearing'] + mu[2])
+        ux = mu[2*landmarkId + 3] - mu[0]# - z[i]['range']*scipy.cos(z[i]['bearing'] + mu[2])
+        uy = mu[2*landmarkId + 4] - mu[1]# - z[i]['range']*scipy.sin(z[i]['bearing'] + mu[2])
         r = scipy.sqrt(pow(ux,2) + pow(uy,2))
 
         Hi[:,0] = scipy.array([-ux*r, uy])
@@ -138,11 +141,12 @@ def correction(mu, sigma, z, observedLandmarks):
         Hi[:,2*landmarkId + 3] = scipy.array([ux*r, -uy])
 	Hi[:,2*landmarkId + 4] = scipy.array([uy*r, ux])
 	# Augment H with the new Hi
-	H += [Hi]	
+	H += [Hi/pow(r,2)]	
 
         
     H = scipy.vstack(H)
-
+    print(Z,expectedZ)
+    
     #TODO: Construct the sensor noise matrix Q
     Q = .01*scipy.eye(2*m)
     

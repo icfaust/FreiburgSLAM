@@ -5,43 +5,43 @@ from matplotlib.patches import Ellipse
 from matplotlib.patches import Rectangle
 from matplotlib.patches import Arrow
 
-def plot_state(mu, landmarks, timestep, z):
-    """Visualizes the robot in the map.
-    - The resulting plot displays the following information:
-        the landmarks in the map (black +'s)
-    - current robot pose (red)
-    - observations made at this time step (line between robot
-         and landmark)
-   
-    Args:
-        mu (3x1 array): robot position and direction
-        landmarks (WorldData obj): contains landmark
-            positions
-        timestep (integer): timestep index as an integer
-        z (list): sensor data at timestep    
-    """
+def plot_state(mu, sigma, landmarks, timestep, observedLandmarks, z, window):
+    """ Visualizes the state of the EKF SLAM algorithm.
+    
+     The resulting plot displays the following information:
+     - map ground truth (black +'s)
+     - current robot pose estimate (red)
+     - current landmark pose estimates (blue)
+     - visualization of the observations made at this time step (line between robot and landmark)"""
 
+    plt.clf()
     plt.grid('on')
-    #figure(1, "visible", "off");
-    plt.plot(landmarks.x, landmarks.y, 'k+', ms=10, lw=5.);
+    print(mu[:2])
+    print(sigma[:2,:2])
+    
+    draw_probe_ellipse(mu[:2], sigma[:2,:2], 0.6, 'r')
+    plt.plot(landmarks['x'], landmarks['y'], 'k+', markersize=10, linewidth=5)
 
-    for i in range(len(z)):
-        id = z[i]['id']
-        mX = landmarks(id)['x']
-        mY = landmarks(id)['y']
-        plt.plot([mu[0], mX],[mu[1], mY], color='b', lw=1.)
+    for i in range(len(observedLandmarks)):
+	if observedLandmarks[i]:
+	    plt.plot(mu[2*i + 3],mu[2*i + 4], 'bo', markersize=10, linewidth=5)
+   	    draw_probe_ellipse(mu[2*i + 3:2*i+ 5], sigma[2*i + 3:2*i+ 5,2*i + 3:2*i + 5], 0.6, 'b')
 
-    drawrobot(mu[0:3], 'r', 3, 0.3, 0.3);
+    for i in range(len(z)):#1:size(z,2))
+	mX = mu[2*z[i]['id'] + 3]
+	mY = mu[2*z[i]['id'] + 4]
+    	plt.plot([mu[0], mX], [mu[1], mY], color='k', linewidth=1)
+
+    drawrobot(mu[:3], 'r', 3, 0.3, 0.3)
     plt.xlim([-2., 12.])
     plt.ylim([-2., 12.])
-    plt.show()
-    
-    
-    #modify this if you want to make the pngs and generate the video
-    
-    #filename = sprintf('../plots/odom_%03d.png', timestep);
-    #print(filename, '-dpng');
-    #hold off
+
+    if window:
+      plt.draw()
+      plt.pause(0.1)
+    else:
+      filename = '../ekf_%03d.png'.format(timestep)
+      plt.savefig(filename)
     
 def drawrobot(xvec, color, type=2, W=.2, L=.6):
     """Draws a robot at a set pose using matplotlib in current plot
@@ -121,7 +121,8 @@ def drawrobot(xvec, color, type=2, W=.2, L=.6):
                        W + .015,
                        W + .015,
                        angle=theta,
-                       color=color)
+                       edgecolor=color,
+                       fill=False)
         plt.gca().add_artist(temp)
         
         rin = _rot(theta,scipy.array([W + .015,0]))
@@ -191,7 +192,7 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
         alpha (float):
    
     Kwargs:   
-        color (string): matplotlib color convention
+        color (string): matplotlib color convention for ellipse edge
 
     Returns:
          (matplotlib Ellipse Object): Ellipse object for drawing
@@ -206,8 +207,9 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
 
     theta = .5*scipy.arctan2(2*covar[0,1], covar[0,0] - covar[1,1])
     
-    return Ellipse(xy, a, b, angle=theta, color=color, **kwargs)
-
+    ellipse = Ellipse(xy, a, b, angle=theta, edgecolor=color, fill=False, **kwargs)
+    plt.gca().add_patch(ellipse)
+    return ellipse
     
 def _rot(theta, vec):
     """ there are a number of vector rotations in draw robot that are 
