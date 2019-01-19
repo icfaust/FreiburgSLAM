@@ -41,9 +41,6 @@ def prediction(mu, sigma, u):
     R3 = scipy.array([[motionNoise, 0., 0.], 
                       [0., motionNoise, 0.], 
                       [0., 0., motionNoise/10.]])
-    
-    #R = scipy.zeros((sigma.shape[0],sigma.shape[0]))
-    #R[:3,:3] = R3
 
     # TODO: Compute the predicted sigma after incorporating the motion
 
