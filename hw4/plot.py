@@ -24,7 +24,7 @@ def plot_state(mu, sigma, landmarks, timestep, observedLandmarks, z, window):
 
     for i in range(len(observedLandmarks)):
 	if observedLandmarks[i]:
-	    plt.plot(mu[2*i + 3],mu[2*i + 4], 'bo', markersize=10, linewidth=5)
+	    plt.plot(mu[2*i + 3],mu[2*i + 4], 'bo', fillstyle='none', markersize=10, linewidth=5)
    	    draw_probe_ellipse(mu[2*i + 3:2*i+ 5], sigma[2*i + 3:2*i+ 5,2*i + 3:2*i + 5], 0.6, 'b')
 
     for i in range(len(z)):#1:size(z,2))
@@ -198,16 +198,21 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
          (matplotlib Ellipse Object): Ellipse object for drawing
  
     """
-    
-    b24ac = scipy.sqrt(pow(covar[0,0] - covar[1,1],2) + 4*covar[0,1])
-    c2inv = chi2.ppf(alpha, 2.)/1e2
+    print(xy, covar)
+    b24ac = scipy.sqrt(pow(covar[0,0] - covar[1,1],2) + 4*pow(covar[0,1],2))
+    c2inv = chi2.ppf(alpha, 2.)#/1e2
     
     a = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] + b24ac)))
     b = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] - b24ac)))
 
     theta = .5*scipy.arctan2(2*covar[0,1], covar[0,0] - covar[1,1])
+
+    if covar[1,1] > covar[0,0]:
+        swap = a
+        a = b
+        b = swap
     
-    ellipse = Ellipse(xy, a, b, angle=theta, edgecolor=color, fill=False, **kwargs)
+    ellipse = Ellipse(xy, 2*a, 2*b, angle=theta, edgecolor=color, fill=False, **kwargs)
     plt.gca().add_patch(ellipse)
     return ellipse
     

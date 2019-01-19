@@ -49,14 +49,12 @@ showGui = True # show a window while the algorithm runs
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-#for t in range(len(data['sensor'])):#1:size(data.timestep, 2):
-for t in range(2):
+for t in range(len(data['sensor'])):#1:size(data.timestep, 2):
+#for t in range(50):
 
    # Perform the prediction step of the EKF
    mu, sigma = ekf_slam.prediction(mu, sigma, data['odometry'][t])
 
-   print(data['odometry'][t])
-   
    # Perform the correction step of the EKF
    mu, sigma, observedLandmarks = ekf_slam.correction(mu, sigma, data['sensor'][t], observedLandmarks)
 
@@ -67,4 +65,4 @@ for t in range(2):
 print("Final system covariance matrix: %f".format(sigma))
 # Display the final state estimate
 print("Final robot pose:")
-print("mu_robot = %f sigma_robot = %f", mu[0:3], sigma[0:3,0:3])
+print("mu_robot = %f sigma_robot = %f", mu[:3], sigma[:3,:3])

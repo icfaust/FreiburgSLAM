@@ -31,7 +31,7 @@ def prediction(mu, sigma, u):
     # TODO: Compute the 3x3 Jacobian Gx of the motion model
     Gx = scipy.eye(3)
     Gx[0,2] = -1*u['t']*scipy.sin(mu[2] + u['r1'])
-    Gx[1,2] = u['t']*scipy.cos(mu[2] + u['r2'])
+    Gx[1,2] = u['t']*scipy.cos(mu[2] + u['r1'])
     
     # TODO: Construct the full Jacobian G
 
@@ -108,7 +108,6 @@ def correction(mu, sigma, z, observedLandmarks):
     for i in range(m):
 	# Get the id of the landmark corresponding to the i-th observation
 	landmarkId = z[i]['id']
-        print(landmarkId)
 	# If the landmark is obeserved for the first time:
 	if observedLandmarks[landmarkId] == False:
 	    # TODO: Initialize its pose in mu based on the measurement and the current robot pose:
@@ -137,7 +136,7 @@ def correction(mu, sigma, z, observedLandmarks):
 
         Hi[:,0] = scipy.array([-ux*r, uy])
         Hi[:,1] = scipy.array([-uy*r, -ux])
-        Hi[:,2] = scipy.array([0., -r])
+        Hi[:,2] = scipy.array([0., -pow(r,2)])
         Hi[:,2*landmarkId + 3] = scipy.array([ux*r, -uy])
 	Hi[:,2*landmarkId + 4] = scipy.array([uy*r, ux])
 	# Augment H with the new Hi
@@ -145,11 +144,9 @@ def correction(mu, sigma, z, observedLandmarks):
 
         
     H = scipy.vstack(H)
-    print(Z,expectedZ)
     
     #TODO: Construct the sensor noise matrix Q
     Q = .01*scipy.eye(2*m)
-    
     # TODO: Compute the Kalman gain
     inv = scipy.linalg.inv(scipy.dot(H, scipy.dot(sigma,
                                                   H.T)) + Q)
@@ -162,7 +159,7 @@ def correction(mu, sigma, z, observedLandmarks):
     # TODO: Finish the correction step by computing the new mu and sigma.
     # Normalize theta in the robot pose.
     mu += scipy.dot(K, delta)
-    sigma += scipy.dot(scipy.eye(len(sigma)) - scipy.dot(K, H),
-                       sigma)
+    sigma = scipy.dot(scipy.eye(len(sigma)) - scipy.dot(K, H),
+                      sigma)
 
     return mu, sigma, observedLandmarks

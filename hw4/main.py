@@ -50,7 +50,7 @@ def normalize_angle(inp):
         inp (numpy array or float): array or value between -pi and pi
 
     """
-    return (inp + scipy.pi) % 2*scipy.pi - scipy.pi
+    return (inp + scipy.pi) % (2*scipy.pi) - scipy.pi
 
 def normalize_all_bearings(z):
     """casts all angles within a vector z array into [-pi to pi]

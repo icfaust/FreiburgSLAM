@@ -86,7 +86,7 @@ def normalize_angle(inp):
         inp (numpy array or float): array or value between -pi and pi
 
     """
-    return (inp + scipy.pi) % 2*scipy.pi - scipy.pi
+    return (inp + scipy.pi) % (2*scipy.pi) - scipy.pi
 
 
 def read_data(filename_, flag=True):
