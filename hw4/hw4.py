@@ -22,7 +22,7 @@ data = main.read_data('../sensor_data.dat')
 
 infty = 1000.
 # Get the number of landmarks in the map
-n = len(landmarks['id']) #size(landmarks,2) this must be changed
+n = len(landmarks['id'])
 
 # observedLandmarks is a vector that keeps track of which landmarks have been observed so far.
 # observedLandmarks(i) will be true if the landmark with id = i has been observed at some point by the robot
@@ -33,7 +33,7 @@ observedLandmarks = scipy.zeros((n,)).astype(bool)#repmat(false,1,N);
 # The first 3 components of mu correspond to the pose of the robot,
 # and the landmark poses (xi, yi) are stacked in ascending id order.
 # sigma: (2N+3)x(2N+3) covariance matrix of the normal distribution
-mu = scipy.zeros((2*n + 3,))#repmat([0.0], (2*n + 3), 1);
+mu = scipy.zeros((2*n + 3,))
 robSigma = scipy.zeros((3, 3))
 robMapSigma = scipy.zeros((3, 2*n))
 mapSigma = infty*scipy.eye(2*n)
@@ -49,7 +49,7 @@ showGui = True # show a window while the algorithm runs
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in range(len(data['sensor'])):#1:size(data.timestep, 2):
+for t in range(len(data['sensor'])):
 #for t in range(50):
 
    # Perform the prediction step of the EKF
@@ -60,9 +60,10 @@ for t in range(len(data['sensor'])):#1:size(data.timestep, 2):
 
    #Generate visualization plots of the current state of the filter
    plot.plot_state(mu, sigma, landmarks, t, observedLandmarks, data['sensor'][t], showGui)
-   print('Current state vector: \n mu = %f'.format(mu))
+   print(r'Current state vector: \n mu = '),
+   print(mu)
 
 print("Final system covariance matrix: %f".format(sigma))
 # Display the final state estimate
 print("Final robot pose:")
-print("mu_robot = %f sigma_robot = %f", mu[:3], sigma[:3,:3])
+print("mu_robot = ",  mu[:3],"sigma_robot = ", sigma[:3,:3])
