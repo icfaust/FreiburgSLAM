@@ -198,7 +198,7 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
          (matplotlib Ellipse Object): Ellipse object for drawing
  
     """
-    print(xy, covar)
+    
     b24ac = scipy.sqrt(pow(covar[0,0] - covar[1,1],2) + 4*pow(covar[0,1],2))
     c2inv = chi2.ppf(alpha, 2.)#/1e2
     
