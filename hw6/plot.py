@@ -19,16 +19,16 @@ def plot_state(mu, sigma, landmarks, timestep, mapout, z, window)
     plt.grid("on")
     
     L = struct2cell(landmarks); 
-    plot.draw_probe_ellipse(land(1:3), sigma[0:3,0:3], 0.95, 'r'); #I don't know how to fix this here, will have to come back an
+    draw_probe_ellipse(land(1:3), sigma[0:3,0:3], 0.95, 'r'); #I don't know how to fix this here, will have to come back an
     plt.plot(cell2mat(L(2,:)), cell2mat(L(3,:)), 'k+', markersize=10., linewidth=5.)
 
     for i in xrange(len(mapout)):
 	plt.plot(mu[2*i+ 1],mu[2*i+ 2], 'bo', markersize=10., linewidth=5.)
-	plot.draw_prob_ellipse(mu[2*i+ 1:2*i+ 3],
-                               sigma[2*i+ 1:2*i+ 2,2*i+ 1:2*i+ 2],
-                               0.95,
-                               'b');
-
+	draw_prob_ellipse(mu[2*i+ 1:2*i+ 3],
+                          sigma[2*i+ 1:2*i+ 2,2*i+ 1:2*i+ 2],
+                          0.95,
+                          'b');
+        
     for in xrange(len(z)):
 	loc = scipy.where(mapout == z['id'][i])
 	mX = mu[2*loc];
@@ -186,6 +186,7 @@ def drawrobot(xvec, color, type=2, W=.2, L=.6):
         
     else:
         raise ValueError('type out of bounds')
+
     
 def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
     """Generates an ellipse object based of a point and related
@@ -198,22 +199,30 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
    
     Kwargs:   
         color (string): matplotlib color convention
+
     Returns:
          (matplotlib Ellipse Object): Ellipse object for drawing
  
     """
     
-    b24ac = scipy.sqrt(pow(covar[0,0] - covar[1,1],2) + 4*covar[0,1])
-    c2inv = chi2.ppf(alpha, 2.)/1e2
+    b24ac = scipy.sqrt(pow(covar[0,0] - covar[1,1],2) + 4*pow(covar[0,1],2))
+    c2inv = chi2.ppf(alpha, 2.)
     
     a = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] + b24ac)))
     b = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] - b24ac)))
 
     theta = .5*scipy.arctan2(2*covar[0,1], covar[0,0] - covar[1,1])
     
-    return Ellipse(xy, a, b, angle=theta, color=color, **kwargs)
+    if covar[1,1] > covar[0,0]:
+        swap = a
+        a = b
+        b = swap
 
-    
+    ellipse = Ellipse(xy, 2*a, 2*b, angle=theta, edgecolor=color, fill=False, **kwargs)
+    plt.gca().add_patch(ellipse)
+    return ellipse 
+
+
 def _rot(theta, vec):
     """ there are a number of vector rotations in draw robot that are 
     not necessary to individually program.

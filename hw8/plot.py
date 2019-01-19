@@ -181,6 +181,7 @@ def drawrobot(xvec, color, type=2, W=.2, L=.6):
         
     else:
         raise ValueError('type out of bounds')
+
     
 def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
     """Generates an ellipse object based of a point and related
@@ -199,15 +200,22 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
  
     """
     
-    b24ac = scipy.sqrt(pow(covar[0,0] - covar[1,1],2) + 4*covar[0,1])
-    c2inv = chi2.ppf(alpha, 2.)/1e2
+    b24ac = scipy.sqrt(pow(covar[0,0] - covar[1,1],2) + 4*pow(covar[0,1],2))
+    c2inv = chi2.ppf(alpha, 2.)
     
     a = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] + b24ac)))
     b = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] - b24ac)))
 
     theta = .5*scipy.arctan2(2*covar[0,1], covar[0,0] - covar[1,1])
     
-    return Ellipse(xy, a, b, angle=theta, color=color, **kwargs)
+    if covar[1,1] > covar[0,0]:
+        swap = a
+        a = b
+        b = swap
+
+    ellipse = Ellipse(xy, 2*a, 2*b, angle=theta, edgecolor=color, fill=False, **kwargs)
+    plt.gca().add_patch(ellipse)
+    return ellipse
 
     
 def _rot(theta, vec):
