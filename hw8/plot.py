@@ -206,14 +206,18 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
     a = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] + b24ac)))
     b = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] - b24ac)))
 
-    theta = .5*scipy.arctan2(2*covar[0,1], covar[0,0] - covar[1,1])
-    
+    if covar[0,0] != covar[1,1]:
+        theta = .5*scipy.arctan(2*covar[0,1]/(covar[0,0] - covar[1,1]))
+        print(theta)
+    else:
+        theta = scipy.sign(covar[0,1])*scipy.pi/4
+        
     if covar[1,1] > covar[0,0]:
         swap = a
         a = b
         b = swap
 
-    ellipse = Ellipse(xy, 2*a, 2*b, angle=theta, edgecolor=color, fill=False, **kwargs)
+    ellipse = Ellipse(xy, 2*a, 2*b, angle=theta*180./scipy.pi, edgecolor=color, fill=False, **kwargs)
     plt.gca().add_patch(ellipse)
     return ellipse
 

@@ -11,8 +11,8 @@ def compute_sigma_points(mu, sigma, lamb, alpha, beta):
        (i.e. each of size 1x2n+1) They are later used to recover the mean and 
        covariance respectively."""
 
-    n = length(mu)
-    sigma_points = scipy.zeros((n, 2*n + 1))
+    n = len(mu)
+    sigma_points = scipy.zeros((n, 2*n+1))
     
     #TODO: compute all sigma points
     
@@ -58,7 +58,7 @@ def transform(points):
     x = points[0, :]
     y = points[1, :]
     r = scipy.sqrt(scipy.sum([pow(x, 2), pow(y, 2)]))
-    theta = scipy.atan2(y, x)
+    theta = scipy.arctan2(y, x)
     points = scipy.array([r, theta])
     #####
 

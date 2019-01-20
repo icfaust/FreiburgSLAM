@@ -1,5 +1,5 @@
 import scipy
-
+import scipy.linalg
 
 def compute_sigma_points(mu, sigma, lamb, alpha, beta):
     """This function samples 2n+1 sigma points from the distribution given by mu
@@ -11,13 +11,19 @@ def compute_sigma_points(mu, sigma, lamb, alpha, beta):
        (i.e. each of size 1x2n+1) They are later used to recover the mean and 
        covariance respectively."""
 
-    n = length(mu)
-    sigma_points = scipy.zeros((n, 2*n + 1))
+    n = len(mu)
+    #sigma_points = scipy.zeros((n, 2*n+1))
     
     #TODO: compute all sigma points
-    
+    sigma_points = scipy.tile(mu, (2*n+1, 1)).T
+    sqrt = scipy.linalg.sqrtm((n + lamb)*sigma)
+    #sigma_points[:,0] = mu
+    sigma_points[:,1:n+1] += sqrt
+    sigma_points[:,n+1:] -= sqrt
     
     #TODO compute weight vectors w_m and w_c
+    w_m = lamb/(n + lamb)*scipy.ones((2*n+1,))
+    w_c = w_m + (1 - pow(alpha,2) + beta)
     
     return sigma_points, w_m, w_c
 
@@ -31,10 +37,13 @@ def recover_gaussian(sigma_points, w_m, w_c):
        Try to vectorize your operations as much as possible"""
     
     # TODO: compute mu
-
+    mu = scipy.dot(sigma_points, w_m)
     
     # TODO: compute sigma
-
+    temp = sigma_points - scipy.tile(mu, (len(w_m), 1)).T
+    sigma = scipy.dot(scipy.tile(w_c, (2, 1))*temp, temp.T)
+    print(mu.shape)
+    print(sigma.shape)
     return mu, sigma
 
 def transform(points):
@@ -52,19 +61,19 @@ def transform(points):
     points[1, :] = points[1, :] + 2
     #####
 
-    #####
+    """#####
     # Function 2 (nonlinear)
     # Computes the polar coordinates corresponding to [x; y]
     x = points[0, :]
     y = points[1, :]
-    r = scipy.sqrt(scipy.sum([pow(x, 2), pow(y, 2)]))
-    theta = scipy.atan2(y, x)
-    points = scipy.array([r, theta])
-    #####
+    r = scipy.sqrt(pow(x, 2) + pow(y, 2))
+    theta = scipy.arctan2(y, x)
+    points = scipy.vstack([r, theta])
+    #####"""
 
-    #####
+    """#####
     # Function 3 (nonlinear)
     points = points*scipy.cos(points)*scipy.sin(points)
-    #####
+    #####"""
 
     return points
