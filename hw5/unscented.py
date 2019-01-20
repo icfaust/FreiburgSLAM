@@ -39,14 +39,10 @@ def recover_gaussian(sigma_points, w_m, w_c):
     
     # TODO: compute mu
     mu = scipy.dot(sigma_points, w_m)
-    print(sigma_points)
-    print(scipy.sum(w_m))
-    print(scipy.sum(w_m*sigma_points[0]))
+    
     # TODO: compute sigma
     temp = sigma_points - scipy.tile(mu, (len(w_m), 1)).T
     sigma = scipy.dot(scipy.tile(w_c, (2, 1))*temp, temp.T)
-    print(mu.shape)
-    print(sigma.shape)
     return mu, sigma
 
 def transform(points):
@@ -62,7 +58,7 @@ def transform(points):
     # Applies a translation to [x; y]
     points[0, :] = points[0, :] + 1
     points[1, :] = points[1, :] + 2
-    #####
+    #####"""
 
     """#####
     # Function 2 (nonlinear)
