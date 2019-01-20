@@ -51,7 +51,7 @@ showGui = True # show a window while the algorithm runs
 # Perform filter update for each odometry-observation pair read from the
 # data file.
 for t in range(len(data['sensor'])):
-#for t in range(50):
+#for t in range(80):
 
    # Perform the prediction step of the EKF
    mu, sigma = ekf_slam.prediction(mu, sigma, data['odometry'][t])
@@ -61,7 +61,8 @@ for t in range(len(data['sensor'])):
 
    #Generate visualization plots of the current state of the filter
    plot.plot_state(mu, sigma, landmarks, t, observedLandmarks, data['sensor'][t], showGui)
-   print(r'Current state vector: \n mu = '),
+   print(r'Current state vector:')
+   print('mu = '),
    print(mu)
 
 print("Final system covariance matrix: %f".format(sigma))

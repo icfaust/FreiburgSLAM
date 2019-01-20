@@ -22,19 +22,18 @@ def prediction(mu, sigma, u):
 
     # TODO: Compute the new mu based on the noise-free (odometry-based) motion model
     # Remember to normalize theta after the update (hint: use the function normalize_angle available in tools)
-
-    mu[:3] += scipy.array([u['t']*scipy.cos(u['t'] + u['r1']),
-                           u['t']*scipy.sin(u['t'] + u['r1']),
-                           u['r1'] + u['r2']])
-    mu[2] = main.normalize_angle(mu[2])
-    
-    # TODO: Compute the 3x3 Jacobian Gx of the motion model
     Gx = scipy.eye(3)
     Gx[0,2] = -1*u['t']*scipy.sin(mu[2] + u['r1'])
-    Gx[1,2] = u['t']*scipy.cos(mu[2] + u['r1'])
+    Gx[1,2] = u['t']*scipy.cos(mu[2] + u['r1']) #THIS NEEDS TO USE THE OLD ROTATION VALUE, SO THE ORDER IS DIFFERENT IN MINE
+
+    
+    mu[:3] += scipy.array([u['t']*scipy.cos(mu[2] + u['r1']),
+                           u['t']*scipy.sin(mu[2] + u['r1']),
+                           u['r1'] + u['r2']])
+    mu[2] = main.normalize_angle(mu[2])
+    # TODO: Compute the 3x3 Jacobian Gx of the motion model
     
     # TODO: Construct the full Jacobian G
-
 
     # Motion noise
     motionNoise = 0.1
@@ -45,17 +44,16 @@ def prediction(mu, sigma, u):
     # TODO: Compute the predicted sigma after incorporating the motion
 
     #handling the 3x3 [x,y,theta] covariances
-    sigma[:3,:3] = scipy.dot(Gx.T, scipy.dot(sigma[:3,:3], Gx)) + R3
-    temp = scipy.dot(sigma[3:,:3], Gx)
+    sigma[:3,:3] = scipy.dot(Gx, scipy.dot(sigma[:3,:3], Gx.T)) + R3
+    temp = scipy.dot(Gx, sigma[:3,3:])
 
     #handling the landmark/ [x,y,theta] covariances
-    sigma[:3,3:] = temp.T
-    sigma[3:,:3] = temp
+    sigma[:3,3:] = temp
+    sigma[3:,:3] = temp.T
 
     #I did it this way, as it was recommended in the lectures, it
     #reduces unneccesary computations elsewhere in what could be a
     #very large matrix (in generating a full Jacobian G)
-        
     return mu, sigma
 
 
@@ -148,6 +146,7 @@ def correction(mu, sigma, z, observedLandmarks):
     inv = scipy.linalg.inv(scipy.dot(H, scipy.dot(sigma,
                                                   H.T)) + Q)
     K = scipy.dot(sigma, scipy.dot(H.T,inv))
+    
     # TODO: Compute the difference between the expected and recorded measurements.
     # Remember to normalize the bearings after subtracting!
     # (hint: use the normalize_all_bearings function available in tools)
