@@ -1,5 +1,5 @@
 import scipy
-
+import scipy.linalg
 
 def compute_sigma_points(mu, sigma, lamb, alpha, beta):
     """This function samples 2n+1 sigma points from the distribution given by mu
@@ -12,12 +12,18 @@ def compute_sigma_points(mu, sigma, lamb, alpha, beta):
        covariance respectively."""
 
     n = len(mu)
-    sigma_points = scipy.zeros((n, 2*n+1))
     
     #TODO: compute all sigma points
-    
+    sigma_points = scipy.tile(mu, (2*n+1, 1)).T
+    sqrt = scipy.linalg.sqrtm((n + lamb)*sigma)
+    sigma_points[:,1:n+1] += sqrt
+    sigma_points[:,n+1:] -= sqrt
     
     #TODO compute weight vectors w_m and w_c
+    w_m = scipy.ones((2*n+1,))/(2*(n + lamb))
+    w_c = w_m.copy()
+    w_m[0] *= 2*lamb
+    w_c[0] = w_m[0] + (1 - pow(alpha,2) + beta)
     
     return sigma_points, w_m, w_c
 
@@ -31,10 +37,11 @@ def recover_gaussian(sigma_points, w_m, w_c):
        Try to vectorize your operations as much as possible"""
     
     # TODO: compute mu
-
+    mu = scipy.dot(sigma_points, w_m)
     
     # TODO: compute sigma
-
+    temp = sigma_points - scipy.tile(mu, (len(w_m), 1)).T
+    sigma = scipy.dot(scipy.tile(w_c, (2, 1))*temp, temp.T)
     return mu, sigma
 
 def transform(points):
@@ -50,21 +57,21 @@ def transform(points):
     # Applies a translation to [x; y]
     points[0, :] = points[0, :] + 1
     points[1, :] = points[1, :] + 2
-    #####
+    #####"""
 
-    #####
+    """#####
     # Function 2 (nonlinear)
     # Computes the polar coordinates corresponding to [x; y]
     x = points[0, :]
     y = points[1, :]
-    r = scipy.sqrt(scipy.sum([pow(x, 2), pow(y, 2)]))
+    r = scipy.sqrt(pow(x, 2) + pow(y, 2))
     theta = scipy.arctan2(y, x)
-    points = scipy.array([r, theta])
-    #####
+    points = scipy.vstack([r, theta])
+    #####"""
 
-    #####
+    """#####
     # Function 3 (nonlinear)
     points = points*scipy.cos(points)*scipy.sin(points)
-    #####
+    #####"""
 
     return points
