@@ -125,8 +125,8 @@ def correction(mu, sigma, z, observedLandmarks):
         
 	# TODO: Compute the Jacobian Hi of the measurement function h for this observation
         Hi = scipy.zeros((2, len(mu)))
-        ux = mu[2*landmarkId + 3] - mu[0]# - z[i]['range']*scipy.cos(z[i]['bearing'] + mu[2])
-        uy = mu[2*landmarkId + 4] - mu[1]# - z[i]['range']*scipy.sin(z[i]['bearing'] + mu[2])
+        ux = mu[2*landmarkId + 3] - mu[0]
+        uy = mu[2*landmarkId + 4] - mu[1]
         r = scipy.sqrt(pow(ux,2) + pow(uy,2))
 
         Hi[:,0] = scipy.array([-ux*r, uy])
