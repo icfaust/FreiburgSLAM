@@ -37,6 +37,7 @@ plt.plot(sigma_points[0], sigma_points[1], 'kx',
 
 # Transform sigma points
 sigma_points_trans = unscented.transform(sigma_points)
+print(sigma_points_trans)
 
 # Recover mu and sigma of the transformed distribution
 mu_trans, sigma_trans = unscented.recover_gaussian(sigma_points_trans, w_m, w_m)

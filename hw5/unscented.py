@@ -17,13 +17,14 @@ def compute_sigma_points(mu, sigma, lamb, alpha, beta):
     #TODO: compute all sigma points
     sigma_points = scipy.tile(mu, (2*n+1, 1)).T
     sqrt = scipy.linalg.sqrtm((n + lamb)*sigma)
-    #sigma_points[:,0] = mu
     sigma_points[:,1:n+1] += sqrt
     sigma_points[:,n+1:] -= sqrt
     
     #TODO compute weight vectors w_m and w_c
-    w_m = lamb/(n + lamb)*scipy.ones((2*n+1,))
-    w_c = w_m + (1 - pow(alpha,2) + beta)
+    w_m = scipy.ones((2*n+1,))/(2*(n + lamb))
+    w_c = w_m.copy()
+    w_m[0] *= 2*lamb
+    w_c[0] = w_m[0] + (1 - pow(alpha,2) + beta)
     
     return sigma_points, w_m, w_c
 
@@ -38,7 +39,9 @@ def recover_gaussian(sigma_points, w_m, w_c):
     
     # TODO: compute mu
     mu = scipy.dot(sigma_points, w_m)
-    
+    print(sigma_points)
+    print(scipy.sum(w_m))
+    print(scipy.sum(w_m*sigma_points[0]))
     # TODO: compute sigma
     temp = sigma_points - scipy.tile(mu, (len(w_m), 1)).T
     sigma = scipy.dot(scipy.tile(w_c, (2, 1))*temp, temp.T)
