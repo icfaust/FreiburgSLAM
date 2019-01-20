@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import scipy
 import scipy.stats
 from scipy.linalg import inv

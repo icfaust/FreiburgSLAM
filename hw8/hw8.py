@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import scipy
 import fastslam
 import main

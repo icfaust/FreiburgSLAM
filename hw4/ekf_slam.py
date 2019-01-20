@@ -85,7 +85,7 @@ def correction(mu, sigma, z, observedLandmarks):
     # H will be 2m x 2N+3
     H = []
 
-    for i = range(m):
+    for i in range(m):
 	# Get the id of the landmark corresponding to the i-th observation
 	landmarkId = z[i]['id']
 	# If the landmark is obeserved for the first time:

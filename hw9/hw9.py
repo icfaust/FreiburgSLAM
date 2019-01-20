@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import scipy
 import matplotlib.pyplot as plt
 import calibrate

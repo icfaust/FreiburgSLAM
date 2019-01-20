@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import scipy
 import unscented
 from plot import draw_probe_ellipse

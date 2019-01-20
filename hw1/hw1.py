@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import scipy
 from main import read_world
 from main import read_data
