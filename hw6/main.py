@@ -8,15 +8,12 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
        employ the unscented transform to propagate Q (sensor noise) through the
        current state"""
     
-    # For computing sigma
-    # FIND OUT WHY THEY WERE USING A GLOBAL ---> global scale;
-
     #add landmark to the map
     mapout += [z['id']]
     # TODO: Initialize its pose according to the measurement and add it to mu
     
     # Append the measurement to the state vector
-    mu += [z['range'], z['bearing']]
+    mu = scipy.concatenate((mu,[z['range'], z['bearing']]))
     
     # Initialize its uncertainty and add it to sigma
     sigma = scipy.linalg.block_diag(sigma, Q)
@@ -35,17 +32,17 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
     sig_pnts_new[-1,:] = newY
     
     # Recover mu and sigma
-    #n = len(mu)
-    #lam = scale - n;
-    w0 = 1 - len(mu)/scale #lam/scale;
-    wm = [w0, scipy.tile(1/(2*scale), (1, 2*n))]
+    n = len(mu)
+    lam = scale - n
+    w0 = lam/scale
+    wm = scipy.concatenate([w0, scipy.ones((2*n,))/(2*scale)])#scipy.tile(1/(2*scale), (1, 2*n))]
     
     # Theta should be recovered by summing up the sines and cosines
     cosines = scipy.sum(scipy.cos(sig_pnts_new[2,:])*wm)
     sines = scipy.sum(scipy.sin(sig_pnts_new[2,:])*wm)
     
     # recompute the angle and normalize it
-    mu_theta = scipy.arctan2(sines, cosines);
+    mu_theta = scipy.arctan2(sines, cosines)
     mu = scipy.sum(sig_pnts_new*scipy.tile(wm, (sig_pnts_new.shape[0], 1)), 1)
     mu[2] = mu_theta
 
@@ -55,7 +52,7 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
     diff[2,:] = normalize_angle(diff[2,:])
     sigma = scipy.dot(scipy.tile(wm, (diff.shape[0], 1))*diff, diff.T)
     
-  return mu, sigma, mapout
+    return mu, sigma, mapout
 
 
 def compute_sigma_points(mu, sigma, scale):
@@ -63,17 +60,16 @@ def compute_sigma_points(mu, sigma, scale):
        where n is the dimensionality of the mean vector mu.
        The sigma points should form the columns of sigma_points,
        i.e. sigma_points is an nx2n+1 matrix."""
-
-   #global scale;
-   
-   # Compute sigma points
-   sigmasqr = scipy.linalg.sqrtm(sigma)
-   sigmasqr = scipy.sqrt(scale) * sigmasqr
-   
-   mureplicated = scipy.tile(mu, (1, len(mu)))
-   sigma_points = scipy.concatenate([mu, mureplicated + sigmasqr, mureplicated - sigmasqr])
-   
-   return sigma_points
+    
+    #
+    # Compute sigma points
+    sigmasqr = scipy.linalg.sqrtm(sigma)
+    sigmasqr = scipy.sqrt(scale) * sigmasqr
+    
+    mureplicated = scipy.tile(mu, (1, len(mu)))
+    sigma_points = scipy.concatenate([mu, mureplicated + sigmasqr, mureplicated - sigmasqr])
+    
+    return sigma_points
 
 
 def normalize_angle(inp):
@@ -109,8 +105,8 @@ def read_data(filename_, flag=True):
     idx = scipy.squeeze(data[:,0] == 'ODOMETRY')
     for inp in data[idx,1:].astype(float):
         output['odometry'] += [{'r1':inp[0],
-                                    't':inp[1],
-                                    'r2':inp[2]}]
+                                't':inp[1],
+                                'r2':inp[2]}]
 
     idxarray = scipy.where(idx)
     idxarray = scipy.append(idxarray,[len(idx)])
