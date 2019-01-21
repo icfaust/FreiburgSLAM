@@ -27,8 +27,8 @@ def prediction(mu, sigma, u, scale):
 
 
     # Computing the weights for recovering the mean
-    wm = [lamb/scale, repmat(1/(2*scale),1,2*n)]; #need to change this to a tile command
-    wc = wm
+    wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)]) #need to change this to a tile command
+    wc = wm.copy()
 
     # TODO: recover mu.
     # Be careful when computing the robot's orientation (sum up the sines and
