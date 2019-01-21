@@ -48,7 +48,7 @@ def prediction(mu, sigma, u, scale):
 
     # TODO: Compute the predicted sigma after incorporating the motion
     
-    return mu, sigma, sigma_points
+    return mu, sigma
 
 
 def correction(mu, sigma, z, mapout, scale):
