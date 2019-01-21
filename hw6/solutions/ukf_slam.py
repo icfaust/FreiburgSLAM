@@ -25,9 +25,8 @@ def prediction(mu, sigma, u, scale):
     # Remember to vectorize your operations and normalize angles
     # Tip: the function normalize_angle also works on a vector (row) of angles
 
-
     # Computing the weights for recovering the mean
-    wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)])
+    wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)]) #need to change this to a tile command
     wc = wm.copy()
 
     # TODO: recover mu.
@@ -48,7 +47,7 @@ def prediction(mu, sigma, u, scale):
 
     # TODO: Compute the predicted sigma after incorporating the motion
     
-    return mu, sigma, sigma_points
+    return mu, sigma
 
 
 def correction(mu, sigma, z, mapout, scale):
@@ -80,16 +79,14 @@ def correction(mu, sigma, z, mapout, scale):
     """
 
     # For computing sigma
-    #global scale;
 
     # Number of measurements in this time step
     m = len(z)
 
     # Measurement noise
     Q = 0.01*scipy.eye(2)
-    i = 0
     
-    while i < m:#1:m
+    for i in range(m):#1:m
 
 	# If the landmark is observed for the first time:
 	if ~scipy.any(mapout == z[i]['id']):
@@ -101,7 +98,6 @@ def correction(mu, sigma, z, mapout, scale):
                                                            Q,
                                                            scale)
 	    # The measurement has been incorporated so we quit the correction step
-            i = m
         else:
 	    # Compute sigma points from the predicted mean and covariance
             # This corresponds to line 6 on slide 32
@@ -116,7 +112,7 @@ def correction(mu, sigma, z, mapout, scale):
             
             # extract the current location of the landmark for each sigma point
             # Use this for computing an expected measurement, i.e., applying the h function
-	    landmarkIndex = mapout == z[i].id
+	    landmarkIndex = mapout == z[i]['id']
 	    landmarkXs = sigma_points[2*landmarkIndex + 1, :]
 	    landmarkYs = sigma_points[2*landmarkIndex + 2, :]
             
@@ -154,7 +150,5 @@ def correction(mu, sigma, z, mapout, scale):
             
 	    # TODO: Normalize the robot heading mu(3)
 
-            # Don't touch this iterator
-            i = i + 1
             
-    return mu, sigma, observedLandmarks
+    return mu, sigma, mapout

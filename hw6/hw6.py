@@ -46,7 +46,7 @@ showGui = True;  # show a window while the algorithm runs
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in range(len(data['odometry'])):#1:data.timestep.shape[1]:
+for t in range(1):#in range(len(data['odometry'])):#1:data.timestep.shape[1]:
     print('Time step t = %f'.format(t))
 
     # Perform the prediction step of the UKF

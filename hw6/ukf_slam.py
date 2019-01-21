@@ -24,13 +24,11 @@ def prediction(mu, sigma, u, scale):
     # TODO: Transform all sigma points according to the odometry command
     # Remember to vectorize your operations and normalize angles
     # Tip: the function normalize_angle also works on a vector (row) of angles
-    print(sigma_points.shape)
 
     # Computing the weights for recovering the mean
     wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)]) #need to change this to a tile command
     wc = wm.copy()
-    print('prediction wm='),
-    print(wm.shape)
+
     # TODO: recover mu.
     # Be careful when computing the robot's orientation (sum up the sines and
     # cosines and recover the 'average' angle via atan2)
@@ -87,9 +85,8 @@ def correction(mu, sigma, z, mapout, scale):
 
     # Measurement noise
     Q = 0.01*scipy.eye(2)
-    i = 0
     
-    while i < m:#1:m
+    for i in range(m):#1:m
 
 	# If the landmark is observed for the first time:
 	if ~scipy.any(mapout == z[i]['id']):
@@ -101,7 +98,6 @@ def correction(mu, sigma, z, mapout, scale):
                                                            Q,
                                                            scale)
 	    # The measurement has been incorporated so we quit the correction step
-            i = m
         else:
 	    # Compute sigma points from the predicted mean and covariance
             # This corresponds to line 6 on slide 32
@@ -116,7 +112,7 @@ def correction(mu, sigma, z, mapout, scale):
             
             # extract the current location of the landmark for each sigma point
             # Use this for computing an expected measurement, i.e., applying the h function
-	    landmarkIndex = mapout == z[i].id
+	    landmarkIndex = mapout == z[i]['id']
 	    landmarkXs = sigma_points[2*landmarkIndex + 1, :]
 	    landmarkYs = sigma_points[2*landmarkIndex + 2, :]
             
@@ -124,7 +120,7 @@ def correction(mu, sigma, z, mapout, scale):
             # This corresponds to line 7 on slide 32
                         
             # setup the weight vector for mean and covariance
-            wm = scipy.concatenate([[lam/scale], scipy.tile(1/(2*scale), (1, 2*n))]
+            wm = scipy.concatenate([[lam/scale], scipy.tile(1/(2*scale), (1, 2*n))])
 
 	    # TODO: Compute zm, line 8 on slide 32
 	    # zm is the recovered expected measurement mean from z_points.
@@ -147,14 +143,12 @@ def correction(mu, sigma, z, mapout, scale):
             
             
 	    # Get the actual measurement as a vector (for computing the difference to the observation)
-	    z_actual = [z[i]['range'], z[i]['bearing']]
+	    z_actual = scipy.array([z[i]['range'], z[i]['bearing']])
             
 	    # TODO: Update mu and sigma, line 12 + 13 on slide 32
             # normalize the relative bearing
             
 	    # TODO: Normalize the robot heading mu(3)
 
-            # Don't touch this iterator
-            i = i + 1
             
-    return mu, sigma, observedLandmarks
+    return mu, sigma, mapout

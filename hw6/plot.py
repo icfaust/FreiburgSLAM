@@ -22,25 +22,26 @@ def plot_state(mu, sigma, landmarks, timestep, mapout, z, window):
     plt.plot(landmarks['x'], landmarks['y'], 'k+', markersize=10., linewidth=5.)
 
     for i in xrange(len(mapout)): #plots landmarks
-	plt.plot(mu[2*i+ 1],mu[2*i + 2], 'bo', markersize=10., linewidth=5., fillstyle='none')
-	draw_prob_ellipse(mu[2*i + 1:2*i + 3],
-                          sigma[2*i + 1:2*i + 3,2*i + 1:2*i + 3],
-                          0.95,
-                          'b');
-        
-    for j in z['id']:#plots lines to landmarks
-	loc = scipy.where(mapout == j)
-	mX = mu[2*loc]
-	mY = mu[2*loc + 1]
+	plt.plot(mu[2*i+ 3],mu[2*i + 4], 'bo', markersize=10., linewidth=5., fillstyle='none')
+	draw_probe_ellipse(mu[2*i + 3:2*i + 5],
+                           sigma[2*i + 3:2*i + 5,2*i + 3:2*i + 5],
+                           0.95,
+                           'b');
+
+    for j in z:#plots lines to landmarks
+	loc = scipy.squeeze(scipy.where(scipy.array(mapout) == j['id'])[0])
+	mX = mu[2*loc + 3]
+	mY = mu[2*loc + 4]
     	plt.plot([mu[0], mX],[mu[1], mY], color='k', linewidth=1.) 
 
-    plot.drawrobot(mu[0:2], 'r', 3, 0.3, 0.3)
+    drawrobot(mu[0:3], 'r', 3, 0.3, 0.3)
     plt.xlim([-2., 12.])
     plt.ylim([-2., 12.])
 
     #plt.plot(sig_pnts[0:2,0], sig_pnts[0:2,1], 'gx', linewidth=3.)
 
     if window:
+        #plt.show()
         plt.pause(0.1);
     else:
         plt.draw()
@@ -212,7 +213,6 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
 
     if covar[0,0] != covar[1,1]:
         theta = .5*scipy.arctan(2*covar[0,1]/(covar[0,0] - covar[1,1]))
-        print(theta)
     else:
         theta = scipy.sign(covar[0,1])*scipy.pi/4
         

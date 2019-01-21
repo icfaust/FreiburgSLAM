@@ -22,11 +22,14 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
     # This operation intializes the uncertainty in the position of the landmark
     # Sample sigma points
     sig_pnts_new = compute_sigma_points(mu, sigma, scale)
+    
     # Normalize!
     sig_pnts_new[2,:] = normalize_angle(sig_pnts_new[2,:])
+    
     # Compute the xy location of the new landmark according to each sigma point
     newX = sig_pnts_new[0,:] + sig_pnts_new[-2,:]*scipy.cos(sig_pnts_new[2,:] + sig_pnts_new[-1,:])
     newY = sig_pnts_new[1,:] + sig_pnts_new[-2,:]*scipy.sin(sig_pnts_new[2,:] + sig_pnts_new[-1,:])
+    
     # The last 2 components of the sigma points can now be replaced by the xy pose of the landmark
     sig_pnts_new[-2,:] = newX
     sig_pnts_new[-1,:] = newY
@@ -47,7 +50,7 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
     mu = scipy.sum(sig_pnts_new*scipy.tile(wm, (sig_pnts_new.shape[0], 1)), 1)
     mu[2] = mu_theta
 
-    diff = sig_pnts_new - scipy.tile(mu, (1, sig_pnts_new.shape[1]))
+    diff = sig_pnts_new - scipy.tile(mu, (sig_pnts_new.shape[1],1)).T
 
     # Normalize!
     diff[2,:] = normalize_angle(diff[2,:])
@@ -61,14 +64,12 @@ def compute_sigma_points(mu, sigma, scale):
        where n is the dimensionality of the mean vector mu.
        The sigma points should form the columns of sigma_points,
        i.e. sigma_points is an nx2n+1 matrix."""
-    
-    
+
     # Compute sigma points
     sigmasqr = scipy.linalg.sqrtm(scale*sigma)
-    #sigmasqr = scipy.sqrt(scale) * sigmasqr
     
     mureplicated = scipy.tile(mu, (len(mu),1)).T
-    sigma_points = scipy.vstack([mu, mureplicated + sigmasqr, mureplicated - sigmasqr])
+    sigma_points = scipy.hstack([scipy.atleast_2d(mu).T, mureplicated + sigmasqr, mureplicated - sigmasqr])
     
     return sigma_points
 
