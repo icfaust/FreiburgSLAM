@@ -1,4 +1,4 @@
-mport scipy
+import scipy
 import scipy.linalg
 
 def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
@@ -12,7 +12,7 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
     # FIND OUT WHY THEY WERE USING A GLOBAL ---> global scale;
 
     #add landmark to the map
-    mapout += [z.idx]
+    mapout += [z['id']]
     # TODO: Initialize its pose according to the measurement and add it to mu
     
     # Append the measurement to the state vector

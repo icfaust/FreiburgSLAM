@@ -1,31 +1,41 @@
 import scipy
 import main
 
-def prediction(mu, sigma, u):
-    """Updates the belief concerning the robot pose according to 
-       the motion model (From the original MATLAB code: Use u.r1,
-       u.t, and u.r2 to access the rotation and translation values)
-       In this case u['r1'], u['t'] and u['r2'] to access values
+def prediction(mu, sigma, u, scale):
+    """Updates the belief concerning the robot pose according to the motion model.
+    mu: state vector containing robot pose and poses of landmarks obeserved so far
+    Current robot pose = mu(1:3)
+    Note that the landmark poses in mu are stacked in the order by which they were observed
+    sigma: the covariance matrix of the system.
+    u: odometry reading (r1, t, r2)
+    Use u['r1'], u['t'], and u['r2'] to access the rotation and translation values"""
 
-       Args:
-           mu ((2N+3, 1) numpy float array): state mean matrix
-               mean. N in this case is the number of landmarks
-           sigma ((2N+3, 2N+3) numpy float array): covariance matrix
-           u (dictionary): odometry reading (r1, t, r2)
+    # For computing lambda.
+    # use the scale parameter
 
-       Returns:
-           mu (numpy float array): updated mu by u
-           sigma (numpy float array): updated sigma by u
-       """
+    # Compute sigma points
+    sigma_points = main.compute_sigma_points(mu, sigma, scale)
 
-    # TODO: Compute the new mu based on the noise-free (odometry-based) motion model
-    # Remember to normalize theta after the update (hint: use the function normalize_angle available in tools)
+    # Dimensionality
+    n = len(mu)
+    # lambda
+    lamb = scale - n
 
-    # TODO: Compute the 3x3 Jacobian Gx of the motion model
+    # TODO: Transform all sigma points according to the odometry command
+    # Remember to vectorize your operations and normalize angles
+    # Tip: the function normalize_angle also works on a vector (row) of angles
 
 
-    # TODO: Construct the full Jacobian G
+    # Computing the weights for recovering the mean
+    wm = [lamb/scale, repmat(1/(2*scale),1,2*n)]; #need to change this to a tile command
+    wc = wm
 
+    # TODO: recover mu.
+    # Be careful when computing the robot's orientation (sum up the sines and
+    # cosines and recover the 'average' angle via atan2)
+
+
+    # TODO: Recover sigma. Again, normalize the angular difference
 
     # Motion noise
     motionNoise = 0.1
@@ -34,11 +44,11 @@ def prediction(mu, sigma, u):
                       [0., 0., motionNoise/10.]])
     
     R = scipy.zeros((sigma.shape[0],sigma.shape[0]))
-    R[0:3,0:3] = R3
+    R[:3,:3] = R3
 
     # TODO: Compute the predicted sigma after incorporating the motion
     
-    return mu, sigma
+    return mu, sigma, sigma_points
 
 
 def correction(mu, sigma, z, mapout, scale):
