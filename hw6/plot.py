@@ -19,8 +19,8 @@ def plot_state(mu, sigma, landmarks, timestep, mapout, z, window)
     plt.grid("on")
     
     L = struct2cell(landmarks); 
-    draw_probe_ellipse(land(1:3), sigma[0:3,0:3], 0.95, 'r'); #I don't know how to fix this here, will have to come back an
-    plt.plot(cell2mat(L(2,:)), cell2mat(L(3,:)), 'k+', markersize=10., linewidth=5.)
+    draw_probe_ellipse(mu[:2], sigma[:2,:2], 0.95, 'r'); #I don't know how to fix this here, will have to come back an
+    plt.plot(landmakrs['x'], landmarks['y'], 'k+', markersize=10., linewidth=5.)
 
     for i in xrange(len(mapout)):
 	plt.plot(mu[2*i+ 1],mu[2*i+ 2], 'bo', markersize=10., linewidth=5.)

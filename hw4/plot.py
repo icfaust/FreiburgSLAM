@@ -16,8 +16,6 @@ def plot_state(mu, sigma, landmarks, timestep, observedLandmarks, z, window):
 
     plt.clf()
     plt.grid('on')
-    print(mu[:2])
-    print(sigma[:2,:2])
     
     draw_probe_ellipse(mu[:2], sigma[:2,:2], 0.6, 'r')
     plt.plot(landmarks['x'], landmarks['y'], 'k+', markersize=10, linewidth=5)

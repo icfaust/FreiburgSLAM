@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import scipy
-import main
 import plot
 import ukf_slam
 
@@ -56,7 +55,7 @@ for t in range(len(data['odometry'])):#1:data.timestep.shape[1]:
     mu, sigma, mapout = ukf_slam.correction_step(mu, sigma, data['sensor'][t], mapout, scale)
 
     #Generate visualization plots of the current state of the filter
-    main.plot_state(mu, sigma, landmarks, t, mapout, data['sensor'][t], showGui)
+    plot.plot_state(mu, sigma, landmarks, t, mapout, data['sensor'][t], showGui)
 
     print("Current state vector mu ="),
     print(mu)
