@@ -17,29 +17,28 @@ def plot_state(mu, sigma, landmarks, timestep, mapout, z, window)
 
     plt.clf()
     plt.grid("on")
-    
-    L = struct2cell(landmarks); 
-    draw_probe_ellipse(mu[:2], sigma[:2,:2], 0.95, 'r'); #I don't know how to fix this here, will have to come back an
-    plt.plot(landmakrs['x'], landmarks['y'], 'k+', markersize=10., linewidth=5.)
+     
+    draw_probe_ellipse(mu[:2], sigma[:2,:2], 0.95, 'r');
+    plt.plot(landmarks['x'], landmarks['y'], 'k+', markersize=10., linewidth=5.)
 
-    for i in xrange(len(mapout)):
-	plt.plot(mu[2*i+ 1],mu[2*i+ 2], 'bo', markersize=10., linewidth=5.)
-	draw_prob_ellipse(mu[2*i+ 1:2*i+ 3],
-                          sigma[2*i+ 1:2*i+ 2,2*i+ 1:2*i+ 2],
+    for i in xrange(len(mapout)): #plots landmarks
+	plt.plot(mu[2*i+ 1],mu[2*i + 2], 'bo', markersize=10., linewidth=5., fillstyle='none')
+	draw_prob_ellipse(mu[2*i + 1:2*i + 3],
+                          sigma[2*i + 1:2*i + 3,2*i + 1:2*i + 3],
                           0.95,
                           'b');
         
-    for in xrange(len(z)):
-	loc = scipy.where(mapout == z['id'][i])
-	mX = mu[2*loc];
+    for j in z['id']:#plots lines to landmarks
+	loc = scipy.where(mapout == j)
+	mX = mu[2*loc]
 	mY = mu[2*loc + 1]
-    	plt.plot([mu[0], mX],[mu[1], mY], color='k', linewidth=1.)
+    	plt.plot([mu[0], mX],[mu[1], mY], color='k', linewidth=1.) 
 
     plot.drawrobot(mu[0:2], 'r', 3, 0.3, 0.3)
-    plt.xlim([-2, 12])
-    plt.ylim([-2, 12])
+    plt.xlim([-2., 12.])
+    plt.ylim([-2., 12.])
 
-    #plot(sig_pnts(1:2,1),sig_pnts(1:2,2),'gx','linewidth',3);
+    #plt.plot(sig_pnts[0:2,0], sig_pnts[0:2,1], 'gx', linewidth=3.)
 
     if window:
         plt.pause(0.1);
