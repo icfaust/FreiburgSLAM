@@ -24,12 +24,13 @@ def prediction(mu, sigma, u, scale):
     # TODO: Transform all sigma points according to the odometry command
     # Remember to vectorize your operations and normalize angles
     # Tip: the function normalize_angle also works on a vector (row) of angles
-
+    print(sigma_points.shape)
 
     # Computing the weights for recovering the mean
     wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)]) #need to change this to a tile command
     wc = wm.copy()
-
+    print('prediction wm='),
+    print(wm.shape)
     # TODO: recover mu.
     # Be careful when computing the robot's orientation (sum up the sines and
     # cosines and recover the 'average' angle via atan2)
@@ -80,20 +81,18 @@ def correction(mu, sigma, z, mapout, scale):
     """
 
     # For computing sigma
-    #global scale;
 
     # Number of measurements in this time step
-    m = len(z['id'])
+    m = len(z)
 
     # Measurement noise
     Q = 0.01*scipy.eye(2)
     i = 0
-    lm = len(m)
     
-    while i < lm:#1:m
+    while i < m:#1:m
 
 	# If the landmark is observed for the first time:
-	if (scipy.sum(mapout == z[i].id) == 0):
+	if ~scipy.any(mapout == z[i]['id']):
             # Add new landmark to the map
             [mu, sigma, mapout] = main.add_landmark_to_map(mu,
                                                            sigma,
@@ -102,7 +101,7 @@ def correction(mu, sigma, z, mapout, scale):
                                                            Q,
                                                            scale)
 	    # The measurement has been incorporated so we quit the correction step
-            i = lm
+            i = m
         else:
 	    # Compute sigma points from the predicted mean and covariance
             # This corresponds to line 6 on slide 32
@@ -125,7 +124,7 @@ def correction(mu, sigma, z, mapout, scale):
             # This corresponds to line 7 on slide 32
                         
             # setup the weight vector for mean and covariance
-            wm = [lam/scale, scipy.tile(1/(2*scale), (1, 2*n))]
+            wm = scipy.concatenate([[lam/scale], scipy.tile(1/(2*scale), (1, 2*n))]
 
 	    # TODO: Compute zm, line 8 on slide 32
 	    # zm is the recovered expected measurement mean from z_points.

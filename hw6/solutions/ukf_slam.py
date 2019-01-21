@@ -27,7 +27,7 @@ def prediction(mu, sigma, u, scale):
 
 
     # Computing the weights for recovering the mean
-    wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)]) #need to change this to a tile command
+    wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)])
     wc = wm.copy()
 
     # TODO: recover mu.
@@ -83,17 +83,16 @@ def correction(mu, sigma, z, mapout, scale):
     #global scale;
 
     # Number of measurements in this time step
-    m = len(z['id'])
+    m = len(z)
 
     # Measurement noise
     Q = 0.01*scipy.eye(2)
     i = 0
-    lm = len(m)
     
-    while i < lm:#1:m
+    while i < m:#1:m
 
 	# If the landmark is observed for the first time:
-	if (scipy.sum(mapout == z[i].id) == 0):
+	if ~scipy.any(mapout == z[i]['id']):
             # Add new landmark to the map
             [mu, sigma, mapout] = main.add_landmark_to_map(mu,
                                                            sigma,
@@ -102,7 +101,7 @@ def correction(mu, sigma, z, mapout, scale):
                                                            Q,
                                                            scale)
 	    # The measurement has been incorporated so we quit the correction step
-            i = lm
+            i = m
         else:
 	    # Compute sigma points from the predicted mean and covariance
             # This corresponds to line 6 on slide 32
@@ -125,7 +124,7 @@ def correction(mu, sigma, z, mapout, scale):
             # This corresponds to line 7 on slide 32
                         
             # setup the weight vector for mean and covariance
-            wm = [lam/scale, scipy.tile(1/(2*scale), (1, 2*n))]
+            wm = scipy.concatenate([[lam/scale], scipy.tile(1/(2*scale), (1, 2*n))])
 
 	    # TODO: Compute zm, line 8 on slide 32
 	    # zm is the recovered expected measurement mean from z_points.
@@ -148,7 +147,7 @@ def correction(mu, sigma, z, mapout, scale):
             
             
 	    # Get the actual measurement as a vector (for computing the difference to the observation)
-	    z_actual = [z[i]['range'], z[i]['bearing']]
+	    z_actual = scipy.array([z[i]['range'], z[i]['bearing']])
             
 	    # TODO: Update mu and sigma, line 12 + 13 on slide 32
             # normalize the relative bearing

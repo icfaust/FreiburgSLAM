@@ -6,7 +6,7 @@ from matplotlib.patches import Rectangle
 from matplotlib.patches import Arrow
 
     
-def plot_state(mu, sigma, landmarks, timestep, mapout, z, window)
+def plot_state(mu, sigma, landmarks, timestep, mapout, z, window):
     """ Visualizes the state of the UKF SLAM algorithm.
     
      The resulting plot displays the following information:

@@ -41,7 +41,7 @@ def recover_gaussian(sigma_points, w_m, w_c):
     
     # TODO: compute sigma
     temp = sigma_points - scipy.tile(mu, (len(w_m), 1)).T
-    sigma = scipy.dot(scipy.tile(w_c, (2, 1))*temp, temp.T)
+    sigma = scipy.dot(scipy.tile(w_c, (temp.shape[0], 1))*temp, temp.T)
     return mu, sigma
 
 def transform(points):

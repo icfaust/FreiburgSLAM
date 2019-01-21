@@ -35,7 +35,8 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
     n = len(mu)
     lam = scale - n
     w0 = lam/scale
-    wm = scipy.concatenate([w0, scipy.ones((2*n,))/(2*scale)])#scipy.tile(1/(2*scale), (1, 2*n))]
+    wm = scipy.concatenate([[w0], scipy.ones((2*n,))/(2*scale)])#scipy.tile(1/(2*scale), (1, 2*n))]
+    wc = wm.copy()
     
     # Theta should be recovered by summing up the sines and cosines
     cosines = scipy.sum(scipy.cos(sig_pnts_new[2,:])*wm)
@@ -50,7 +51,7 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
 
     # Normalize!
     diff[2,:] = normalize_angle(diff[2,:])
-    sigma = scipy.dot(scipy.tile(wm, (diff.shape[0], 1))*diff, diff.T)
+    sigma = scipy.dot(scipy.tile(wc, (diff.shape[0], 1))*diff, diff.T)
     
     return mu, sigma, mapout
 
@@ -61,13 +62,13 @@ def compute_sigma_points(mu, sigma, scale):
        The sigma points should form the columns of sigma_points,
        i.e. sigma_points is an nx2n+1 matrix."""
     
-    #
-    # Compute sigma points
-    sigmasqr = scipy.linalg.sqrtm(sigma)
-    sigmasqr = scipy.sqrt(scale) * sigmasqr
     
-    mureplicated = scipy.tile(mu, (1, len(mu)))
-    sigma_points = scipy.concatenate([mu, mureplicated + sigmasqr, mureplicated - sigmasqr])
+    # Compute sigma points
+    sigmasqr = scipy.linalg.sqrtm(scale*sigma)
+    #sigmasqr = scipy.sqrt(scale) * sigmasqr
+    
+    mureplicated = scipy.tile(mu, (len(mu),1)).T
+    sigma_points = scipy.vstack([mu, mureplicated + sigmasqr, mureplicated - sigmasqr])
     
     return sigma_points
 

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import scipy
+import main
 import plot
 import ukf_slam
 
@@ -30,7 +31,7 @@ landmarks = main.read_world('../world.dat')
 data = main.read_data('../sensor_data.dat')
 # load data
 # Initialize belief
-mu = scipy.zeros(3,1)
+mu = scipy.zeros((3,))
 sigma = 0.001*scipy.eye(3)
 mapout = []
 
@@ -49,10 +50,10 @@ for t in range(len(data['odometry'])):#1:data.timestep.shape[1]:
     print('Time step t = %f'.format(t))
 
     # Perform the prediction step of the UKF
-    mu, sigma = ukf_slam.prediction_step(mu, sigma, data['odometry'][t], scale)
+    mu, sigma = ukf_slam.prediction(mu, sigma, data['odometry'][t], scale)
 
     # Perform the correction step of the UKF
-    mu, sigma, mapout = ukf_slam.correction_step(mu, sigma, data['sensor'][t], mapout, scale)
+    mu, sigma, mapout = ukf_slam.correction(mu, sigma, data['sensor'][t], mapout, scale)
 
     #Generate visualization plots of the current state of the filter
     plot.plot_state(mu, sigma, landmarks, t, mapout, data['sensor'][t], showGui)
