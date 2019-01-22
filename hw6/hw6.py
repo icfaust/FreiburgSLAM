@@ -46,12 +46,12 @@ showGui = True;  # show a window while the algorithm runs
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in range(1):#in range(len(data['odometry'])):#1:data.timestep.shape[1]:
-    print('Time step t = %f'.format(t))
+for t in range(80):#in range(len(data['odometry'])):
+    print('Time step t = {:4.0f}'.format(t))
 
     # Perform the prediction step of the UKF
     mu, sigma = ukf_slam.prediction(mu, sigma, data['odometry'][t], scale)
-
+    
     # Perform the correction step of the UKF
     mu, sigma, mapout = ukf_slam.correction(mu, sigma, data['sensor'][t], mapout, scale)
 

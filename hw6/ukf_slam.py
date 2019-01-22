@@ -87,9 +87,8 @@ def correction(mu, sigma, z, mapout, scale):
     Q = 0.01*scipy.eye(2)
     
     for i in range(m):#1:m
-
 	# If the landmark is observed for the first time:
-	if ~scipy.any(mapout == z[i]['id']):
+	if ~scipy.any([k == z[i]['id'] for k in mapout]):
             # Add new landmark to the map
             [mu, sigma, mapout] = main.add_landmark_to_map(mu,
                                                            sigma,
@@ -119,8 +118,8 @@ def correction(mu, sigma, z, mapout, scale):
 	    # TODO: Compute z_points (2x2n+1), which consists of predicted measurements from all sigma points
             # This corresponds to line 7 on slide 32
                         
-            # setup the weight vector for mean and covariance
-            wm = scipy.concatenate([[lam/scale], scipy.tile(1/(2*scale), (1, 2*n))])
+            # setup the weight vector for mean and covariance 
+            wm = scipy.concatenate([[lam/scale], scipy.tile(1/(2*scale), (2*n,))])
 
 	    # TODO: Compute zm, line 8 on slide 32
 	    # zm is the recovered expected measurement mean from z_points.
@@ -149,6 +148,6 @@ def correction(mu, sigma, z, mapout, scale):
             # normalize the relative bearing
             
 	    # TODO: Normalize the robot heading mu(3)
-
+            
             
     return mu, sigma, mapout
