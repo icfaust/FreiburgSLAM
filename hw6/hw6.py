@@ -33,7 +33,7 @@ data = main.read_data('../sensor_data.dat')
 # Initialize belief
 mu = scipy.zeros((3,))
 sigma = 0.001*scipy.eye(3)
-mapout = []
+mapout = scipy.array([])
 
 # For computing lambda
 # scale = lam + dimensionality
@@ -46,7 +46,7 @@ showGui = True;  # show a window while the algorithm runs
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in range(80):#in range(len(data['odometry'])):
+for t in range(len(data['odometry'])):
     print('Time step t = {:4.0f}'.format(t))
 
     # Perform the prediction step of the UKF
@@ -70,5 +70,5 @@ print("Final robot pose:")
 print("mu_robot = "),
 print(mu[:2]),
 print("sigma_robot = "),
-print(sigma[:2,:2])
+print(sigma[:3,:3])
 

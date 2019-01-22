@@ -8,7 +8,7 @@ def add_landmark_to_map(mu, sigma, z, mapout, Q, scale):
        employ the unscented transform to propagate Q (sensor noise) through the
        current state"""
     #add landmark to the map
-    mapout += [z['id']]
+    mapout = scipy.concatenate((mapout,[z['id']]))
     # TODO: Initialize its pose according to the measurement and add it to mu
     # Append the measurement to the state vector
     mu = scipy.concatenate((mu,[z['range'], z['bearing']]))

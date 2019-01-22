@@ -26,7 +26,7 @@ def prediction(mu, sigma, u, scale):
     # Tip: the function normalize_angle also works on a vector (row) of angles
 
     # Computing the weights for recovering the mean
-    wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)]) #need to change this to a tile command
+    wm = scipy.concatenate([[lamb/scale], scipy.ones((2*n,))/(2*scale)])
     wc = wm.copy()
 
     # TODO: recover mu.
@@ -102,7 +102,7 @@ def correction(mu, sigma, z, mapout, scale):
             # This corresponds to line 6 on slide 32
 	    sigma_points = main.compute_sigma_points(mu, sigma, scale)
             # Normalize!
-	    sigma_points[2,:] = main.normalize_angle(sigma_points[2,:])
+	    sigma_points[2] = main.normalize_angle(sigma_points[2])
             
 	    # Compute lambda
 	    n = len(mu)
@@ -111,16 +111,18 @@ def correction(mu, sigma, z, mapout, scale):
             
             # extract the current location of the landmark for each sigma point
             # Use this for computing an expected measurement, i.e., applying the h function
-	    landmarkIndex = mapout == z[i]['id']
-	    landmarkXs = sigma_points[2*landmarkIndex + 1, :]
-	    landmarkYs = sigma_points[2*landmarkIndex + 2, :]
+	    landmarkIndex = scipy.where(mapout == z[i]['id'])[0]
+            landmarks = scipy.zeros((2,sigma_points.shape[1]))
+	    landmarks[0] = sigma_points[2*landmarkIndex + 3]
+	    landmarks[1] = sigma_points[2*landmarkIndex + 4]
             
 	    # TODO: Compute z_points (2x2n+1), which consists of predicted measurements from all sigma points
             # This corresponds to line 7 on slide 32
                         
             # setup the weight vector for mean and covariance 
             wm = scipy.concatenate([[lam/scale], scipy.tile(1/(2*scale), (2*n,))])
-
+            wc = wm.copy()
+            
 	    # TODO: Compute zm, line 8 on slide 32
 	    # zm is the recovered expected measurement mean from z_points.
 	    # It will be a 2x1 vector [expected_range; expected_bearing].
@@ -147,7 +149,7 @@ def correction(mu, sigma, z, mapout, scale):
 	    # TODO: Update mu and sigma, line 12 + 13 on slide 32
             # normalize the relative bearing
             
-	    # TODO: Normalize the robot heading mu(3)
+	    # TODO: Normalize the robot heading mu[2]
             
             
     return mu, sigma, mapout
