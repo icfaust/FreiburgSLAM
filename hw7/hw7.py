@@ -23,19 +23,28 @@ gridSize = 0.5
 
 # Set up map boundaries and initialize map.
 border = 30
-robXMin = laser.pose[:,0].min()
-robXMax = laser.pose[:,0].max()
-robYMin = laser.pose[:,1].min()
-robYMax = laser.pose[:,1].max()
+robXMin = 0.
+robXMax = 0.
+robYMin = 0.
+robYMax = 0.
+
+for i in laser:
+    #ugh I hate this section, but the discrepancy in MATLAB structs requires it
+    pose = i['pose']
+    robXMin = scipy.where(pose[0] < robXMin, pose[0], robXMin)
+    robXMax = scipy.where(pose[0] > robXMax, pose[0], robXMax)
+    robYMin = scipy.where(pose[1] < robYMin, pose[1], robYMin)
+    robYMax = scipy.where(pose[1] > robYMax, pose[1], robYMax)
+    
 mapBox = scipy.array([robXMin - border,
                       robXMax + border,
                       robYMin - border,
                       robYMax + border])
+print(mapBox)
 offsetX = mapBox[0]
 offsetY = mapBox[2]
 mapSizeMeters = scipy.array([mapBox[1] - offsetX, mapBox[3] - offsetY])
-mapSize = scipy.ceil(mapSizeMeters/gridSize)
-
+mapSize = scipy.ceil(mapSizeMeters/gridSize).astype(int)
 # Used when updating the map. Assumes that prob_to_log_odds.m
 # has been implemented correctly.
 logOddsPrior = gridmap.prob_to_log_odds(prior)
@@ -50,16 +59,20 @@ offset = scipy.array([offsetX, offsetY])
 
 # Main loop for updating map cells.
 # You can also take every other point when debugging to speed up the loop (t=1:2:size(poses,1))
-for t in xrange(len(laser.pose)):
+for t in xrange(len(laser)):
     # Robot pose at time t.
-    robPose = scipy.array([laser.pose[t,0],
-                           laser.pose[t,1],
-                           laser.pose[t,2]])
+    robPose = laser[t]['pose']
 	
     # Laser scan made at time t.
-    sc = laser['scan'][t]
+    sc = laser[t]
     # Compute the mapUpdate, which contains the log odds values to add to the map.
-    mapUpdate, robPoseMapFrame, laserEndPntsMapFrame = gridmap.inv_sensor_model(mapout, sc, robPose, gridSize, offset, probOcc, probFree)
+    mapUpdate, robPoseMapFrame, laserEndPntsMapFrame = gridmap.inv_sensor_model(mapout,
+                                                                                sc,
+                                                                                robPose,
+                                                                                gridSize,
+                                                                                offset,
+                                                                                probOcc,
+                                                                                probFree)
     
     mapUpdate -= logOddsPrior*scipy.ones(mapout.shape)
     # Update the occupancy values of the affected cells.

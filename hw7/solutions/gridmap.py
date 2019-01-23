@@ -35,7 +35,7 @@ def inv_sensor_model(mapout, scan, robPose, gridSize, offset, probOcc, probFree)
     laserEndPnts = main.robotlaser_as_cartesian(scan, 30, False)
     
     # Compute the endpoints of the laser beams in the world coordinates frame.
-    laserEndPnts = scipy.dot(robTrans,laserEndPnts)
+    laserEndPnts = scipy.dot(robTrans, laserEndPnts)
     # TODO: compute laserEndPntsMapFrame from laserEndPnts. Use your world_to_map_coordinates implementation.
 
 

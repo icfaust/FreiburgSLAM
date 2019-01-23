@@ -102,22 +102,23 @@ def t2v(R):
 
 def robotlaser_as_cartesian(rl, maxRange=15, subsample=False):
 
-    numBeams = len(rl.ranges)
-    maxRange=scipy.min(maxRange, rl.maximum_range);
+    numBeams = len(rl['scan'])
+    maxRange = scipy.array([maxRange, rl['max_range']]).max()
     # apply the max range
-    idx = scipy.logical_and(rl.ranges < maxRange, rl.ranges>0)
+    idx = scipy.logical_and(rl['scan'] < maxRange, rl['scan'] > 0)
     
     if subsample:
         idx[1:2:] = 0.
 
-    angles = scipy.linspace(rl.start_angle, rl.start_angle + numBeams*rl.angular_resolution, numBeams)[idx]
-    points = scipy.array([rl.ranges(idx)*scipy.cos(angles),
-                          rl.ranges(idx)*scipy.sin(angles),
-                          scipy.ones(1, len(angles))])
-    transf = v2t(rl.laser_offset)
+    angles = scipy.linspace(rl['start'], rl['start'] + numBeams*rl['ang_res'], numBeams)[idx]
+    points = scipy.vstack([rl['scan'][idx]*scipy.cos(angles),
+                          rl['scan'][idx]*scipy.sin(angles),
+                          scipy.ones(angles.shape)])
+
+    transf = v2t(rl['laser_offset'])
 
     # apply the laser offset
-    points = transf * points
+    points = scipy.dot(transf, points)
 
     return points
 
@@ -126,7 +127,7 @@ def robotlaser_as_cartesian(rl, maxRange=15, subsample=False):
 #    Data Reading Scripts      #
 ################################
 
-def read_robotlaser(filename_):
+def read_robotlaser(filename_, flag=True):
     """Reads the robot laser readings from a file.
     
     Args:
@@ -139,7 +140,40 @@ def read_robotlaser(filename_):
         NameError: incorrect filepath
 
     """
-    return RobotLaser(filename_)
+    if flag:
+                
+        tempdata = scipy.genfromtxt(filename_, dtype='object')
+        idx = tempdata[:,0] == 'ROBOTLASER1'
+        tempdata = tempdata[idx, 1:]
+        num = tempdata[:, 7].astype(int) 
+        laserdata = []
+        
+        for i in range(len(tempdata)):
+            tempdict= {'start':float(tempdata[i,1]),
+                       'ang_res':float(tempdata[i,5]),
+                       'max_range':float(tempdata[i,4]),
+                       'scan':[],
+                       'pose':scipy.zeros((3,)),
+                       'laser_offset':scipy.zeros((3,)),
+                       't':[]}
+            
+            idx1 = num[i] + 8
+            tempdict['scan'] = tempdata[i,8:idx1].astype(float)
+
+            offset = int(tempdata[i, idx1]) + 1
+            idx1 += offset
+
+            tempdict['pose'] = tempdata[i, idx1 + 3:idx1 + 6].astype(float)
+            tempdict['laser_offset'] = t2v(scipy.dot(scipy.linalg.inv(v2t(tempdict['pose'])),
+                                                     v2t(tempdata[i, idx1:idx1 + 3].astype(float))))
+            tempdict['t'] = float(tempdata[i, idx1 + 11])
+
+            laserdata += [tempdict]
+            
+        return laserdata
+        
+    else:
+        return RobotLaser(filename_)
 
 class RobotLaser(object):
 
@@ -151,8 +185,8 @@ class RobotLaser(object):
         tempdata = tempdata[idx, 1:]
         
         self.start = tempdata[:, 1].astype(float)
-        self.ang_res = tempdata[:, 4].astype(float)
-        self.max_range = tempdata[:, 5].astype(float)
+        self.ang_res = tempdata[:, 5].astype(float)
+        self.max_range = tempdata[:, 4].astype(float)
 
         #next two are accuracies
         self._num_readings = tempdata[:, 7].astype(int)
@@ -173,4 +207,3 @@ class RobotLaser(object):
             self.laser_offset[i] = t2v(scipy.dot(scipy.linalg.inv(v2t(self.pose[i])),
                                         v2t(tempdata[i, idx1:idx1 + 3].astype(float))))
             self.t[i] = tempdata[i, idx1 + 11]        
-    
