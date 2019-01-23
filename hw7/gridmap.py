@@ -6,7 +6,7 @@ def inv_sensor_model(mapout, scan, robPose, gridSize, offset, probOcc, probFree)
     """ Compute the log odds values that should be added to the map based on the inverse sensor model
     of a laser range finder.
 
-    map is the matrix containing the occupancy values (IN LOG ODDS) of each cell in the map.
+    mapout is the matrix containing the occupancy values (IN LOG ODDS) of each cell in the map.
     scan is a laser scan made at this time step. Contains the range readings of each laser beam.
     robPose is the robot pose in the world coordinates frame.
     gridSize is the size of each grid in meters.
@@ -28,7 +28,7 @@ def inv_sensor_model(mapout, scan, robPose, gridSize, offset, probOcc, probFree)
     robTrans = main.v2t(robPose)
 
     # TODO: compute robPoseMapFrame. Use your world_to_map_coordinates implementation.
-
+    robPoseMapFrame = world_to_map_coordinates(robPose[:2], gridSize, offset)
 
     # Compute the Cartesian coordinates of the laser beam endpoints.
     # Set the third argument to 'true' to use only half the beams for speeding up the algorithm when debugging.
@@ -37,30 +37,30 @@ def inv_sensor_model(mapout, scan, robPose, gridSize, offset, probOcc, probFree)
     # Compute the endpoints of the laser beams in the world coordinates frame.
     laserEndPnts = scipy.dot(robTrans, laserEndPnts)
     # TODO: compute laserEndPntsMapFrame from laserEndPnts. Use your world_to_map_coordinates implementation.
-
+    laserEndPntsMapFrame = world_to_map_coordinates(laserEndPnts, gridSize, offset)
 
     # freeCells are the map coordinates of the cells through which the laser beams pass.
-    freeCells = [];
+    freeCells = []
     
     # Iterate over each laser beam and compute freeCells.
     # Use the bresenham method available to you in tools for computing the X and Y
     # coordinates of the points that lie on a line.
     # Example use for a line between points p1 and p2:
-    # [X,Y] = bresenham(map,[p1_x, p1_y; p2_x, p2_y]);
+    # [X,Y] = main.bresenham([p1_x, p1_y; p2_x, p2_y]);
     # You only need the X and Y outputs of this function.
     for sc in xrange(laserEndPntsMapFrame.shape[1]):
-        #TODO: compute the XY map coordinates of the free cells along the laser beam ending in laserEndPntsMapFrame(:,sc)
-        pass
-
+        #TODO: compute the XY map coordinates of the free cells along the laser beam ending in laserEndPntsMapFrame[:,sc]
+        coords = main.bresenham(scipy.vstack([robPoseMapFrame, laserEndPntsMapFrame[:,sc]])) 
         #TODO: add them to freeCells
+        freeCells += [coords]
 
-
-
+    freeCells = scipy.hstack(freeCells)
     #TODO: update the log odds values in mapUpdate for each free cell according to probFree.
-
-
+    mapUpdate[freeCells[0],freeCells[1]] = prob_to_log_odds(probFree)
     #TODO: update the log odds values in mapUpdate for each laser endpoint according to probOcc.
 
+    mapUpdate[laserEndPntsMapFrame[0].astype(int), laserEndPntsMapFrame[1].astype(int)] = prob_to_log_odds(probOcc)
+    
     return mapUpdate, robPoseMapFrame, laserEndPntsMapFrame
 
 def world_to_map_coordinates(pntsWorld, gridSize, offset):
@@ -70,9 +70,12 @@ def world_to_map_coordinates(pntsWorld, gridSize, offset):
     offset = [offsetX; offsetY] is the offset that needs to be subtracted from a point
     when converting to map coordinates.
     pntsMap is a 2xN matrix containing the corresponding points in map coordinates."""
-    pntsMap = scipy.zeros((2,len(pntsWorld)))
+    pntsMap = scipy.zeros(pntsWorld.shape)
     # TODO: compute pntsMap
-    
+    pntsMap[0] = (pntsWorld[0] - offset[0])/gridSize - .5 
+    pntsMap[1] = (pntsWorld[1] - offset[1])/gridSize - .5 #assumes that the grid pixels are centered, and not on edges
+    pntsMap = scipy.around(pntsMap)[:2]
+
     return pntsMap
 
 

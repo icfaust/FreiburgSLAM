@@ -21,8 +21,8 @@ def bresenham(mycoords):
     
     See also: tut_line_algorithm"""
     
-    x = scipy.round(mycoords[:, 0])
-    y = scipy.round(mycoords[:, 1])
+    x = scipy.around(mycoords[:, 0]).astype(int)
+    y = scipy.around(mycoords[:, 1]).astype(int)
     steep = (abs(y[1]-y[0]) > abs(x[1]-x[0]))
 
     if steep:
@@ -34,6 +34,8 @@ def bresenham(mycoords):
 
     delx = x[1] - x[0]
     dely = abs(y[1] - y[0])
+    X = scipy.zeros((int(delx),),dtype=int)
+    Y = scipy.zeros((int(delx),),dtype=int)
     error = 0
     x_n = x[0]
     y_n = y[0]
@@ -43,7 +45,7 @@ def bresenham(mycoords):
     else:
         ystep = -1 
 
-    for n in xrange(delx):
+    for n in range(delx):
         if steep:
             X[n] = x_n
             Y[n] = y_n
@@ -51,11 +53,11 @@ def bresenham(mycoords):
             X[n] = y_n
             Y[n] = x_n
 
-    x_n += 1
-    error += dely
-    if (error << 1) >= delx: #same as -> if 2*error >= delx, 
-        y_n += ystep
-        error -= delx
+        x_n += 1
+        error += dely
+        if (error << 1) >= delx: #same as -> if 2*error >= delx, 
+            y_n += ystep
+            error -= delx
 
     temp = X
     X = Y

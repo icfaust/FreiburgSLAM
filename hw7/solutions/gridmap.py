@@ -6,7 +6,7 @@ def inv_sensor_model(mapout, scan, robPose, gridSize, offset, probOcc, probFree)
     """ Compute the log odds values that should be added to the map based on the inverse sensor model
     of a laser range finder.
 
-    map is the matrix containing the occupancy values (IN LOG ODDS) of each cell in the map.
+    mapout is the matrix containing the occupancy values (IN LOG ODDS) of each cell in the map.
     scan is a laser scan made at this time step. Contains the range readings of each laser beam.
     robPose is the robot pose in the world coordinates frame.
     gridSize is the size of each grid in meters.
@@ -70,7 +70,7 @@ def world_to_map_coordinates(pntsWorld, gridSize, offset):
     offset = [offsetX; offsetY] is the offset that needs to be subtracted from a point
     when converting to map coordinates.
     pntsMap is a 2xN matrix containing the corresponding points in map coordinates."""
-    pntsMap = scipy.zeros((2,len(pntsWorld)))
+    pntsMap = scipy.zeros(pntsWorld.shape)
     # TODO: compute pntsMap
     
     return pntsMap

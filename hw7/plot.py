@@ -7,25 +7,31 @@ import gridmap
 ################################
 
 
-def plot_map(mapout, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t):
+def plot_map(mapout, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t, window=True):
 
-    #figure(1, "visible", "off");
-    plt.axis(mapBox);
+    plt.clf()
+    #plt.axis(mapBox);
     mapout = mapout.T
-    
-    plt.imshow(scipy.ones(mapout.shape) - log_odds_to_prob(mapout))
+    plt.imshow(scipy.ones(mapout.shape) - gridmap.log_odds_to_prob(mapout),vmin=0.,vmax=1.)
     s = mapout.shape[1] 
     #set(plt.gcf(), "position", [50 50 s*5]) 
-    plt.subplots_adjust(.05, .05, .9, .9) 
-    traj = scipy.vstack([poses[0:t, 0].T,poses[0:t, 1].T])
+    plt.subplots_adjust(.05, .05, .9, .9)
+    traj = []
+    for i in range(t+1):
+        traj += [poses[i]['pose'][:2]]
+    traj = scipy.array(traj).T
     traj = gridmap.world_to_map_coordinates(traj, gridSize, offset)
-    plt.plot(traj[0],traj[1],'g')
+    plt.plot(traj[0], traj[1], 'g')
     plt.plot(robPoseMapFrame[0], robPoseMapFrame[1], 'bo', markersize=5., linewidth=4., fillstyle='none')
     plt.plot(laserEndPntsMapFrame[0],laserEndPntsMapFrame[1],'ro',markersize=2., fillstyle='none')
-    #filename = 'gridmap_%03d.png'.format(t)
-    #plt.savefig(filename)
+    if window:
+        #plt.show()
+        plt.pause(.1)
+    else:
+        filename = 'gridmap_%03d.png'.format(t)
+        plt.savefig(filename)
 
-def plot_state(particles, timestep):
+def plot_state(particles, timestep, window=True):
     """ Visualizes the state of the particles"""
 
     plt.grid("on")
@@ -39,8 +45,6 @@ def plot_state(particles, timestep):
     plt.ylim([-2, 12])
     
     #dump to a file or show the window
-    #window = False
-    window = True
     if window:
         plt.pause(.5)
     else:

@@ -59,7 +59,7 @@ offset = scipy.array([offsetX, offsetY])
 
 # Main loop for updating map cells.
 # You can also take every other point when debugging to speed up the loop (t=1:2:size(poses,1))
-for t in xrange(len(laser)):
+for t in range(len(laser)):
     # Robot pose at time t.
     robPose = laser[t]['pose']
 	
@@ -82,7 +82,7 @@ for t in xrange(len(laser)):
     plot.plot_map(mapout,
                   mapBox,
                   robPoseMapFrame,
-                  laser['pose'],
+                  laser,
                   laserEndPntsMapFrame,
                   gridSize,
                   offset,
