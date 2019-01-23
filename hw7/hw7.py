@@ -40,7 +40,7 @@ mapBox = scipy.array([robXMin - border,
                       robXMax + border,
                       robYMin - border,
                       robYMax + border])
-print(mapBox)
+
 offsetX = mapBox[0]
 offsetY = mapBox[2]
 mapSizeMeters = scipy.array([mapBox[1] - offsetX, mapBox[3] - offsetY])
@@ -50,7 +50,7 @@ mapSize = scipy.ceil(mapSizeMeters/gridSize).astype(int)
 logOddsPrior = gridmap.prob_to_log_odds(prior)
 
 # The occupancy value of each cell in the map is initialized with the prior.
-mapout = scipy.dot(logOddsPrior, scipy.ones(mapSize))
+mapout = logOddsPrior*scipy.ones(mapSize)
 print('Map initialized. Map size:'),
 print(mapout.shape)
 
