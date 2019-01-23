@@ -103,7 +103,7 @@ def t2v(R):
 def robotlaser_as_cartesian(rl, maxRange=15, subsample=False):
 
     numBeams = len(rl['scan'])
-    maxRange = scipy.array([maxRange, rl['max_range']]).max()
+    maxRange = scipy.where(maxRange > rl['max_range'], rl['max_range'], maxRange) #a min call
     # apply the max range
     idx = scipy.logical_and(rl['scan'] < maxRange, rl['scan'] > 0)
     
