@@ -4,6 +4,7 @@ import scipy.stats
 from scipy.linalg import inv
 import maptlotlib.pyplot as plt
 import main
+import plot
 import motion
 
 # Read sensor readings, i.e. odometry
@@ -37,7 +38,7 @@ def motion():
         particles = motion.prediction_step(particles, data['odometry'][t], noise)
 
         # Generate visualization plots of the current state of the filter
-        main.plot_state(particles, t)
+        plot.plot_state(particles, t)
 
 def resampling():
     # how many particles

@@ -50,7 +50,7 @@ def inv_sensor_model(mapout, scan, robPose, gridSize, offset, probOcc, probFree)
     # You only need the X and Y outputs of this function.
     for sc in xrange(laserEndPntsMapFrame.shape[1]):
         #TODO: compute the XY map coordinates of the free cells along the laser beam ending in laserEndPntsMapFrame(:,sc)
-
+        pass
 
         #TODO: add them to freeCells
 
@@ -70,16 +70,16 @@ def world_to_map_coordinates(pntsWorld, gridSize, offset):
     offset = [offsetX; offsetY] is the offset that needs to be subtracted from a point
     when converting to map coordinates.
     pntsMap is a 2xN matrix containing the corresponding points in map coordinates."""
-
-# TODO: compute pntsMap
-
-return pntsMap
+    pntsMap = scipy.zeros((2,len(pntsWorld)))
+    # TODO: compute pntsMap
+    
+    return pntsMap
 
 
 def log_odds_to_prob(l):
     """ Convert log odds l to the corresponding probability values p.
     l could be a scalar or a matrix."""
-
+    p = []
     # TODO: compute p.
 
     return p
@@ -87,7 +87,7 @@ def log_odds_to_prob(l):
 def prob_to_log_odds(p):
     """ Convert proability values p to the corresponding log odds l.
     p could be a scalar or a matrix."""
-
+    l = []
     # TODO: compute l.
 
     return l

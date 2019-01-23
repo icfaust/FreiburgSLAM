@@ -2,6 +2,7 @@
 import scipy
 import gridmap
 import main
+import plot
 
 # Load laser scans and robot poses.
 #load("../data/laser")
@@ -26,7 +27,7 @@ robXMin = laser.pose[:,0].min()
 robXMax = laser.pose[:,0].max()
 robYMin = laser.pose[:,1].min()
 robYMax = laser.pose[:,1].max()
-mapBox = sciyp.array([robXMin - border,
+mapBox = scipy.array([robXMin - border,
                       robXMax + border,
                       robYMin - border,
                       robYMax + border])
@@ -40,7 +41,7 @@ mapSize = scipy.ceil(mapSizeMeters/gridSize)
 logOddsPrior = gridmap.prob_to_log_odds(prior)
 
 # The occupancy value of each cell in the map is initialized with the prior.
-mapout = logOddsPrior*scipy.ones((mapSize, mapSize))
+mapout = scipy.dot(logOddsPrior, scipy.ones(mapSize))
 print('Map initialized. Map size:'),
 print(mapout.shape)
 
@@ -56,7 +57,7 @@ for t in xrange(len(laser.pose)):
                            laser.pose[t,2]])
 	
     # Laser scan made at time t.
-    sc = laser.scan[t]
+    sc = laser['scan'][t]
     # Compute the mapUpdate, which contains the log odds values to add to the map.
     mapUpdate, robPoseMapFrame, laserEndPntsMapFrame = gridmap.inv_sensor_model(mapout, sc, robPose, gridSize, offset, probOcc, probFree)
     
@@ -65,5 +66,12 @@ for t in xrange(len(laser.pose)):
     mapout += mapUpdate
     
     # Plot current map and robot trajectory so far.
-    main.plot_map(mapout, mapBox, robPoseMapFrame, laser.pose, laserEndPntsMapFrame, gridSize, offset, t)
+    plot.plot_map(mapout,
+                  mapBox,
+                  robPoseMapFrame,
+                  laser['pose'],
+                  laserEndPntsMapFrame,
+                  gridSize,
+                  offset,
+                  t)
     
