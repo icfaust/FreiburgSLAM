@@ -1,6 +1,6 @@
 import scipy
 
-def prediction_step(particles, u, noise):
+def prediction(particles, u, noise):
     """ Updates the particles by drawing from the motion model
     Use u.r1, u.t, and u.r2 to access the rotation and translation values
     which have to be pertubated with Gaussian noise.

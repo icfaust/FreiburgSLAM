@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import scipy
 import scipy.stats
-from scipy.linalg import inv
+import scipy.linalg
 import maptlotlib.pyplot as plt
 import main
 import plot
@@ -35,7 +35,7 @@ def motion():
         print('timestep = %d\n', t)
 
         # Perform the prediction step of the particle filter
-        particles = motion.prediction_step(particles, data['odometry'][t], noise)
+        particles = motion.prediction(particles, data['odometry'][t], noise)
 
         # Generate visualization plots of the current state of the filter
         plot.plot_state(particles, t)
@@ -63,7 +63,7 @@ def resampling():
 
     # re-weight the particles according to their distance to [0 0]
     sigma = .2*scipy.eye(2)
-    sinv = inv(sigma)
+    sinv = scipy.linalg.inv(sigma)
     
     for p in particles:
         p['weight'] = scipy.exp(-.5*scipy.dot(p['pose'], scipy.dot(sinv, p['pose'])))

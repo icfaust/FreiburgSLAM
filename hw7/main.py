@@ -129,7 +129,7 @@ def robotlaser_as_cartesian(rl, maxRange=15, subsample=False):
 #    Data Reading Scripts      #
 ################################
 
-def read_robotlaser(filename_, flag=True):
+def read_robotlaser(filename_):
     """Reads the robot laser readings from a file.
     
     Args:
@@ -142,70 +142,71 @@ def read_robotlaser(filename_, flag=True):
         NameError: incorrect filepath
 
     """
-    if flag:
+   
+    tempdata = scipy.genfromtxt(filename_, dtype='object')
+    idx = tempdata[:,0] == 'ROBOTLASER1'
+    tempdata = tempdata[idx, 1:]
+    num = tempdata[:, 7].astype(int) 
+    laserdata = []
+        
+    for i in range(len(tempdata)):
+        tempdict= {'start':float(tempdata[i,1]),
+                   'ang_res':float(tempdata[i,3]),
+                   'max_range':float(tempdata[i,4]),
+                   'scan':[],
+                   'pose':scipy.zeros((3,)),
+                   'laser_offset':scipy.zeros((3,)),
+                   't':[]}
+        
+        idx1 = num[i] + 8
+        tempdict['scan'] = tempdata[i,8:idx1].astype(float)
+        
+        offset = int(tempdata[i, idx1]) + 1
+        idx1 += offset
+        
+        tempdict['pose'] = tempdata[i, idx1 + 3:idx1 + 6].astype(float)
+        tempdict['laser_offset'] = t2v(scipy.dot(scipy.linalg.inv(v2t(tempdict['pose'])),
+                                                 v2t(tempdata[i, idx1:idx1 + 3].astype(float))))
+        tempdict['t'] = float(tempdata[i, idx1 + 11])
+        
+        laserdata += [tempdict]
+        
+    return laserdata
+
+
+def read_data(filename_, flag=True):
+    """Reads the odometry and sensor readings from a file.
+    
+    Args:
+        filename_: string containing file location
+    
+    Returns:
+        output: A FburgData class which contains the odometry
+        and/or sensor data
+        
+    Raises:
+        NameError: incorrect filepath
+
+    """
+    output = {'sensor':[],'odometry':[]}
+        
+    data = scipy.genfromtxt(filename_, dtype='object')
+    idx = scipy.squeeze(data[:,0] == 'ODOMETRY')
+    for inp in data[idx,1:].astype(float):
+        output['odometry'] += [{'r1':inp[0],
+                                    't':inp[1],
+                                    'r2':inp[2]}]
+
+    idxarray = scipy.where(idx)
+    idxarray = scipy.append(idxarray,[len(idx)])
+    for i in range(len(idxarray) - 1):
+        temp = []
+        
+        for j in scipy.arange(idxarray[i] + 1, idxarray[i + 1]):
+            temp += [{'id':int(data[j,1]) - 1,
+                      'range':float(data[j,2]),
+                      'bearing':float(data[j,3])}]
                 
-        tempdata = scipy.genfromtxt(filename_, dtype='object')
-        idx = tempdata[:,0] == 'ROBOTLASER1'
-        tempdata = tempdata[idx, 1:]
-        num = tempdata[:, 7].astype(int) 
-        laserdata = []
-        
-        for i in range(len(tempdata)):
-            tempdict= {'start':float(tempdata[i,1]),
-                       'ang_res':float(tempdata[i,3]),
-                       'max_range':float(tempdata[i,4]),
-                       'scan':[],
-                       'pose':scipy.zeros((3,)),
-                       'laser_offset':scipy.zeros((3,)),
-                       't':[]}
-            
-            idx1 = num[i] + 8
-            tempdict['scan'] = tempdata[i,8:idx1].astype(float)
+        output['sensor'] += [temp]
+    return output
 
-            offset = int(tempdata[i, idx1]) + 1
-            idx1 += offset
-
-            tempdict['pose'] = tempdata[i, idx1 + 3:idx1 + 6].astype(float)
-            tempdict['laser_offset'] = t2v(scipy.dot(scipy.linalg.inv(v2t(tempdict['pose'])),
-                                                     v2t(tempdata[i, idx1:idx1 + 3].astype(float))))
-            tempdict['t'] = float(tempdata[i, idx1 + 11])
-
-            laserdata += [tempdict]
-            
-        return laserdata
-        
-    else:
-        return RobotLaser(filename_)
-
-class RobotLaser(object):
-
-
-    def __init__(self, name):
-        
-        tempdata = scipy.genfromtxt(name, dtype='object')
-        idx = tempdata[:,0] == 'ROBOTLASER1'
-        tempdata = tempdata[idx, 1:]
-        
-        self.start = tempdata[:, 1].astype(float)
-        self.ang_res = tempdata[:, 3].astype(float)
-        self.max_range = tempdata[:, 4].astype(float)
-
-        #next two are accuracies
-        self._num_readings = tempdata[:, 7].astype(int)
-
-        #force object to int necessary for slicing
-        self.scan = []
-        self.pose = scipy.zeros((len(idx), 3))
-        self.laser_offset = scipy.zeros((len(idx), 3))
-        self.t = scipy.zeros((len(idx),))
-        
-        for i in range(len(tempdata)):
-            idx1 = self._num_readings[i] + 8
-            self.scan += [tempdata[i,8:idx1].astype(float)]
-
-            offset = int(tempdata[i, idx1]) + 1
-            idx1 += offset
-            self.pose[i] = tempdata[i, idx1 + 3:idx1 + 6].astype(float)
-            self.laser_offset[i] = t2v(scipy.dot(scipy.linalg.inv(v2t(self.pose[i])),
-                                        v2t(tempdata[i, idx1:idx1 + 3].astype(float))))
-            self.t[i] = tempdata[i, idx1 + 11]        
