@@ -152,7 +152,7 @@ def read_robotlaser(filename_, flag=True):
         
         for i in range(len(tempdata)):
             tempdict= {'start':float(tempdata[i,1]),
-                       'ang_res':float(tempdata[i,5]),
+                       'ang_res':float(tempdata[i,3]),
                        'max_range':float(tempdata[i,4]),
                        'scan':[],
                        'pose':scipy.zeros((3,)),
@@ -187,7 +187,7 @@ class RobotLaser(object):
         tempdata = tempdata[idx, 1:]
         
         self.start = tempdata[:, 1].astype(float)
-        self.ang_res = tempdata[:, 5].astype(float)
+        self.ang_res = tempdata[:, 3].astype(float)
         self.max_range = tempdata[:, 4].astype(float)
 
         #next two are accuracies
