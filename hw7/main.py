@@ -102,6 +102,19 @@ def t2v(R):
     return scipy.array([R[0,2],R[1,2],scipy.arctan2(R[1,0],R[0,0])])
 
 
+def normalize_angle(inp):
+    """casts all angles into [-pi to pi]
+    
+    Args:
+        inp (numpy array or float): numeric with elements which are angles
+    
+    Returns:
+        inp (numpy array or float): array or value between -pi and pi
+
+    """
+    return (inp + scipy.pi) % (2*scipy.pi) - scipy.pi
+
+
 def robotlaser_as_cartesian(rl, maxRange=15, subsample=False):
 
     numBeams = len(rl['scan'])

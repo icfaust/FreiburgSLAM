@@ -2,13 +2,13 @@
 import scipy
 import scipy.stats
 import scipy.linalg
-import maptlotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import main
 import plot
 import motion
 
 # Read sensor readings, i.e. odometry
-def motion():
+def motiontest():
     data = main.read_data('odometry.dat')
     
     noise = scipy.array([0.005, 0.01, 0.005])
@@ -21,18 +21,11 @@ def motion():
                  'pose':scipy.zeros((3,)),
                  'history':[]} for x in range(numParticles)]
 
-    
-    #for i = 1:numParticles
-    #  particles(i).weight = 1. / numParticles;
-    #  particles(i).pose = zeros(3,1);
-    #  particles(i).history = cell();
-    #end
-
     # Perform filter update for each odometry-observation read from the
     # data file.
-    for t in xrange(len(data['odometry'])):# = 1:size(data.timestep, 2)
-        #for t = 1:50
-        print('timestep = %d\n', t)
+    for t in range(len(data['odometry'])):
+        #for t in range(50):
+        print('timestep = %d' % t)
 
         # Perform the prediction step of the particle filter
         particles = motion.prediction(particles, data['odometry'][t], noise)
@@ -40,15 +33,15 @@ def motion():
         # Generate visualization plots of the current state of the filter
         plot.plot_state(particles, t)
 
-def resampling():
+def resamplingtest():
     # how many particles
-    numParticles = 1000;
+    numParticles = 1000
 
     # initialize the particles array
 
     particles = [{'weight':1./numParticles,
-                  'pose':scipy.stats.norm.rvs([0., 0.], [1., 2.])
-                  'history':[]} for in range(numParticles)]
+                  'pose':scipy.stats.norm.rvs([0., 0.], [1., 2.]),
+                  'history':[]} for x in range(numParticles)]
     
     #p = {'weight':scipy.ones((numParticles,))/numParticles,
     #     'pose':scipy.stats.norm.rvs([0., 0.], [1., 2.]),
