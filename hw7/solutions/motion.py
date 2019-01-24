@@ -13,9 +13,9 @@ def prediction(particles, u, noise):
     Assume Gaussian noise in each of the three parameters of the motion model.
     These three parameters may be used as standard deviations for sampling."""
 
-    r1Noise = pow(noise[0], 2) #now they are variances
-    transNoise = pow(noise[1], 2)
-    r2Noise = pow(noise[2], 2)
+    r1Noise = noise[0]
+    transNoise = noise[1]
+    r2Noise = noise[2]
 
     numParticles = len(particles)
 

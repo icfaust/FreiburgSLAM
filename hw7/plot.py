@@ -46,7 +46,7 @@ def plot_state(particles, timestep, window=True):
     
     #dump to a file or show the window
     if window:
-        plt.pause(.5)
+        plt.pause(.1)
     else:
         plt.draw()
         filename = 'pf_%03d.png'.format(timestep)
