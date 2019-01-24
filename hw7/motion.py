@@ -23,16 +23,9 @@ def prediction(particles, u, noise):
     
         # append the old position to the history of the particle
         p['history'] += [p['pose']]
-
-        ur1 = scipy.stats.norm.rvs(scale=r1Noise) + u['r1']
-        ut = scipy.stats.norm.rvs(scale=transNoise) + u['t']
-        ur2 = scipy.stats.norm.rvs(scale=r2Noise) + u['r2']
     
         # TODO: sample a new pose for the particle
-        p['pose'] += scipy.array([ut*scipy.cos(p['pose'][2] + ur1),
-                                  ut*scipy.sin(p['pose'][2] + ur1),
-                                  ur1 + ur2])
-        p['pose'][2] = main.normalize_angle(p['pose'][2])      
+        
     return particles
 
 
@@ -42,6 +35,7 @@ def resample(particles):
     selected. A good option for such a resampling method is the so-called low
     variance sampling, Probabilistic Robotics pg. 109"""
     numParticles = len(particles)
+
     w = scipy.array([p['weight'] for p in particles])
 
     # normalize the weight
@@ -64,14 +58,11 @@ def resample(particles):
     # TODO: implement the low variance re-sampling
     
     # the cumulative sum
-    wsum = scipy.cumsum(w)
-
-    # initialize the step and the current position on the roulette wheel
-    spacing = wsum[-1]*(scipy.stats.uniform.rvs(scale = 1./numParticles) + scipy.mgrid[0.:1.:1./numParticles])
-    idx = scipy.digitize(spacing, wsum)
-
-    # walk along the wheel to select the particles
-    for i in range(numParticles):
-        newParticles[i] = particles[idx[i]]
     
+    # initialize the step and the current position on the roulette wheel
+    
+    # walk along the wheel to select the particles
+    for i in range(numParticles):#= 1:numParticles
+        pass
+        
     return newParticles
