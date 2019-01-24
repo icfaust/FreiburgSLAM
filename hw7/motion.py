@@ -42,7 +42,6 @@ def resample(particles):
     selected. A good option for such a resampling method is the so-called low
     variance sampling, Probabilistic Robotics pg. 109"""
     numParticles = len(particles)
-
     w = scipy.array([p['weight'] for p in particles])
 
     # normalize the weight
@@ -65,11 +64,14 @@ def resample(particles):
     # TODO: implement the low variance re-sampling
     
     # the cumulative sum
-    
+    wsum = scipy.cumsum(w)
+
     # initialize the step and the current position on the roulette wheel
-    
+    spacing = wsum[-1]*(scipy.stats.uniform.rvs(scale = 1./numParticles) + scipy.mgrid[0.:1.:1./numParticles])
+    idx = scipy.digitize(spacing, wsum)
+
     # walk along the wheel to select the particles
-    for i in range(numParticles):#= 1:numParticles
-        pass
-        
+    for i in range(numParticles):
+        newParticles[i] = particles[idx[i]]
+    
     return newParticles

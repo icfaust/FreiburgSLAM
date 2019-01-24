@@ -42,17 +42,6 @@ def resamplingtest():
     particles = [{'weight':1./numParticles,
                   'pose':scipy.stats.norm.rvs([0., 0.], [1., 2.]),
                   'history':[]} for x in range(numParticles)]
-    
-    #p = {'weight':scipy.ones((numParticles,))/numParticles,
-    #     'pose':scipy.stats.norm.rvs([0., 0.], [1., 2.]),
-    #     'history':[[]]*numParticles}
-
-    #for i = 1:numParticles
-    #    particles(i).weight = 1. / numParticles;
-    #    particles(i).pose = normrnd([0 0]', [1 2]');
-    #    particles(i).history = cell();
-    #end
-
 
     # re-weight the particles according to their distance to [0 0]
     sigma = .2*scipy.eye(2)
@@ -60,13 +49,13 @@ def resamplingtest():
     
     for p in particles:
         p['weight'] = scipy.exp(-.5*scipy.dot(p['pose'], scipy.dot(sinv, p['pose'])))
-    #for i = 1:numParticles
-    #particles(i).weight = exp(-1/2 * particles(i).pose' * inv(sigma) * particles(i).pose);
-    #end
 
-    resampledParticles = motion.resample(p)
+    resampledParticles = motion.resample(particles)
 
     # plot the particles before (red) and after resampling (blue)
-    plt.plot(p['pose'][:,0], p['pose'][:,1], 'r+', markersize=5.)
-    plt.plot(resampledParticles['pose'][:,0], resampledParticles['pose'][:,1], 'b*', markersize=5.)
+    parts = scipy.vstack([p['pose'] for p in particles])
+    plt.plot(parts[:,0], parts[:,1], 'r+', markersize=5.)
+
+    resamp = scipy.vstack([p['pose'] for p in resampledParticles])
+    plt.plot(resamp[:,0], resamp[:,1], 'b*', markersize=5.)
     plt.show()
