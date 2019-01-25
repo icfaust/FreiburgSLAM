@@ -17,6 +17,7 @@ def correction(particles, z):
     m = len(z)
     
     # TODO: Construct the sensor noise matrix Q_t (2 x 2)
+    Q_t = .1*scipy.ones(2)
     
     # process each particle
     for i in range(numParticles): #particle loop
@@ -30,7 +31,6 @@ def correction(particles, z):
             # The (2x2) EKF of the landmark is given by
             # its mean particles[i]['landmarks'][l]['mu']
             # and by its covariance particles[i]['landmarks'][l]['sigma']
-
             # If the landmark is observed for the first time:
             
             if particles[i]['landmarks'][j]['observed'] == False:
