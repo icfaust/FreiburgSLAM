@@ -1,5 +1,4 @@
-This homework evaluates the entirety of an unscented kalman filter SLAM using the same datasets from hw1 and hw4.  The full non-linear nature are discretized and evaluated and then analyzed as a gaussian ensemble.
-
+This homework is separated into two parts. The first section, ran through hw7.py generates a map using a range finding robot using the principals of gridmaps probabilities with binary distributions. The second section is itself in two parts, which must be loaded within a python terminal. The function motiontest() shows a random particle motion. The function resamplingtest() resamples a set of particles, both of these capabilities are important for particle-based SLAM algorithms.
 
 Files of use:
 * hw7.py - code which tests the first section homework output (gridmap.py, csail.log)
