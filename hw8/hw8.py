@@ -20,7 +20,7 @@ landmarks = main.read_world('../world.dat')
 data = main.read_data('../sensor_data.dat')
 
 # Get the number of landmarks in the map
-N = len(landmarks['id'])
+n = len(landmarks['id'])
 
 noise = scipy.array([0.005, 0.01, 0.005])
 
@@ -34,7 +34,7 @@ particles = [{'weight':1./numParticles,
               'history':[],
               'landmarks':[{'observed':False,
                             'mu':scipy.zeros((2,1)),
-                            'sigma':scipy.zeros((2,2))} for i in N]} for x in range(numParticles)]
+                            'sigma':scipy.zeros((2,2))} for i in n]} for x in range(numParticles)]
 
 # toogle the visualization type
 showGui = True  # show a window while the algorithm runs
@@ -42,18 +42,18 @@ showGui = True  # show a window while the algorithm runs
 
 # Perform filter update for each odometry-observation pair read from the
 # data file.
-for t in xrange(len(data['odometry'])):# 1:size(data.timestep, 2)
-#for t = 1:50
-    print('timestep = %d\n', t)
+for t in range(len(data['odometry'])):
+#for t in range(50):
+    print('timestep = %d\n' % t)
 
     # Perform the prediction step of the particle filter
-    particles = fastslam.prediction_step(particles, data['odometry'][t], noise)
+    particles = main.prediction(particles, data['odometry'][t], noise)
 
     # Perform the correction step of the particle filter
-    particles = fastslam.correction_step(particles, data['sensor'][t])
+    particles = fastslam.correction(particles, data['sensor'][t])
 
     # Generate visualization plots of the current state of the filter
-    main.plot_state(particles, landmarks, t, data['sensor'][t], showGui)
+    plot.plot_state(particles, landmarks, t, data['sensor'][t], showGui)
 
     # Resample the particle set
     particles = main.resample(particles)

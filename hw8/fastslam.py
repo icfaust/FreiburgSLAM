@@ -2,7 +2,7 @@ import scipy
 import scipy.stats
 import main
 
-def correction_step(particles, z):
+def correction(particles, z):
     """ Weight the particles according to the current map of the particle
     and the landmark observations z.
     z: dict containing the landmark observations.
@@ -19,10 +19,10 @@ def correction_step(particles, z):
     # TODO: Construct the sensor noise matrix Q_t (2 x 2)
     
     # process each particle
-    for i in xrange(numParticles): #particle loop
+    for i in range(numParticles): #particle loop
         robot = particles[i]['pose']
         # process each measurement
-        for j in xrange(m): #measurement loop
+        for j in range(m): #measurement loop
             # Get the id of the landmark corresponding to the j-th observation
             # particles[i]['landmarks][l] is the EKF for this landmark
             l = z['id'][j]
@@ -42,7 +42,7 @@ def correction_step(particles, z):
             
                 # get the Jacobian with respect to the landmark position
 
-                [h, H] = main.measurement_model(particles[i], tempLandmark)
+                h, H = main.measurement_model(particles[i], tempLandmark)
 
                 # TODO: initialize the EKF for this landmark
 
@@ -52,7 +52,7 @@ def correction_step(particles, z):
             else:
 
                 # get the expected measurement
-                [expectedZ, H] = main.measurement_model(particles[i], tempLandmark)
+                expectedZ, H = main.measurement_model(particles[i], tempLandmark)
 
                 # TODO: compute the measurement covariance
                 

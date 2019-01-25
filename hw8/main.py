@@ -1,7 +1,6 @@
 import scipy
 import scipy.stats
 import matplotlib.pyplot as plt
-import plot
 
 def resample(particles):
     """ resample the set of particles.
@@ -24,7 +23,7 @@ def resample(particles):
         print(neff)
         if neff > 0.5*numParticles:
             newParticles = particles.copy()
-            for i in xrange(numParticles):
+            for i in range(numParticles):
                 newParticles[i]['weight'] = w[i]
             return newParticles
 
@@ -42,7 +41,7 @@ def resample(particles):
     idx = 0
 
     # walk along the wheel to select the particles
-    for i in xrange(numParticles):# 1:numParticles
+    for i in range(numParticles):# 1:numParticles
         position += step;
         if position > weightSum: #Is this necessary???
             position -= weightSum; #I have a feeling this was
@@ -85,6 +84,7 @@ def measurement_model(particle, z):
     
     return h, H
 
+
 def normalize_angle(inp):
     """casts all angles into [-pi to pi]
     
@@ -97,7 +97,8 @@ def normalize_angle(inp):
     """
     return (inp + scipy.pi) % (2*scipy.pi) - scipy.pi
 
-def prediction_step(particles, u, noise):
+
+def prediction(particles, u, noise):
     """ Updates the particles by drawing from the motion model
       Use u['r1'], u['t'], and u['r2'] to access the rotation and translation values
      which have to be pertubated with Gaussian noise.
@@ -113,7 +114,7 @@ def prediction_step(particles, u, noise):
 
     numParticles = len(particles)
 
-    for i in xrange(numParticles):#1:numParticles
+    for i in range(numParticles):#1:numParticles
 
         # append the old position to the history of the particle
         particles['history'] += [particles['pose'][i]]
@@ -159,7 +160,7 @@ def read_data(filename_, flag=True):
         
     idxarray = scipy.where(idx)
     idxarray = scipy.append(idxarray,[len(idx)])
-    for i in xrange(len(idxarray) - 1):
+    for i in range(len(idxarray) - 1):
         temp = []
         
         for j in scipy.arange(idxarray[i] + 1, idxarray[i + 1]):
@@ -169,6 +170,7 @@ def read_data(filename_, flag=True):
                 
         output['sensor'] += [temp]
     return output
+
 
 def read_world(filename_):
     """Reads the world definitionodometry and sensor readings from a file.
@@ -189,65 +191,3 @@ def read_world(filename_):
               'x':data[1,:],
               'y':data[2,:]}
     return output
-
-
-################################
-#       Plotting Scripts       #
-################################
-
-
-def plot_state(particles, landmarks, timestep, z, window):
-    """ Visualizes the state of the FastSLAM algorithm.
-    
-     The resulting plot displays the following information:
-     - map ground truth (black +'s)
-     - currently best particle (red)
-     - particle set in green
-     - current landmark pose estimates (blue)
-     - visualization of the observations made at this time step (line between robot and landmark)"""
-
-    plt.clf()
-    plt.grid("on")
-
-    plt.plot(landmarks['x'], landmarks['y'], 'k+', markersize=10., linewidth=5.)
-    
-    # Plot the particles
-    ppos = scipy.array([p['pose'] for p in particles])
-    plt.plot(ppos[:,0], ppos[:,1], 'g.')
-
-    # determine the currently best particle
-    idx = scipy.argmax(scipy.array([p['weight'] for p in particles]))
-
-    # draw the landmark locations along with the ellipsoids
-    for in xrange(len(particles[idx]['landmarks'])):
-        if particles[idx]['landmarks'][i]['observed']:
-            l = particles[idx]['landmarks'][i]['mu']
-            plt.plot(l[0], l[1], 'bo', markersize=3.);
-            plot.draw_probe_ellipse(l, particles[idx]['landmarks'][i]['sigma'], 0.95, 'b')
-
-    # draw the observations
-    for i in xrange(len(z['id'])): #(i=1:size(z,2))
-      l = particles[idx]['landmarks'][z['id'][i]]['mu']
-      plt.plot([particles[idx]['pose'][0], l[0]],
-               [particles[idx]['pose'][1], l[1]],
-               color='k',
-               linewidth=1.)
-
-    # draw the trajectory as estimated by the currently best particle
-    trajectory = scipy.array(particles[idx]['history'])
-    plt.plot(trajectory[:,0], trajectory[:,1], color='r', linewidth=3.)
-
-    plot.drawrobot(particles[idx]['pose'], 'r', 3, 0.3, 0.3);
-    plt.xlim([-2, 12])
-    plt.ylim([-2, 12])
-
-    hold off
-
-    # dump to a file or show the window
-    if window:
-        plt.pause(0.1);
-    else:
-        plt.draw()
-        filename = 'fastslam_%03d.png'.format(timestep)
-        plt.savefig(filename)
-
