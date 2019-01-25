@@ -36,14 +36,14 @@ def plot_state(particles, landmarks, timestep, z, window=True):
     # draw the landmark locations along with the ellipsoids
     for k in particles[idx]['landmarks']:
         if k['observed']:
-            l = particles[idx]['landmarks'][i]['mu']
+            #l = particles[idx]['landmarks'][i]['mu']
             
             plt.plot(k['mu'][0], k['mu'][1], 'bo', markersize=3., fillstyle='none')
-            plot.draw_probe_ellipse(k['mu'], k['sigma'], 0.95, 'b')
+            draw_probe_ellipse(k['mu'], k['sigma'], 0.95, 'b')
 
     # draw the observations
-    for i in xrange(len(z['id'])): #(i=1:size(z,2))
-        l = particles[idx]['landmarks'][z['id'][i]]['mu']
+    for i in range(len(z)): #(i=1:size(z,2))
+        l = particles[idx]['landmarks'][z[i]['id']]['mu']
 
         plt.plot([particles[idx]['pose'][0], l[0]],
                  [particles[idx]['pose'][1], l[1]],
@@ -51,10 +51,10 @@ def plot_state(particles, landmarks, timestep, z, window=True):
                  linewidth=1.)
         
     # draw the trajectory as estimated by the currently best particle
-    trajectory = scipy.hstack(particles[idx]['history'])
+    trajectory = scipy.atleast_2d(scipy.hstack(particles[idx]['history']))
     plt.plot(trajectory[:,0], trajectory[:,1], color='r', linewidth=3.)
 
-    plot.drawrobot(particles[idx]['pose'], 'r', 3, 0.3, 0.3)
+    drawrobot(particles[idx]['pose'], 'r', 3, 0.3, 0.3)
     plt.xlim([-2, 12])
     plt.ylim([-2, 12])
 
@@ -230,7 +230,6 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
 
     if covar[0,0] != covar[1,1]:
         theta = .5*scipy.arctan(2*covar[0,1]/(covar[0,0] - covar[1,1]))
-        print(theta)
     else:
         theta = scipy.sign(covar[0,1])*scipy.pi/4
         

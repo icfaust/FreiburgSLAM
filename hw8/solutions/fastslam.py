@@ -14,7 +14,7 @@ def correction(particles, z):
     numParticles = len(particles)
     
     # Number of measurements in this time step
-    m = len(z['id'])
+    m = len(z)
     
     # TODO: Construct the sensor noise matrix Q_t (2 x 2)
     
@@ -25,7 +25,7 @@ def correction(particles, z):
         for j in range(m): #measurement loop
             # Get the id of the landmark corresponding to the j-th observation
             # particles[i]['landmarks][l] is the EKF for this landmark
-            l = z['id'][j]
+            l = z[j]['id']
 
             # The (2x2) EKF of the landmark is given by
             # its mean particles[i]['landmarks'][l]['mu']
@@ -33,16 +33,13 @@ def correction(particles, z):
 
             # If the landmark is observed for the first time:
             
-            tempLandmark = {'id':l,
-                            'x':z['x'][j],
-                            'y':z['y'][j]}
             if particles[i]['landmarks'][j]['observed'] == False:
 
                 # TODO: Initialize its position based on the measurement and the current robot pose:
             
                 # get the Jacobian with respect to the landmark position
 
-                h, H = main.measurement_model(particles[i], tempLandmark)
+                h, H = main.measurement_model(particles[i], z[j])
 
                 # TODO: initialize the EKF for this landmark
 
@@ -52,7 +49,7 @@ def correction(particles, z):
             else:
 
                 # get the expected measurement
-                expectedZ, H = main.measurement_model(particles[i], tempLandmark)
+                expectedZ, H = main.measurement_model(particles[i], z[j])
 
                 # TODO: compute the measurement covariance
                 

@@ -69,18 +69,19 @@ def measurement_model(particle, z):
     landmarkX = landmarkPos[0]
     landmarkY = landmarkPos[1]
     
-    expectedRange = scipy.sqrt(pow(landmarkX - particle.pose[0], 2) + pow(landmarkY - particle.pose[1], 2))
-    expectedBearing = normalize_angle(scipy.arctan2(landmarkY - particle.pose[1], landmarkX - particle.pose[0]) - particle.pose[2])
+    expectedRange = scipy.sqrt(pow(landmarkX - particle['pose'][0], 2) + pow(landmarkY - particle['pose'][1], 2))
+    expectedBearing = normalize_angle(scipy.arctan2(landmarkY - particle['pose'][1],
+                                                    landmarkX - particle['pose'][0]) - particle['pose'][2])
 
     h = scipy.array([expectedRange, expectedBearing])
     
     # TODO: Compute the Jacobian H of the measurement function h wrt the landmark location
-    H = scipy.zeros(2,2)
+    H = scipy.zeros((2,2))
 
-    H[0,0] = (landmarkX - particle.pose[0])/expectedRange
-    H[0,1] = (landmarkY - particle.pose[1])/expectedRange
-    H[1,0] = (particle.pose[1] - landmarkY)/pow(expectedRange, 2)
-    H[1,1] = (landmarkX - particle.pose[0])/pow(expectedRange, 2)
+    H[0,0] = (landmarkX - particle['pose'][0])/expectedRange
+    H[0,1] = (landmarkY - particle['pose'][1])/expectedRange
+    H[1,0] = (particle['pose'][1] - landmarkY)/pow(expectedRange, 2)
+    H[1,1] = (landmarkX - particle['pose'][0])/pow(expectedRange, 2)
     
     return h, H
 
@@ -117,15 +118,15 @@ def prediction(particles, u, noise):
     for i in range(numParticles):#1:numParticles
 
         # append the old position to the history of the particle
-        particles['history'] += [particles['pose'][i]]
+        particles[i]['history'] += [particles[i]['pose']]
         
         # sample a new pose for the particle
         r1 = scipy.stats.norm.rvs(loc=u['r1'], scale=r1Noise)
         r2 = scipy.stats.norm.rvs(loc=u['r2'], scale=r2Noise)
         trans = scipy.stats.norm.rvs(loc=u['t'], scale=transNoise)
-        particles['pose'][i,0] = particles['pose'][i,0] + trans*scipy.cos(particles['pose'][i,2] + r1)
-        particles['pose'][i,1] = particles['pose'][i,1] + trans*scipy.sin(particles['pose'][i,2] + r1)
-        particles['pose'][i,2] = normalize_angle(particles['pose'][i,2] + r1 + r2)
+        particles[i]['pose'][0] = particles[i]['pose'][0] + trans*scipy.cos(particles[i]['pose'][2] + r1)
+        particles[i]['pose'][1] = particles[i]['pose'][1] + trans*scipy.sin(particles[i]['pose'][2] + r1)
+        particles[i]['pose'][2] = normalize_angle(particles[i]['pose'][2] + r1 + r2)
         
     return particles
 

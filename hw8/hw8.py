@@ -2,6 +2,7 @@
 import scipy
 import fastslam
 import main
+import plot
 
 # This is the main FastSLAM loop. This script calls all the required
 # functions in the correct order.
@@ -34,7 +35,7 @@ particles = [{'weight':1./numParticles,
               'history':[],
               'landmarks':[{'observed':False,
                             'mu':scipy.zeros((2,1)),
-                            'sigma':scipy.zeros((2,2))} for i in n]} for x in range(numParticles)]
+                            'sigma':scipy.zeros((2,2))} for i in range(n)]} for x in range(numParticles)]
 
 # toogle the visualization type
 showGui = True  # show a window while the algorithm runs
@@ -44,7 +45,7 @@ showGui = True  # show a window while the algorithm runs
 # data file.
 for t in range(len(data['odometry'])):
 #for t in range(50):
-    print('timestep = %d\n' % t)
+    print('timestep = %d' % t)
 
     # Perform the prediction step of the particle filter
     particles = main.prediction(particles, data['odometry'][t], noise)
