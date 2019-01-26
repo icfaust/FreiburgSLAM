@@ -42,15 +42,14 @@ def resample(particles):
 
     # walk along the wheel to select the particles
     for i in range(numParticles):# 1:numParticles
-        position += step;
-        if position > weightSum: #Is this necessary???
-            position -= weightSum; #I have a feeling this was
-                   #dubiously programmed...
+        position += step
+        if position > weightSum:
+            position -= weightSum 
             idx = 0
         while position > cs[idx]:
             idx += 1
 
-        newParticles[i] = particles[idx]
+        newParticles[i] = particles[idx].copy()
         newParticles[i]['weight'] = 1./numParticles
 
     return newParticles
@@ -74,7 +73,6 @@ def measurement_model(particle, z):
                                                     landmarkX - particle['pose'][0]) - particle['pose'][2])
 
     h = scipy.array([expectedRange, expectedBearing])
-    
     # TODO: Compute the Jacobian H of the measurement function h wrt the landmark location
     H = scipy.zeros((2,2))
 
@@ -118,7 +116,7 @@ def prediction(particles, u, noise):
     for i in range(numParticles):#1:numParticles
 
         # append the old position to the history of the particle
-        particles[i]['history'] += [particles[i]['pose']]
+        particles[i]['history'] += [particles[i]['pose'].copy()]
         
         # sample a new pose for the particle
         r1 = scipy.stats.norm.rvs(loc=u['r1'], scale=r1Noise)

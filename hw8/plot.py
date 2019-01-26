@@ -51,7 +51,7 @@ def plot_state(particles, landmarks, timestep, z, window=True):
                  linewidth=1.)
         
     # draw the trajectory as estimated by the currently best particle
-    trajectory = scipy.atleast_2d(scipy.hstack(particles[idx]['history']))
+    trajectory = scipy.atleast_2d(scipy.vstack(particles[idx]['history']))
     plt.plot(trajectory[:,0], trajectory[:,1], color='r', linewidth=3.)
 
     drawrobot(particles[idx]['pose'], 'r', 3, 0.3, 0.3)

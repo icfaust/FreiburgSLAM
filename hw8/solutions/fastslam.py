@@ -1,5 +1,6 @@
 import scipy
 import scipy.stats
+import scipy.linalg
 import main
 
 def correction(particles, z):
@@ -33,7 +34,7 @@ def correction(particles, z):
 
             # If the landmark is observed for the first time:
             
-            if particles[i]['landmarks'][j]['observed'] == False:
+            if particles[i]['landmarks'][l]['observed'] == False:
 
                 # TODO: Initialize its position based on the measurement and the current robot pose:
             
@@ -44,7 +45,7 @@ def correction(particles, z):
                 # TODO: initialize the EKF for this landmark
 
                 # Indicate that this landmark has been observed
-                particles[i]['landmarks'][j]['observed'] = True
+                particles[i]['landmarks'][l]['observed'] = True
                 
             else:
 
