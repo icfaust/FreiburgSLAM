@@ -23,7 +23,7 @@ def correction(particles, z):
     # process each particle
     for p in particles: #range(numParticles): #particle loop
         robot = p['pose']
-        print('weight start ',p['weight'])
+        
         # process each measurement
         for j in range(m): #measurement loop
             # Get the id of the landmark corresponding to the j-th observation
@@ -74,11 +74,7 @@ def correction(particles, z):
                 # TODO: compute the likelihood of this observation, multiply with the former weight
                 #       to account for observing several features in one time step
 
-                #I'm not 100% sure about this
                 det = pow(scipy.linalg.det(Qinv/(2*scipy.pi)), .5)
                 p['weight'] *= det*scipy.exp(-.5*scipy.dot(delta.T, scipy.dot(Qinv, delta)))
-                #p['weight'] = p['weight']/scipy.sqrt(scipy.linalg.det(2*scipy.pi*Q))*scipy.exp(-.5*scipy.dot(delta.T,
-                                                                                                             #scipy.dot(scipy.linalg.inv(Q), delta)))
-                print(p['weight'])
                 
     return particles

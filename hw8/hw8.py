@@ -24,12 +24,10 @@ data = main.read_data('../sensor_data.dat')
 n = len(landmarks['id'])
 
 noise = scipy.array([0.005, 0.01, 0.005])
-#noise = scipy.zeros((3,))
 
 # how many particles
 numParticles = 100
 
-# THIS IS VERY MATLABED I NEED TO REDO THIS AGAIN
 # initialize the particles dict
 particles = [{'weight':1./numParticles,
               'pose':scipy.zeros((3,)),
@@ -45,7 +43,7 @@ showGui = True  # show a window while the algorithm runs
 # Perform filter update for each odometry-observation pair read from the
 # data file.
 for t in range(len(data['odometry'])):
-#for t in range(2):
+#for t in range(80):
     print('timestep = %d' % t)
 
     # Perform the prediction step of the particle filter

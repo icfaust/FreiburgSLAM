@@ -1,5 +1,6 @@
 import scipy
 import scipy.stats
+from copy import deepcopy
 import matplotlib.pyplot as plt
 
 def resample(particles):
@@ -11,7 +12,6 @@ def resample(particles):
     numParticles = len(particles)
     
     w = scipy.array([p['weight'] for p in particles])
-
     # normalize the weight
     w = w / scipy.sum(w)
 
@@ -33,7 +33,7 @@ def resample(particles):
 
     # the cumulative sum
     cs = scipy.cumsum(w)
-    weightSum = cs[-1]#cs[len(cs)]
+    weightSum = cs[-1]
 
     # initialize the step and the current position on the roulette wheel
     step = weightSum / numParticles
@@ -41,7 +41,7 @@ def resample(particles):
     idx = 0
 
     # walk along the wheel to select the particles
-    for i in range(numParticles):# 1:numParticles
+    for i in range(numParticles):
         position += step
         if position > weightSum:
             position -= weightSum 
@@ -49,7 +49,7 @@ def resample(particles):
         while position > cs[idx]:
             idx += 1
 
-        newParticles[i] = particles[idx].copy()
+        newParticles[i] = deepcopy(particles[idx]) #this step took 3 hours to debug. my god.
         newParticles[i]['weight'] = 1./numParticles
 
     return newParticles
@@ -113,8 +113,7 @@ def prediction(particles, u, noise):
 
     numParticles = len(particles)
 
-    for i in range(numParticles):#1:numParticles
-
+    for i in range(numParticles):
         # append the old position to the history of the particle
         particles[i]['history'] += [particles[i]['pose'].copy()]
         
@@ -125,7 +124,7 @@ def prediction(particles, u, noise):
         particles[i]['pose'][0] = particles[i]['pose'][0] + trans*scipy.cos(particles[i]['pose'][2] + r1)
         particles[i]['pose'][1] = particles[i]['pose'][1] + trans*scipy.sin(particles[i]['pose'][2] + r1)
         particles[i]['pose'][2] = normalize_angle(particles[i]['pose'][2] + r1 + r2)
-        
+
     return particles
 
 
