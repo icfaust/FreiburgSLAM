@@ -56,7 +56,6 @@ def correction(particles, z):
 
                 # get the expected measurement
                 expectedZ, H = main.measurement_model(p, z[j])
-                Q = scipy.dot(H, scipy.dot(p['landmarks'][l]['sigma'], H.T)) + Q_t
                 # TODO: compute the measurement covariance
                 Qinv = scipy.linalg.inv(scipy.dot(H, scipy.dot(p['landmarks'][l]['sigma'], H.T)) + Q_t)
                 
