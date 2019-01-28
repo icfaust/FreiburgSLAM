@@ -1,4 +1,5 @@
 import scipy
+import main
 
 
 def apply_odometry_correction(X, U):
@@ -19,11 +20,11 @@ def compute_trajectory(U):
     T:	a (N+1)x3 matrix, each row contains the robot position (starting from 0,0,0)"""
     
     # initialize the trajectory matrix
-    T = zeros(size(U,1)+1, 3);
+    T = scipy.zeros((len(U) + 1, 3))
     # store the first pose in the result
-    T(1, :) = zeros(1,3);
+    T[0] = scipy.zeros((1,3))
     # the current pose in the chain
-    currentPose = v2t(T(1, :));
+    currentPose = main.v2t(T[0, :])
     
     # TODO: compute the result of chaining up the odometry deltas
     # Note that U(i) results in T(i+1).
