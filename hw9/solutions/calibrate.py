@@ -52,7 +52,7 @@ def ls_calibrate_odometry(Z):
     # TODO: initialize H and b of the linear system
     
     # TODO: loop through the measurements and update H and b
-    # You may call the functions error_function and jacobian, see below
+    # You may call the functions _error_function and _jacobian, see below
     # We assume that the information matrix is the identity.
     
     # TODO: solve and update the solution
