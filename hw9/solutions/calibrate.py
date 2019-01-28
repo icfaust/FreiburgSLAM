@@ -24,7 +24,7 @@ def compute_trajectory(U):
     # store the first pose in the result
     T[0] = scipy.zeros((1,3))
     # the current pose in the chain
-    currentPose = main.v2t(T[0, :])
+    currentPose = main.v2t(T[0])
     
     # TODO: compute the result of chaining up the odometry deltas
     # Note that U(i) results in T(i+1).
