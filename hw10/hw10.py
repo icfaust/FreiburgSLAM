@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import scipy
 import pickle
-import main
+import plot
+import lsslam
 
 
 def lsSLAM():
@@ -19,9 +20,9 @@ def lsSLAM():
     g = pickle.load(open(loc, 'rb'))
     
     # plot the initial state of the graph
-    main.plot_graph(g, 0)
+    plot.plot_graph(g, 0)
     
-    print('Initial error %f\n' % main.compute_global_error(g))
+    print('Initial error %f\n' % lsslam.compute_global_error(g))
 
     # the number of iterations
     numIterations = 100
@@ -36,14 +37,14 @@ def lsSLAM():
     for i in range(numIterations):# = 1:numIterations
         print('Performing iteration 03%d\n'.format(i))
     
-        dx = main.linearize_and_solve(g)
+        dx = lsslam.linearize_and_solve(g)
 
         # TODO: apply the solution to the state vector g.x
         
         # plot the current state of the graph
-        main.plot_graph(g, i)
+        plot.plot_graph(g, i)
         
-        err = main.compute_global_error(g)
+        err = lsslam.compute_global_error(g)
         
         # Print current error
         print('Current error %f\n' % err )
@@ -63,7 +64,7 @@ def test_jacobian_pose_pose():
     z  = scipy.array([0.9, 1.1, 1.05])
 
     # get the analytic Jacobian
-    e, A, B = main.linearize_pose_pose_constraint(x1, x2, z)
+    e, A, B = lsslam.linearize_pose_pose_constraint(x1, x2, z)
 
     # check the error vector
     e_true = scipy.array([-1.06617,  -1.18076,  -0.85000])
@@ -83,10 +84,10 @@ def test_jacobian_pose_pose():
     for d in range(3):# = 1:3
         curX = x1
         curX[d] += delta
-        err = main.linearize_pose_pose_constraint(curX, x2, z)
+        err = lsslam.linearize_pose_pose_constraint(curX, x2, z)
         curX = x1
         curX[d] -= delta
-        err -= main.linearize_pose_pose_constraint(curX, x2, z)
+        err -= lsslam.linearize_pose_pose_constraint(curX, x2, z)
         
         ANumeric[:, d] = scalar * err
 
@@ -105,10 +106,10 @@ def test_jacobian_pose_pose():
     for d in range(3):# = 1:3
         curX = x2
         curX[d] += delta
-        err = main.linearize_pose_pose_constraint(x1, curX, z)
+        err = lsslam.linearize_pose_pose_constraint(x1, curX, z)
         curX = x2
         curX[d] -= delta
-        err -= main.linearize_pose_pose_constraint(x1, curX, z)
+        err -= lsslam.linearize_pose_pose_constraint(x1, curX, z)
 
         BNumeric[:, d] = scalar * err
 
@@ -131,7 +132,7 @@ def test_jacobian_pose_landmark():
     z  = scipy.array([1.3, -0.4])
 
     # get the analytic Jacobian
-    e, A, B = main.linearize_pose_landmark_constraint(x1, x2, z)
+    e, A, B = lsslam.linearize_pose_landmark_constraint(x1, x2, z)
 
     # check the error vector
     e_true = scipy.array([0.135804, 0.014684])
@@ -151,10 +152,10 @@ def test_jacobian_pose_landmark():
     for d in range(3):#= 1:3
         curX = x1
         curX[d] += delta
-        err = main.linearize_pose_landmark_constraint(curX, x2, z)
+        err = lsslam.linearize_pose_landmark_constraint(curX, x2, z)
         curX = x1
         curX[d] -= delta
-        err -= main.linearize_pose_landmark_constraint(curX, x2, z)
+        err -= lsslam.linearize_pose_landmark_constraint(curX, x2, z)
 
         ANumeric[:, d] = scalar * err
 
@@ -172,10 +173,10 @@ def test_jacobian_pose_landmark():
     for d in range(2):# 1:2
         curX = x2
         curX[d] += delta
-        err = main.linearize_pose_landmark_constraint(x1, curX, z)
+        err = lsslam.linearize_pose_landmark_constraint(x1, curX, z)
         curX = x2
         curX[d] -= delta
-        err -= main.linearize_pose_landmark_constraint(x1, curX, z)
+        err -= lsslam.linearize_pose_landmark_constraint(x1, curX, z)
 
         BNumeric[:, d] = scalar * err
         
