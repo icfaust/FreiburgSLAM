@@ -1,9 +1,8 @@
 #!/usr/bin/python
 import scipy
-from main import read_world
-from main import read_data
-from plot import plot_state
-from motion_command import motion_command
+import main
+import plot
+import motion_command
 
 # This script runs the main loop and calls all the required
 # functions in the correct order.
@@ -21,9 +20,9 @@ world_loc = '../world.dat'
 data_loc = '../sensor_data.dat'
 
 # Read world data, i.e. landmarks.
-landmarks = read_world(world_loc)
+landmarks = main.read_world(world_loc)
 # Read sensor readings, i.e. odometry and range-bearing sensor
-data = read_data(data_loc)
+data = main.read_data(data_loc)
 
 # Initialize belief
 # x: 3x1 vector representing the robot pose [x; y; theta]
@@ -37,12 +36,12 @@ for t in xrange(len(data['sensor'])):
 
     # Update the pose of the robot based on the motion model
     #x = motion_command(x, data.timestep(t).odometry);
-    x = motion_command(x, data['odometry'][t]);
+    x = motion_command.motion_command(x, data['odometry'][t])
 
     
     #Generate visualization plots of the current state
     #plot_state(x, landmarks, t, data.timestep(t).sensor);
-    plot_state(x, landmarks, t, data['sensor'][t]);
+    plot.plot_state(x, landmarks, t, data['sensor'][t])
 
     print("Current robot pose:")
     print("x = ", x)
