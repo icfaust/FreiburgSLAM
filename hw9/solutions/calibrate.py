@@ -1,4 +1,5 @@
 import scipy
+import scipy.linalg
 import main
 
 
@@ -12,6 +13,7 @@ def apply_odometry_correction(X, U):
     # TODO: compute the calibrated motion vector, try to vectorize
     C = []
     return C
+
 
 def compute_trajectory(U):
     """ computes the trajectory of the robot by chaining up

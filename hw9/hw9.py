@@ -26,9 +26,9 @@ scanmatch_trajectory = calibrate.compute_trajectory(scanmatched_motions)
 calibrated_trajectory = calibrate.compute_trajectory(calibrated_motions)
 
 # plot the trajectories
-plt.plot(odom_trajectory[:,0], odom_trajectory[:,1],label="Uncalibrated Odometry")
-plt.plot(scanmatch_trajectory[:,0], scanmatch_trajectory[:,1], label="Scan-Matching")
-plt.plot(calibrated_trajectory[:,0], calibrated_trajectory[:,1], label="Calibrated Odometry")
-plt.legend()
+plt.plot(odom_trajectory[:,0], odom_trajectory[:,1], color='b', label="Uncalibrated Odometry")
+plt.plot(scanmatch_trajectory[:,0], scanmatch_trajectory[:,1], color='g', label="Scan-Matching")
+plt.plot(calibrated_trajectory[:,0], calibrated_trajectory[:,1], color='r', label="Calibrated Odometry")
+plt.legend(loc=1)
 plt.show()
 #plt.savefig('odometry-calibration.png')
