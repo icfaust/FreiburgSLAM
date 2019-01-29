@@ -66,7 +66,6 @@ def ls_calibrate_odometry(Z):
         b += scipy.dot(scipy.atleast_2d(er), J).T #This work assumes Omega is the identity matrix
         H += scipy.dot(J.T, J)
 
-    print(H.shape,b.shape)
     X -= scipy.dot(scipy.linalg.inv(H), b).reshape((3,3))
     
     # TODO: solve and update the solution
