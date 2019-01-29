@@ -136,7 +136,7 @@ def linearize_and_solve(g):
 
             # TODO: compute and add the term to H and b
 
-    print('solving system');
+    print('solving system')
 
     # TODO: solve the linear system, whereas the solution should be stored in dx
     # Remember to use the backslash operator instead of inverting H
