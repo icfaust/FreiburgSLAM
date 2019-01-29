@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import scipy
+import pickle
 import main
 
 
@@ -8,17 +9,19 @@ def lsSLAM():
     # only leave one line uncommented
     
     # simulation datasets
-    load ../data/simulation-pose-pose.dat
-    #load ../data/simulation-pose-landmark.dat
+    loc='simulation-pose-pose.p'
+    
+    #loc='simulation-pose-landmark.p'
     
     # real-world datasets
-    #load ../data/intel.dat
-    #load ../data/dlr.dat
+    #loc='intel.p'
+    #loc='dlr.p'
+    g = pickle.load(open(loc, 'rb'))
     
     # plot the initial state of the graph
     main.plot_graph(g, 0)
     
-    print('Initial error %f\n'.format(main.compute_global_error(g)))
+    print('Initial error %f\n' % main.compute_global_error(g))
 
     # the number of iterations
     numIterations = 100
@@ -27,11 +30,11 @@ def lsSLAM():
     eps = 10^-4
 
     # Error
-    err = 0
+    err = 0.
 
     # carry out the iterations
-    for i in xrange(numIterations):# = 1:numIterations
-        print('Performing iteration %d\n'.format(i))
+    for i in range(numIterations):# = 1:numIterations
+        print('Performing iteration 03%d\n'.format(i))
     
         dx = main.linearize_and_solve(g)
 
@@ -43,12 +46,12 @@ def lsSLAM():
         err = main.compute_global_error(g)
         
         # Print current error
-        print('Current error %f\n'.format(err))
+        print('Current error %f\n' % err )
         
         # TODO: implement termination criterion as suggested on the sheet
 
 
-    print('Final error %f\n'.format(err))
+    print('Final error %f\n' % err)
 
     
 def test_jacobian_pose_pose():
@@ -60,10 +63,10 @@ def test_jacobian_pose_pose():
     z  = scipy.array([0.9, 1.1, 1.05])
 
     # get the analytic Jacobian
-    [e, A, B] = main.linearize_pose_pose_constraint(x1, x2, z)
+    e, A, B = main.linearize_pose_pose_constraint(x1, x2, z)
 
     # check the error vector
-    e_true = scipy.array([-1.06617  -1.18076  -0.85000])
+    e_true = scipy.array([-1.06617,  -1.18076,  -0.85000])
     if norm(e - e_true) > eps:
         print('Your error function seems to return a wrong value')
         print('Result of your function', e)
@@ -77,7 +80,7 @@ def test_jacobian_pose_pose():
 
     # test for x1
     ANumeric = scipy.zeros((3,3))
-    for d in xrange(3):# = 1:3
+    for d in range(3):# = 1:3
         curX = x1
         curX[d] += delta
         err = main.linearize_pose_pose_constraint(curX, x2, z)
@@ -99,7 +102,7 @@ def test_jacobian_pose_pose():
 
     #test for x2
     BNumeric = scipy.zeros((3,3))
-    for d in xrange(3):# = 1:3
+    for d in range(3):# = 1:3
         curX = x2
         curX[d] += delta
         err = main.linearize_pose_pose_constraint(x1, curX, z)
@@ -124,11 +127,11 @@ def test_jacobian_pose_landmark():
     eps = 1e-5;
 
     x1 = scipy.array([1.1, 0.9, 1.])
-    x2 = scipy.array([2.2 1.9])
-    z  = scipy.array([1.3 -0.4])
+    x2 = scipy.array([2.2, 1.9])
+    z  = scipy.array([1.3, -0.4])
 
     # get the analytic Jacobian
-    [e, A, B] = main.linearize_pose_landmark_constraint(x1, x2, z)
+    e, A, B = main.linearize_pose_landmark_constraint(x1, x2, z)
 
     # check the error vector
     e_true = scipy.array([0.135804, 0.014684])
@@ -145,7 +148,7 @@ def test_jacobian_pose_landmark():
 
     # test for x1
     ANumeric = scipy.zeros((2,3))
-    for d in xrange(3):#= 1:3
+    for d in range(3):#= 1:3
         curX = x1
         curX[d] += delta
         err = main.linearize_pose_landmark_constraint(curX, x2, z)
@@ -166,7 +169,7 @@ def test_jacobian_pose_landmark():
 
     # test for x2
     BNumeric = scipy.zeros((2,2))
-    for d in xrange(2):# 1:2
+    for d in range(2):# 1:2
         curX = x2
         curX[d] += delta
         err = main.linearize_pose_landmark_constraint(x1, curX, z)
