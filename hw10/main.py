@@ -40,14 +40,16 @@ def get_poses_landmarks(g):
 
     poses = []
     landmarks = []
-    
     for value in g['idLookup']:
-        dim = value['dimension']
-        offset = value['offset']
+        dim = g['idLookup'][value]['dimension']
+        offset = g['idLookup'][value]['offset']
         if dim == 3:
-            poses = scipy.array([poses, offset])
+            poses += [offset]
         elif dim == 2:
-            landmarks = scipy.array([landmarks, offset])
+            landmarks += [offset]
+
+    poses = scipy.array(poses)
+    landmarks = scipy.array(landmarks)
   
     return poses, landmarks
 
