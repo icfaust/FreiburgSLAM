@@ -17,9 +17,9 @@ def plot_graph(g, iteration = -1):
                  fillstyle='none')
 
     if len(p) > 0:
-        pIdxX = p+1;
-        pIdxY = p+2;
-        plt.plot(g.x[pIdxX], g.x[pIdxY], '.xb', markersize=4.)
+        pIdxX = p+1
+        pIdxY = p+2
+        plt.plot(g['x'][pIdxX], g['x'][pIdxY], '.xb', markersize=4.)
         
         # draw line segments???
     if False:

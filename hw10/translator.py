@@ -26,9 +26,9 @@ def load(loc='simulation-pose-pose.dat'):
     idx = [int(x) for x in str(idlookup.dtype).split("'")[1::4]]
     idlookup = idlookup[0][0]
     for i in range(len(idx)):
-        inp = idlookup[0][0][0]
-        output['idLookup'][idx[i]] = {'offset':inp[0][0][0],
-                                      'dimension':inp[1][0][0]}
+        inp = idlookup[i][0][0]
+        output['idLookup'][idx[i]] = {'offset':int(inp[0][0][0]),
+                                      'dimension':int(inp[1][0][0])}
         
     return output
 
