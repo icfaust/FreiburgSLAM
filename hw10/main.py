@@ -70,12 +70,11 @@ def nnz_of_graph(g):
 
     # elements along the diagonal
     for value in g['idLookup']:
-        nnz += pow(value['dimension'], 2)
+        nnz += pow(g['idLookup'][value]['dimension'], 2)
     
 
     # off-diagonal elements
-    for eid in range(len(g['edges'])):# 1:length(g.edges)
-        edge = g['edges'][eid]
+    for edge in g['edges']:
         if edge['type'] == 'P':
             nnz += 2 * 9
         elif edge['type'] == 'L':

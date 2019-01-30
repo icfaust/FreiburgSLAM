@@ -92,9 +92,9 @@ def linearize_pose_landmark_constraint(x, l, z):
     e 2x1 error of the constraint
     A 2x3 Jacobian wrt x
     B 2x2 Jacobian wrt l"""
-    e = []
-    A = []
-    B = []
+    e = scipy.zeros((2,1))
+    A = scipy.zeros((2,3))
+    B = scipy.zeros((2,2))
     # TODO compute the error and the Jacobians of the error
     
     
@@ -115,7 +115,9 @@ def linearize_pose_pose_constraint(x1, x2, z):
     e 3x1 error of the constraint
     A 3x3 Jacobian wrt x1
     B 3x3 Jacobian wrt x2"""
-    
+    e = scipy.zeros((3,1))
+    A = scipy.zeros((3,3))
+    B = scipy.zeros((3,3))
     # TODO compute the error and the Jacobians of the error
     
     return e, A, B
@@ -126,9 +128,10 @@ def linearize_and_solve(g):
     each constraint is linearized and added to the Hessian"""
 
     nnz = main.nnz_of_graph(g)
-
+    dx = scipy.zeros(g['x'].shape)
+    
     # allocate the sparse H and the vector b
-    H = scipy.sparse.csr_matrix((len(g['x']), len(g['x'])), nnz) #u
+    H = scipy.sparse.dok_matrix((len(g['x']), len(g['x']))) #u
     b = scipy.zeros((len(g['x']), 1))
 
     needToAddPrior = True
