@@ -1,4 +1,5 @@
 import scipy
+import scipy.sparse
 import main
 
 
@@ -7,23 +8,22 @@ def compute_global_error(g):
     Fx = 0
 
     # Loop over all edges
-    for eid in g.edges:#= 1:length(g.edges)
-        edge = g.edges(eid)
+    for edge in g['edges']:#= 1:length(g.edges)
 
         # pose-pose constraint
-        if edge.type == 'P':
+        if edge['type'] == 'P':
 
-            x1 = main.v2t(g.x[edge.fromIdx:edge.fromIdx+2])  # the first robot pose
-            x2 = main.v2t(g.x[edge.toIdx:edge.toIdx+2])      # the second robot pose
+            x1 = main.v2t(g['x'][edge['fromIdx']:edge['fromIdx']+2])  # the first robot pose
+            x2 = main.v2t(g['x'][edge['toIdx']:edge['toIdx']+2])      # the second robot pose
       
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge.measurement and edge.information to access the
             # measurement and the information matrix respectively.
       
         # pose-landmark constraint
-        elif edge.type == 'L':
-            x = g.x(edge.fromIdx:edge.fromIdx+2);  % the robot pose
-            l = g.x(edge.toIdx:edge.toIdx+1);      % the landmark
+        elif edge['type'] == 'L':
+            x = g['x'](edge['fromIdx']:edge['fromIdx']+2);  % the robot pose
+            l = g['x'](edge['toIdx']:edge['toIdx']+1);      % the landmark
 
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge.measurement and edge.information to access the
@@ -79,26 +79,25 @@ def linearize_and_solve(g):
     nnz = main.nnz_of_graph(g)
 
     # allocate the sparse H and the vector b
-    H = spalloc(len(g.x), len(g.x), nnz) #u
-    b = scipy.zeros((len(g.x), 1))
+    H = scipy.sparse.csr_matrix((len(g['x']), len(g['x'])), nnz) #u
+    b = scipy.zeros((len(g['x']), 1))
 
     needToAddPrior = True
 
     # compute the addend term to H and b for each of our constraints
     print('linearize and build system')
-    for eid in xrange(len(g.edges)):# = 1:length(g.edges)
-        edge = g.edges(eid)
+    for edge in g['edges']:
 
         # pose-pose constraint
-        if edge.type == 'P':#(strcmp(edge.type, 'P') != 0)
-            # edge.fromIdx and edge.toIdx describe the location of
+        if edge['type'] == 'P':
+            # edge['fromIdx'] and edge['toIdx'] describe the location of
             # the first element of the pose in the state vector
             # You should use also this index when updating the elements
             # of the H matrix and the vector b.
             # edge.measurement is the measurement
             # edge.information is the information matrix
-            x1 = g.x[edge.fromIdx:edge.fromIdx+2]  # the first robot pose
-            x2 = g.x[edge.toIdx:edge.toIdx+2]      # the second robot pose
+            x1 = g['x'][edge['fromIdx']:edge['fromIdx']+2]  # the first robot pose
+            x2 = g['x'][edge['toIdx']:edge['toIdx']+2]      # the second robot pose
             
             # Computing the error and the Jacobians
             # e the error vector
@@ -117,15 +116,15 @@ def linearize_and_solve(g):
                 needToAddPrior = False
 
         # pose-landmark constraint
-        elif edge.type = 'L':#(strcmp(edge.type, 'L') != 0)
-            # edge.fromIdx and edge.toIdx describe the location of
+        elif edge['type'] == 'L':
+            # edge['fromIdx'] and edge['toIdx'] describe the location of
             # the first element of the pose and the landmark in the state vector
             # You should use also this index when updating the elements
             # of the H matrix and the vector b.
             # edge.measurement is the measurement
             # edge.information is the information matrix
-            x1 = g.x[edge.fromIdx:edge.fromIdx+2]  # the robot pose
-            x2 = g.x[edge.toIdx:edge.toIdx+1]      # the landmark
+            x1 = g['x'][edge['fromIdx']:edge['fromIdx']+2]  # the robot pose
+            x2 = g['x'][edge['toIdx']:edge['toIdx']+1]      # the landmark
           
             # Computing the error and the Jacobians
             # e the error vector

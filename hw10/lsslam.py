@@ -1,4 +1,5 @@
 import scipy
+import scipy.sparse
 import main
 
 
@@ -7,11 +8,10 @@ def compute_global_error(g):
     Fx = 0
 
     # Loop over all edges
-    for eid in g['edges']:#= 1:length(g.edges)
-        edge = g['edges'][eid]
+    for edge in g['edges']:#= 1:length(g.edges)
 
         # pose-pose constraint
-        if edge.type == 'P':
+        if edge['type'] == 'P':
 
             x1 = main.v2t(g['x'][edge['fromIdx']:edge['fromIdx']+2])  # the first robot pose
             x2 = main.v2t(g['x'][edge['toIdx']:edge['toIdx']+2])      # the second robot pose
@@ -21,7 +21,7 @@ def compute_global_error(g):
             # measurement and the information matrix respectively.
       
         # pose-landmark constraint
-        elif edge.type == 'L':
+        elif edge['type'] == 'L':
             x = g['x'](edge['fromIdx']:edge['fromIdx']+2);  % the robot pose
             l = g['x'](edge['toIdx']:edge['toIdx']+1);      % the landmark
 
@@ -79,18 +79,17 @@ def linearize_and_solve(g):
     nnz = main.nnz_of_graph(g)
 
     # allocate the sparse H and the vector b
-    H = spalloc(len(g['x']), len(g['x']), nnz) #u
+    H = scipy.sparse.csr_matrix((len(g['x']), len(g['x'])), nnz) #u
     b = scipy.zeros((len(g['x']), 1))
 
     needToAddPrior = True
 
     # compute the addend term to H and b for each of our constraints
     print('linearize and build system')
-    for eid in xrange(len(g['edges'])):# = 1:length(g.edges)
-        edge = g['edges'][eid]
+    for edge in g['edges']:
 
         # pose-pose constraint
-        if edge['type'] == 'P':#(strcmp(edge.type, 'P') != 0)
+        if edge['type'] == 'P':
             # edge['fromIdx'] and edge['toIdx'] describe the location of
             # the first element of the pose in the state vector
             # You should use also this index when updating the elements
@@ -117,7 +116,7 @@ def linearize_and_solve(g):
                 needToAddPrior = False
 
         # pose-landmark constraint
-        elif edge['type'] = 'L':#(strcmp(edge.type, 'L') != 0)
+        elif edge['type'] == 'L':
             # edge['fromIdx'] and edge['toIdx'] describe the location of
             # the first element of the pose and the landmark in the state vector
             # You should use also this index when updating the elements
