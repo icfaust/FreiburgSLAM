@@ -22,7 +22,7 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
     # plot the initial state of the graph
     plot.plot_graph(g, 0)
     
-    print('Initial error %f\n' % compute_global_error(g))
+    print('Initial error %f' % compute_global_error(g))
 
     # the number of iterations
     numIterations = 100
@@ -35,7 +35,7 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
 
     # carry out the iterations
     for i in range(numIterations):# = 1:numIterations
-        print('Performing iteration 03%d\n'.format(i))
+        print('Performing iteration {:3d}'.format(i))
     
         dx = linearize_and_solve(g)
 
@@ -47,35 +47,32 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
         err = compute_global_error(g)
         
         # Print current error
-        print('Current error %f\n' % err )
+        print('Current error %f' % err )
         
         # TODO: implement termination criterion as suggested on the sheet
 
 
-    print('Final error %f\n' % err)
+    print('Final error %f' % err)
 
 
 def compute_global_error(g):
     """ Computes the total error of the graph"""
     Fx = 0
-
     # Loop over all edges
     for edge in g['edges']:
 
         # pose-pose constraint
         if edge['type'] == 'P':
-
-            x1 = main.v2t(g['x'][edge['fromIdx']:edge['fromIdx']+2])  # the first robot pose
-            x2 = main.v2t(g['x'][edge['toIdx']:edge['toIdx']+2])      # the second robot pose
-      
+            x1 = main.v2t(g['x'][edge['fromIdx']:edge['fromIdx']+3])  # the first robot pose
+            x2 = main.v2t(g['x'][edge['toIdx']:edge['toIdx']+3])      # the second robot pose
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge.measurement and edge.information to access the
             # measurement and the information matrix respectively.
       
         # pose-landmark constraint
         elif edge['type'] == 'L':
-            x = g['x'][edge['fromIdx']:edge['fromIdx']+2]  # the robot pose
-            l = g['x'][edge['toIdx']:edge['toIdx']+1]      # the landmark
+            x = g['x'][edge['fromIdx']:edge['fromIdx']+3]  # the robot pose
+            l = g['x'][edge['toIdx']:edge['toIdx']+2]      # the landmark
 
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge.measurement and edge.information to access the

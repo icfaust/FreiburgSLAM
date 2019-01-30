@@ -15,12 +15,12 @@ def load(loc='simulation-pose-pose.dat'):
     for p in edges:
         inp = p[0]
         output['edges'] += [{'type':str(inp[0][0]),
-                             'from':int(inp[1][0][0]),
-                             'to':int(inp[2][0][0]),
+                             'from':int(inp[1][0][0]) - 1,
+                             'to':int(inp[2][0][0]) - 1,
                              'measurement':inp[3],
                              'information':inp[4],
-                             'fromIdx':int(inp[5][0][0]),
-                             'toIdx':int(inp[6][0][0])}]
+                             'fromIdx':int(inp[5][0][0]) - 1,
+                             'toIdx':int(inp[6][0][0]) - 1}]
                             
     idlookup = temp['g'][0][0][2]
     idx = [int(x) for x in str(idlookup.dtype).split("'")[1::4]]
