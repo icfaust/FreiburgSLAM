@@ -39,7 +39,7 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
     
         dx = linearize_and_solve(g)
 
-        # TODO: apply the solution to the state vector g.x
+        # TODO: apply the solution to the state vector g['x']
         
         # plot the current state of the graph
         plot.plot_graph(g, i)

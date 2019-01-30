@@ -39,7 +39,8 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
     
         dx = linearize_and_solve(g)
 
-        # TODO: apply the solution to the state vector g.x
+        # TODO: apply the solution to the state vector g['x']
+        g['x'] += dx
         
         # plot the current state of the graph
         plot.plot_graph(g, i)
@@ -50,7 +51,8 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
         print('Current error %f' % err )
         
         # TODO: implement termination criterion as suggested on the sheet
-
+        if err < eps:
+            break #not a fan of this, I would have used a while loop
 
     print('Final error %f' % err)
 
