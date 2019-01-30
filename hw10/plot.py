@@ -12,7 +12,7 @@ def plot_graph(g, iteration = -1):
         landmarkIdxY = l + 1
         plt.plot(g['x'][landmarkIdxX],
                  g['x'][landmarkIdxY],
-                 '.or',
+                 'or',
                  markersize=4.,
                  fillstyle='none')
 
