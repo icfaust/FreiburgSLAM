@@ -8,8 +8,8 @@ def plot_graph(g, iteration = -1):
     p, l = main.get_poses_landmarks(g)
 
     if len(l) > 0:
-        landmarkIdxX = l+1
-        landmarkIdxY = l+2
+        landmarkIdxX = l
+        landmarkIdxY = l + 1
         plt.plot(g['x'][landmarkIdxX],
                  g['x'][landmarkIdxY],
                  '.or',
@@ -17,9 +17,9 @@ def plot_graph(g, iteration = -1):
                  fillstyle='none')
 
     if len(p) > 0:
-        pIdxX = p+1
-        pIdxY = p+2
-        plt.plot(g['x'][pIdxX], g['x'][pIdxY], '.xb', markersize=4.)
+        pIdxX = p
+        pIdxY = p + 1
+        plt.plot(g['x'][pIdxX], g['x'][pIdxY], 'xb', markersize=4.)
         
         # draw line segments???
     if False:
