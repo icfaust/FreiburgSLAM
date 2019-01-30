@@ -8,7 +8,7 @@ def compute_global_error(g):
     Fx = 0
 
     # Loop over all edges
-    for edge in g['edges']:#= 1:length(g.edges)
+    for edge in g['edges']:
 
         # pose-pose constraint
         if edge['type'] == 'P':
@@ -22,8 +22,8 @@ def compute_global_error(g):
       
         # pose-landmark constraint
         elif edge['type'] == 'L':
-            x = g['x'](edge['fromIdx']:edge['fromIdx']+2);  % the robot pose
-            l = g['x'](edge['toIdx']:edge['toIdx']+1);      % the landmark
+            x = g['x'](edge['fromIdx']:edge['fromIdx']+2)  # the robot pose
+            l = g['x'](edge['toIdx']:edge['toIdx']+1)      # the landmark
 
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge.measurement and edge.information to access the
@@ -94,8 +94,8 @@ def linearize_and_solve(g):
             # the first element of the pose in the state vector
             # You should use also this index when updating the elements
             # of the H matrix and the vector b.
-            # edge.measurement is the measurement
-            # edge.information is the information matrix
+            # edge['measurement'] is the measurement
+            # edge['information'] is the information matrix
             x1 = g['x'][edge['fromIdx']:edge['fromIdx']+2]  # the first robot pose
             x2 = g['x'][edge['toIdx']:edge['toIdx']+2]      # the second robot pose
             
@@ -103,7 +103,7 @@ def linearize_and_solve(g):
             # e the error vector
             # A Jacobian wrt x1
             # B Jacobian wrt x2
-            e, A, B = linearize_pose_pose_constraint(x1, x2, edge.measurement)
+            e, A, B = linearize_pose_pose_constraint(x1, x2, edge['measurement'])
 
 
             # TODO: compute and add the term to H and b
@@ -121,8 +121,8 @@ def linearize_and_solve(g):
             # the first element of the pose and the landmark in the state vector
             # You should use also this index when updating the elements
             # of the H matrix and the vector b.
-            # edge.measurement is the measurement
-            # edge.information is the information matrix
+            # edge['measurement'] is the measurement
+            # edge['information'] is the information matrix
             x1 = g['x'][edge['fromIdx']:edge['fromIdx']+2]  # the robot pose
             x2 = g['x'][edge['toIdx']:edge['toIdx']+1]      # the landmark
           
@@ -130,7 +130,7 @@ def linearize_and_solve(g):
             # e the error vector
             # A Jacobian wrt x1
             # B Jacobian wrt x2
-            [e, A, B] = linearize_pose_landmark_constraint(x1, x2, edge.measurement)
+            [e, A, B] = linearize_pose_landmark_constraint(x1, x2, edge['measurement'])
 
 
             # TODO: compute and add the term to H and b

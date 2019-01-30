@@ -28,7 +28,7 @@ def lsSLAM():
     numIterations = 100
 
     # maximum allowed dx
-    eps = 10^-4
+    eps = 1e-4
 
     # Error
     err = 0.
