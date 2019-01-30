@@ -1,58 +1,7 @@
 #!/usr/bin/python
 import scipy
-import pickle
-import plot
 import lsslam
-
-
-def lsSLAM():
-    # load the graph into the variable g
-    # only leave one line uncommented
-    
-    # simulation datasets
-    loc='simulation-pose-pose.p'
-    
-    #loc='simulation-pose-landmark.p'
-    
-    # real-world datasets
-    #loc='intel.p'
-    #loc='dlr.p'
-    g = pickle.load(open(loc, 'rb'))
-    
-    # plot the initial state of the graph
-    plot.plot_graph(g, 0)
-    
-    print('Initial error %f\n' % lsslam.compute_global_error(g))
-
-    # the number of iterations
-    numIterations = 100
-
-    # maximum allowed dx
-    eps = 1e-4
-
-    # Error
-    err = 0.
-
-    # carry out the iterations
-    for i in range(numIterations):# = 1:numIterations
-        print('Performing iteration 03%d\n'.format(i))
-    
-        dx = lsslam.linearize_and_solve(g)
-
-        # TODO: apply the solution to the state vector g.x
-        
-        # plot the current state of the graph
-        plot.plot_graph(g, i)
-        
-        err = lsslam.compute_global_error(g)
-        
-        # Print current error
-        print('Current error %f\n' % err )
-        
-        # TODO: implement termination criterion as suggested on the sheet
-
-
-    print('Final error %f\n' % err)
+from lsslam import _lsSLAM as lsSLAM
 
     
 def test_jacobian_pose_pose():
@@ -93,7 +42,7 @@ def test_jacobian_pose_pose():
 
 
     diff = ANumeric - A
-    if scipy.max(abs(diff))) > eps:
+    if (abs(diff)).max() > eps:
         print('Error in the Jacobian for x1')
         print('Your analytic Jacobian', A)
         print('Numerically computed Jacobian', ANumeric)
@@ -115,7 +64,7 @@ def test_jacobian_pose_pose():
 
 
     diff = BNumeric - B;
-    if scipy.max(abs(diff))) > eps:
+    if (abs(diff)).max() > eps:
         print('Error in the Jacobian for x2')
         print('Your analytic Jacobian', B)
         print('Numerically computed Jacobian', BNumeric)
@@ -160,7 +109,7 @@ def test_jacobian_pose_landmark():
         ANumeric[:, d] = scalar * err
 
     diff = ANumeric - A
-    if scipy.max(abs(diff)) > eps:
+    if (abs(diff)).max() > eps:
         print('Error in the Jacobian for x1')
         print('Your analytic Jacobian', A)
         print('Numerically computed Jacobian', ANumeric)
@@ -181,7 +130,7 @@ def test_jacobian_pose_landmark():
         BNumeric[:, d] = scalar * err
         
     diff = BNumeric - B
-    if scipy.max(abs(diff))) > eps:
+    if (abs(diff)).max() > eps:
         print('Error in the Jacobian for x2')
         print('Your analytic Jacobian', B)
         print('Numerically computed Jacobian', BNumeric)

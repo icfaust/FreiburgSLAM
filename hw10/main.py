@@ -9,7 +9,7 @@ def build_structure(g):#THIS FUNCTION NEEDS TO BE THOROUGHLY TESTED
     for value in g['idLookup']:# [value, key] = g.idLookup
         dim = value['dimension']
         offset = value['offset']
-        [r,c] = scipy.mgrid[offset:offset+dim+1, offset:offset+dim+1]
+        r,c = scipy.mgrid[offset:offset+dim+1, offset:offset+dim+1]
         idx +=[r.flatten(), c.flatten()]
 
 
@@ -17,11 +17,11 @@ def build_structure(g):#THIS FUNCTION NEEDS TO BE THOROUGHLY TESTED
         for eid in range(len(g['edges'])):# = 1:length(g.edges)
             edge = g['edges'][eid]
             if edge['type'] == 'P':
-                [r,c] = scipy.mgrid[edge['fromIdx']:edge['fromIdx']+2, edge['toIdx']:edge['toIdx']+3]]
+                r,c = scipy.mgrid[edge['fromIdx']:edge['fromIdx']+2, edge['toIdx']:edge['toIdx']+3]
                 idx += [r.flatten(), c.flatten(), c.flatten(), r.flatten()]
             elif edge['type'] == 'L':
-                [r,c] = scipy.mgrid[edge['fromIdx']:edge['fromIdx']+2, edge['toIdx']:edge['toIdx']+2]]
-                idx += [r.flatten() c.flatten(), c.flatten(), r.flatten()]]
+                r,c = scipy.mgrid[edge['fromIdx']:edge['fromIdx']+2, edge['toIdx']:edge['toIdx']+2]
+                idx += [r.flatten(), c.flatten(), c.flatten(), r.flatten()]
                 
     idx = scipy.concatenate(idx) #check this
     return idx

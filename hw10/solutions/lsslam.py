@@ -1,6 +1,58 @@
 import scipy
 import scipy.sparse
+import pickle
 import main
+import plot
+
+
+def _lsSLAM(loc='simulation-pose-pose.p'):
+    # load the graph into the variable g
+    # only leave one line uncommented
+    
+    # simulation datasets
+    #loc='simulation-pose-pose.p'
+    
+    #loc='simulation-pose-landmark.p'
+    
+    # real-world datasets
+    #loc='intel.p'
+    #loc='dlr.p'
+    g = pickle.load(open(loc, 'rb'))
+    
+    # plot the initial state of the graph
+    plot.plot_graph(g, 0)
+    
+    print('Initial error %f\n' % compute_global_error(g))
+
+    # the number of iterations
+    numIterations = 100
+
+    # maximum allowed dx
+    eps = 1e-4
+
+    # Error
+    err = 0.
+
+    # carry out the iterations
+    for i in range(numIterations):# = 1:numIterations
+        print('Performing iteration 03%d\n'.format(i))
+    
+        dx = linearize_and_solve(g)
+
+        # TODO: apply the solution to the state vector g.x
+        
+        # plot the current state of the graph
+        plot.plot_graph(g, i)
+        
+        err = compute_global_error(g)
+        
+        # Print current error
+        print('Current error %f\n' % err )
+        
+        # TODO: implement termination criterion as suggested on the sheet
+
+
+    print('Final error %f\n' % err)
 
 
 def compute_global_error(g):
@@ -22,8 +74,8 @@ def compute_global_error(g):
       
         # pose-landmark constraint
         elif edge['type'] == 'L':
-            x = g['x'](edge['fromIdx']:edge['fromIdx']+2)  # the robot pose
-            l = g['x'](edge['toIdx']:edge['toIdx']+1)      # the landmark
+            x = g['x'][edge['fromIdx']:edge['fromIdx']+2]  # the robot pose
+            l = g['x'][edge['toIdx']:edge['toIdx']+1]      # the landmark
 
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge.measurement and edge.information to access the
