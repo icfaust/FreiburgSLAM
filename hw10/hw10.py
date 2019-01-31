@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import scipy
+import scipy.linalg
 import lsslam
 from lsslam import _lsSLAM as lsSLAM
 
@@ -17,7 +18,7 @@ def test_jacobian_pose_pose():
 
     # check the error vector
     e_true = scipy.array([-1.06617,  -1.18076,  -0.85000])
-    if norm(e - e_true) > eps:
+    if scipy.linalg.norm(e - e_true) > eps:
         print('Your error function seems to return a wrong value')
         print('Result of your function', e)
         print('True value', e_true)
@@ -31,12 +32,15 @@ def test_jacobian_pose_pose():
     # test for x1
     ANumeric = scipy.zeros((3,3))
     for d in range(3):# = 1:3
-        curX = x1
+        curX = x1.copy()
         curX[d] += delta
-        err = lsslam.linearize_pose_pose_constraint(curX, x2, z)
-        curX = x1
-        curX[d] -= delta
-        err -= lsslam.linearize_pose_pose_constraint(curX, x2, z)
+        err = lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
+        temp1 = lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
+        #print(temp1)
+        curX[d] -= 2*delta
+        err -= lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
+        temp2 = lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
+        #print(err,(temp1-temp2))
         
         ANumeric[:, d] = scalar * err
 
@@ -53,12 +57,11 @@ def test_jacobian_pose_pose():
     #test for x2
     BNumeric = scipy.zeros((3,3))
     for d in range(3):# = 1:3
-        curX = x2
+        curX = x2.copy()
         curX[d] += delta
-        err = lsslam.linearize_pose_pose_constraint(x1, curX, z)
-        curX = x2
-        curX[d] -= delta
-        err -= lsslam.linearize_pose_pose_constraint(x1, curX, z)
+        err = lsslam.linearize_pose_pose_constraint(x1, curX, z)[0]
+        curX[d] -= 2*delta
+        err -= lsslam.linearize_pose_pose_constraint(x1, curX, z)[0]
 
         BNumeric[:, d] = scalar * err
 
@@ -85,7 +88,7 @@ def test_jacobian_pose_landmark():
 
     # check the error vector
     e_true = scipy.array([0.135804, 0.014684])
-    if norm(e - e_true) > eps:
+    if scipy.linalg.norm(e - e_true) > eps:
         print('Your error function seems to return a wrong value')
         print('Result of your function', e)
         print('True value', e_true)
@@ -99,12 +102,11 @@ def test_jacobian_pose_landmark():
     # test for x1
     ANumeric = scipy.zeros((2,3))
     for d in range(3):#= 1:3
-        curX = x1
+        curX = x1.copy()
         curX[d] += delta
-        err = lsslam.linearize_pose_landmark_constraint(curX, x2, z)
-        curX = x1
-        curX[d] -= delta
-        err -= lsslam.linearize_pose_landmark_constraint(curX, x2, z)
+        err = lsslam.linearize_pose_landmark_constraint(curX, x2, z)[0]
+        curX[d] -= 2*delta
+        err -= lsslam.linearize_pose_landmark_constraint(curX, x2, z)[0]
 
         ANumeric[:, d] = scalar * err
 
@@ -120,12 +122,11 @@ def test_jacobian_pose_landmark():
     # test for x2
     BNumeric = scipy.zeros((2,2))
     for d in range(2):# 1:2
-        curX = x2
+        curX = x2.copy()
         curX[d] += delta
-        err = lsslam.linearize_pose_landmark_constraint(x1, curX, z)
-        curX = x2
-        curX[d] -= delta
-        err -= lsslam.linearize_pose_landmark_constraint(x1, curX, z)
+        err = lsslam.linearize_pose_landmark_constraint(x1, curX, z)[0]
+        curX[d] -= 2*delta
+        err -= lsslam.linearize_pose_landmark_constraint(x1, curX, z)[0]
 
         BNumeric[:, d] = scalar * err
         

@@ -1,5 +1,6 @@
 import scipy
 import scipy.sparse
+import scipy.linalg
 import pickle
 import main
 import plot
@@ -73,7 +74,7 @@ def compute_global_error(g):
             Z = main.v2t(edge['measurement'])
             e = main.t2v(scipy.dot(scipy.linalg.inv(Z),
                                    scipy.dot(scipy.linalg.inv(x1),
-                                             x2))))
+                                             x2)))
             Fx += scipy.sum(pow(e,2))
             
         # pose-landmark constraint
@@ -181,7 +182,7 @@ def linearize_pose_landmark_constraint(x, l, z):
     # TODO compute the error and the Jacobians of the error
     X = main.v2t(x)
     R = X[:2,:2]
-    e = scipy.dot(R, l - X[:2,2]) - z
+    e = scipy.dot(R.T, l - X[:2,2]) - z
     deriv = scipy.array([[0.,-1.],
                          [1.,0.]])
     dRdtheta = scipy.dot(deriv, R)
@@ -225,11 +226,11 @@ def linearize_pose_pose_constraint(x1, x2, z):
     
     e = main.t2v(scipy.dot(scipy.linalg.inv(Z),
                            scipy.dot(scipy.linalg.inv(X1),
-                                     X2))))
+                                     X2)))
     
     
     A[:2,:2] = -1*scipy.dot(RZ.T, R1.T)
-    A[2,:2] = (scipy.dot(RZ.T, scipy.dot(dR1dtheta.T, X2[:2,2]-X1[:2,2]))).T #the last transpose matches shape
+    A[:2,2] = (scipy.dot(RZ.T, scipy.dot(dR1dtheta.T, X2[:2,2]-X1[:2,2]))) #the last transpose matches shape
     A[2,2] = -1.
 
     B[:2,:2] = -1*A[:2,:2].copy() #just to be sure
