@@ -75,7 +75,7 @@ def compute_global_error(g):
             e = main.t2v(scipy.dot(scipy.linalg.inv(Z),
                                    scipy.dot(scipy.linalg.inv(x1),
                                              x2)))
-            Fx += scipy.sum(pow(e,2))
+            Fx += scipy.dot(e.T, scipy.dot(edge['information'], e))
             
         # pose-landmark constraint
         elif edge['type'] == 'L':
@@ -85,9 +85,11 @@ def compute_global_error(g):
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge['measurement'] and edge['information'] to access the
             # measurement and the information matrix respectively.
-            Z = main.v2t(edge['measurement'])
-            
+            R = main.v2t(x)[:2, :2]
+            e = scipy.dot(R.T, x-l) - edge['measurement']
 
+            Fx += scipy.dot(e.T, scipy.dot(edge['information'], e))
+            
     return Fx
 
 
