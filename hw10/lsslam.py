@@ -230,7 +230,7 @@ def linearize_pose_pose_constraint(x1, x2, z):
     
     
     A[:2,:2] = -1*scipy.dot(RZ.T, R1.T)
-    A[:2,2] = (scipy.dot(RZ.T, scipy.dot(dR1dtheta.T, X2[:2,2]-X1[:2,2]))) #the last transpose matches shape
+    A[:2,2] = scipy.dot(RZ.T, scipy.dot(dR1dtheta.T, X2[:2,2]-X1[:2,2]))
     A[2,2] = -1.
 
     B[:2,:2] = -1*A[:2,:2].copy() #just to be sure
