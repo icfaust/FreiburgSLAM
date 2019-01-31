@@ -70,7 +70,8 @@ def compute_global_error(g):
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge.measurement and edge.information to access the
             # measurement and the information matrix respectively.
-      
+
+            
         # pose-landmark constraint
         elif edge['type'] == 'L':
             x = g['x'][edge['fromIdx']:edge['fromIdx']+3]  # the robot pose

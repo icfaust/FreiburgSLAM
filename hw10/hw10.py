@@ -6,7 +6,7 @@ from lsslam import _lsSLAM as lsSLAM
     
 def test_jacobian_pose_pose():
 
-    eps = 1e-5;
+    eps = 1e-5
 
     x1 = scipy.array([1.1, 0.9, 1])
     x2 = scipy.array([2.2, 1.85, 1.2])
@@ -63,7 +63,7 @@ def test_jacobian_pose_pose():
         BNumeric[:, d] = scalar * err
 
 
-    diff = BNumeric - B;
+    diff = BNumeric - B
     if (abs(diff)).max() > eps:
         print('Error in the Jacobian for x2')
         print('Your analytic Jacobian', B)
@@ -74,7 +74,7 @@ def test_jacobian_pose_pose():
 
 
 def test_jacobian_pose_landmark():
-    eps = 1e-5;
+    eps = 1e-5
 
     x1 = scipy.array([1.1, 0.9, 1.])
     x2 = scipy.array([2.2, 1.9])
