@@ -129,7 +129,17 @@ def linearize_and_solve(g):
 
 
             # TODO: compute and add the term to H and b
+            H[edge['fromIdx']:edge['fromIdx']+2,edge['fromIdx']:edge['fromIdx'+2]] += scipy.dot(A.T,scipy.dot(edge['information'],
+                                                                                                              A))
+            H[edge['fromIdx']:edge['fromIdx']+2,edge['fromIdx']:edge['fromIdx'+2]] += scipy.dot(B.T,scipy.dot(edge['information'],
+                                                                                                              B))
+            temp = scipy.dot(A.T, scipy.dot(edge['information'], B))
+            H[edge['toIdx']:edge['toIdx']+2,edge['fromIdx']:edge['fromIdx'+2]] += temp
+            H[edge['fromIdx']:edge['fromIdx']+2,edge['toIdx']:edge['toIdx'+2]] += temp.T
 
+            b[edge['fromIdx']:edge['fromIdx']+2] += scipy.dot(e.T, scipy.dot(edge['information'], A))
+            b[edge['toIdx']:edge['toIdx']+2] += scipy.dot(e.T, scipy.dot(edge['information'], B))
+    
 
             if needToAddPrior:
                 # TODO: add the prior for one pose of this edge
