@@ -47,7 +47,7 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
         err = compute_global_error(g)
         
         # Print current error
-        print('Current error %f' % err )
+        print('Current error %f' % err)
         
         # TODO: implement termination criterion as suggested on the sheet
 
@@ -66,7 +66,7 @@ def compute_global_error(g):
             x1 = main.v2t(g['x'][edge['fromIdx']:edge['fromIdx']+3])  # the first robot pose
             x2 = main.v2t(g['x'][edge['toIdx']:edge['toIdx']+3])      # the second robot pose
             #TODO compute the error of the constraint and add it to Fx.
-            # Use edge.measurement and edge.information to access the
+            # Use edge['measurement'] and edge['information'] to access the
             # measurement and the information matrix respectively.
       
         # pose-landmark constraint
@@ -75,52 +75,10 @@ def compute_global_error(g):
             l = g['x'][edge['toIdx']:edge['toIdx']+2]      # the landmark
 
             #TODO compute the error of the constraint and add it to Fx.
-            # Use edge.measurement and edge.information to access the
+            # Use edge['measurement'] and edge['information'] to access the
             # measurement and the information matrix respectively.
 
     return Fx
-
-
-def linearize_pose_landmark_constraint(x, l, z):
-    """Compute the error of a pose-landmark constraint
-    x 3x1 vector (x,y,theta) of the robot pose
-    l 2x1 vector (x,y) of the landmark
-    z 2x1 vector (x,y) of the measurement, the position of the landmark in
-    the coordinate frame of the robot given by the vector x
-    
-    Output
-    e 2x1 error of the constraint
-    A 2x3 Jacobian wrt x
-    B 2x2 Jacobian wrt l"""
-    e = scipy.zeros((2,1))
-    A = scipy.zeros((2,3))
-    B = scipy.zeros((2,2))
-    # TODO compute the error and the Jacobians of the error
-    
-    
-    return e, A, B
-
-
-def linearize_pose_pose_constraint(x1, x2, z):
-    """Compute the error of a pose-pose constraint
-    x1 3x1 vector (x,y,theta) of the first robot pose
-    x2 3x1 vector (x,y,theta) of the second robot pose
-    z 3x1 vector (x,y,theta) of the measurement
-    
-    You may use the functions v2t() and t2v() to compute
-    a Homogeneous matrix out of a (x, y, theta) vector
-    for computing the error.
-    
-    Output
-    e 3x1 error of the constraint
-    A 3x3 Jacobian wrt x1
-    B 3x3 Jacobian wrt x2"""
-    e = scipy.zeros((3,1))
-    A = scipy.zeros((3,3))
-    B = scipy.zeros((3,3))
-    # TODO compute the error and the Jacobians of the error
-    
-    return e, A, B
 
 
 def linearize_and_solve(g):
@@ -182,7 +140,7 @@ def linearize_and_solve(g):
             # e the error vector
             # A Jacobian wrt x1
             # B Jacobian wrt x2
-            [e, A, B] = linearize_pose_landmark_constraint(x1, x2, edge['measurement'])
+            e, A, B = linearize_pose_landmark_constraint(x1, x2, edge['measurement'])
 
 
             # TODO: compute and add the term to H and b
@@ -195,4 +153,43 @@ def linearize_and_solve(g):
     return dx
 
 
+def linearize_pose_landmark_constraint(x, l, z):
+    """Compute the error of a pose-landmark constraint
+    x 3x1 vector (x,y,theta) of the robot pose
+    l 2x1 vector (x,y) of the landmark
+    z 2x1 vector (x,y) of the measurement, the position of the landmark in
+    the coordinate frame of the robot given by the vector x
+    
+    Output
+    e 2x1 error of the constraint
+    A 2x3 Jacobian wrt x
+    B 2x2 Jacobian wrt l"""
+    e = scipy.zeros((2,1))
+    A = scipy.zeros((2,3))
+    B = scipy.zeros((2,2))
+    # TODO compute the error and the Jacobians of the error
+    
+    
+    return e, A, B
 
+
+def linearize_pose_pose_constraint(x1, x2, z):
+    """Compute the error of a pose-pose constraint
+    x1 3x1 vector (x,y,theta) of the first robot pose
+    x2 3x1 vector (x,y,theta) of the second robot pose
+    z 3x1 vector (x,y,theta) of the measurement
+    
+    You may use the functions v2t() and t2v() to compute
+    a Homogeneous matrix out of a (x, y, theta) vector
+    for computing the error.
+    
+    Output
+    e 3x1 error of the constraint
+    A 3x3 Jacobian wrt x1
+    B 3x3 Jacobian wrt x2"""
+    e = scipy.zeros((3,1))
+    A = scipy.zeros((3,3))
+    B = scipy.zeros((3,3))
+    # TODO compute the error and the Jacobians of the error
+    
+    return e, A, B
