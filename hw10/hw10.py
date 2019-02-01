@@ -31,7 +31,7 @@ def test_jacobian_pose_pose():
 
     # test for x1
     ANumeric = scipy.zeros((3,3))
-    for d in range(3):# = 1:3
+    for d in range(3):
         curX = x1.copy()
         curX[d] += delta
         err = lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
@@ -54,7 +54,7 @@ def test_jacobian_pose_pose():
 
     #test for x2
     BNumeric = scipy.zeros((3,3))
-    for d in range(3):# = 1:3
+    for d in range(3):
         curX = x2.copy()
         curX[d] += delta
         err = lsslam.linearize_pose_pose_constraint(x1, curX, z)[0]
@@ -99,7 +99,7 @@ def test_jacobian_pose_landmark():
 
     # test for x1
     ANumeric = scipy.zeros((2,3))
-    for d in range(3):#= 1:3
+    for d in range(3):
         curX = x1.copy()
         curX[d] += delta
         err = lsslam.linearize_pose_landmark_constraint(curX, x2, z)[0]
@@ -119,7 +119,7 @@ def test_jacobian_pose_landmark():
 
     # test for x2
     BNumeric = scipy.zeros((2,2))
-    for d in range(2):# 1:2
+    for d in range(2):
         curX = x2.copy()
         curX[d] += delta
         err = lsslam.linearize_pose_landmark_constraint(x1, curX, z)[0]

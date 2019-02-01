@@ -86,7 +86,7 @@ def correction(mu, sigma, z, mapout, scale):
     # Measurement noise
     Q = 0.01*scipy.eye(2)
     
-    for i in range(m):#1:m
+    for i in range(m):
 	# If the landmark is observed for the first time:
 	if ~scipy.any([k == z[i]['id'] for k in mapout]):
             # Add new landmark to the map

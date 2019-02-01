@@ -25,7 +25,7 @@ def plot_state(mu, sigma, landmarks, timestep, observedLandmarks, z, window):
 	    plt.plot(mu[2*i + 3],mu[2*i + 4], 'bo', fillstyle='none', markersize=10, linewidth=5)
    	    draw_probe_ellipse(mu[2*i + 3:2*i+ 5], sigma[2*i + 3:2*i+ 5,2*i + 3:2*i + 5], 0.6, 'b')
 
-    for i in range(len(z)):#1:size(z,2))
+    for i in range(len(z)):
 	mX = mu[2*z[i]['id'] + 3]
 	mY = mu[2*z[i]['id'] + 4]
     	plt.plot([mu[0], mX], [mu[1], mY], color='k', linewidth=1)
@@ -198,7 +198,7 @@ def draw_probe_ellipse(xy, covar, alpha, color=None, **kwargs):
     """
     
     b24ac = scipy.sqrt(pow(covar[0,0] - covar[1,1],2) + 4*pow(covar[0,1],2))
-    c2inv = chi2.ppf(alpha, 2.)#/1e2
+    c2inv = chi2.ppf(alpha, 2.)
     
     a = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] + b24ac)))
     b = scipy.real(scipy.sqrt(c2inv*.5*(covar[0,0] + covar[1,1] - b24ac)))

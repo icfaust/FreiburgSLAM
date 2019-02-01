@@ -10,12 +10,12 @@ import gridmap
 def plot_map(mapout, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t, window=True):
 
     plt.clf()
-    #plt.axis(mapBox);
     mapout = mapout.T
     plt.imshow(scipy.ones(mapout.shape) - gridmap.log_odds_to_prob(mapout),vmin=0.,vmax=1.)
+    
     s = mapout.shape[1] 
-    #set(plt.gcf(), "position", [50 50 s*5]) 
     plt.subplots_adjust(.05, .05, .9, .9)
+
     traj = []
     for i in range(t+1):
         traj += [poses[i]['pose'][:2]]

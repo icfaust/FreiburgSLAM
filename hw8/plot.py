@@ -36,13 +36,12 @@ def plot_state(particles, landmarks, timestep, z, window=True):
     # draw the landmark locations along with the ellipsoids
     for k in particles[idx]['landmarks']:
         if k['observed']:
-            #l = particles[idx]['landmarks'][i]['mu']
             
             plt.plot(k['mu'][0], k['mu'][1], 'bo', markersize=3., fillstyle='none')
             draw_probe_ellipse(k['mu'], k['sigma'], 0.95, 'b')
 
     # draw the observations
-    for i in range(len(z)): #(i=1:size(z,2))
+    for i in range(len(z)):
         l = particles[idx]['landmarks'][z[i]['id']]['mu']
 
         plt.plot([particles[idx]['pose'][0], l[0]],
