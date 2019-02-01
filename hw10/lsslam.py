@@ -103,8 +103,8 @@ def linearize_and_solve(g):
     dx = scipy.zeros(g['x'].shape)
     
     # allocate the sparse H and the vector b
-    H = scipy.sparse.dok_matrix((len(g['x']), len(g['x']))) #u
-    b = scipy.zeros((len(g['x']),1))
+    H = scipy.sparse.dok_matrix((len(g['x']), len(g['x'])))
+    b = scipy.zeros((len(g['x']), 1))
 
     needToAddPrior = True
 

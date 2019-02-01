@@ -1,5 +1,6 @@
 import scipy
 import scipy.sparse
+import scipy.sparse.linalg
 import scipy.linalg
 import pickle
 import main
