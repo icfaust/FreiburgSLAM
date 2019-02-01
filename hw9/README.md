@@ -1,10 +1,12 @@
-This homework runs completes the correction step of a fastSLAM algorithm, a full SLAM path is shown.
+This homework runs completes an odometry calibration using the least-squares methodology described in the coursework, which minimizes the typically large inversion process
 
 Files of use:
-* hw8.py - code to be run to test homework output
+* hw9.py - code to be run to test homework output
 
-* main.py - contains the other portions of the slam algorithm, including resampling, the measurement_model, and the prediction steps. It also includes the data reading functions.
+* calibrate.py - functions to be completed for the homework, this includes everything necessary for the calibration scheme and trajectory generation (apply_odometry_correction, compute_trajectory, ls_calibrate_odometry, _error_function, and _jacobian)
 
-* plot.py - plots the particles, with a trajectory following the highest weight particle per step, the landmarks and 1 sigma ellipses.
+* main.py - contains homogeneous coordinate transformers (v2t and t2v)
 
-* fastslam.py - The correction function implements the various necessary EKF parts needed for the particle weight generation. 
+* scanmatched_motions.dat - A csv file containing the scanmatched odometry motions
+
+* odom_motions.dat - A csxv file containing the raw odometry motions to be calibrated

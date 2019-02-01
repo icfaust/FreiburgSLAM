@@ -1,9 +1,9 @@
 # FreiburgSLAM
-Python translation of the 2013/2014 Freiburg SLAM course
+Python translation of the Octave/MATLAB-based Freiburg SLAM course
 
-The videos for the course are available on [Youtube](https://www.youtube.com/playlist?list=PLgnQpQtFTOGQrZ4O5QzbIHgl3b1JHimN_ "Youtube").
+The videos for the 2013/2014 course are available on [Youtube](https://www.youtube.com/playlist?list=PLgnQpQtFTOGQrZ4O5QzbIHgl3b1JHimN_ "Youtube").
 
-The slides and original Octave/MATLAB problem sets are available via a [Albert-Ludwigs-Universität Freiburg website](http://ais.informatik.uni-freiburg.de/teaching/ws13/mapping/ "Robot Mapping - Uni Freiburg").
+The slides and original Octave/MATLAB problem sets are available via an [Albert-Ludwigs-Universität Freiburg website](http://ais.informatik.uni-freiburg.de/teaching/ws13/mapping/ "Robot Mapping - Uni Freiburg").
 
 Table of homework contents:
 * HW1 - Homogeneous Coordinates
