@@ -42,6 +42,7 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
         dx = linearize_and_solve(g)
 
         # TODO: apply the solution to the state vector g['x']
+        g['x'] += dx
         
         # plot the current state of the graph
         plot.plot_graph(g, i)
@@ -52,7 +53,8 @@ def _lsSLAM(loc='simulation-pose-pose.p'):
         print('Current error %f' % err)
         
         # TODO: implement termination criterion as suggested on the sheet
-
+        if abs(dx).max() < eps:
+            break #not a fan of this, I would have used a while loop
 
     print('Final error %f' % err)
 
@@ -70,7 +72,13 @@ def compute_global_error(g):
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge['measurement'] and edge['information'] to access the
             # measurement and the information matrix respectively.
-      
+            Z = main.v2t(edge['measurement'])
+            e = main.t2v(scipy.dot(scipy.linalg.inv(Z),
+                                   scipy.dot(scipy.linalg.inv(x1),
+                                             x2)))
+            
+            Fx += scipy.dot(e.T, scipy.dot(edge['information'], e))
+            
         # pose-landmark constraint
         elif edge['type'] == 'L':
             x = g['x'][edge['fromIdx']:edge['fromIdx']+3]  # the robot pose
@@ -79,7 +87,11 @@ def compute_global_error(g):
             #TODO compute the error of the constraint and add it to Fx.
             # Use edge['measurement'] and edge['information'] to access the
             # measurement and the information matrix respectively.
+            R = main.v2t(x)[:2, :2]
+            e = scipy.dot(R.T, l - x[:2]) - edge['measurement']
 
+            Fx += scipy.dot(e.T, scipy.dot(edge['information'], e))
+            
     return Fx
 
 
@@ -91,7 +103,7 @@ def linearize_and_solve(g):
     dx = scipy.zeros(g['x'].shape)
     
     # allocate the sparse H and the vector b
-    H = scipy.sparse.dok_matrix((len(g['x']), len(g['x']))) #u
+    H = scipy.sparse.dok_matrix((len(g['x']), len(g['x'])))
     b = scipy.zeros((len(g['x']), 1))
 
     needToAddPrior = True
@@ -108,8 +120,8 @@ def linearize_and_solve(g):
             # of the H matrix and the vector b.
             # edge['measurement'] is the measurement
             # edge['information'] is the information matrix
-            x1 = g['x'][edge['fromIdx']:edge['fromIdx']+2]  # the first robot pose
-            x2 = g['x'][edge['toIdx']:edge['toIdx']+2]      # the second robot pose
+            x1 = g['x'][edge['fromIdx']:edge['fromIdx']+3]  # the first robot pose
+            x2 = g['x'][edge['toIdx']:edge['toIdx']+3]      # the second robot pose
             
             # Computing the error and the Jacobians
             # e the error vector
@@ -119,12 +131,26 @@ def linearize_and_solve(g):
 
 
             # TODO: compute and add the term to H and b
+                  
+            H[edge['fromIdx']:edge['fromIdx']+3, edge['fromIdx']:edge['fromIdx']+3] += scipy.dot(A.T,scipy.dot(edge['information'],
+                                                                                                              A))
+            H[edge['toIdx']:edge['toIdx']+3, edge['toIdx']:edge['toIdx']+3] += scipy.dot(B.T,scipy.dot(edge['information'],
+                                                                                                              B))
+            temp = scipy.dot(A.T, scipy.dot(edge['information'], B))
+            H[edge['fromIdx']:edge['fromIdx']+3, edge['toIdx']:edge['toIdx']+3] += temp
+            H[edge['toIdx']:edge['toIdx']+3, edge['fromIdx']:edge['fromIdx']+3] += temp.T
 
-
+            ein = scipy.atleast_2d(e)
+            b[edge['fromIdx']:edge['fromIdx']+3] += scipy.dot(ein, scipy.dot(edge['information'], A)).T
+            b[edge['toIdx']:edge['toIdx']+3] += scipy.dot(ein, scipy.dot(edge['information'], B)).T
+    
             if needToAddPrior:
                 # TODO: add the prior for one pose of this edge
                 # This fixes one node to remain at its current location
-      
+                H[0,0] += 1.
+                H[1,1] += 1.
+                H[2,2] += 1.
+                
                 needToAddPrior = False
 
         # pose-landmark constraint
@@ -135,8 +161,8 @@ def linearize_and_solve(g):
             # of the H matrix and the vector b.
             # edge['measurement'] is the measurement
             # edge['information'] is the information matrix
-            x1 = g['x'][edge['fromIdx']:edge['fromIdx']+2]  # the robot pose
-            x2 = g['x'][edge['toIdx']:edge['toIdx']+1]      # the landmark
+            x1 = g['x'][edge['fromIdx']:edge['fromIdx']+3]  # the robot pose
+            x2 = g['x'][edge['toIdx']:edge['toIdx']+2]      # the landmark
           
             # Computing the error and the Jacobians
             # e the error vector
@@ -146,12 +172,24 @@ def linearize_and_solve(g):
 
 
             # TODO: compute and add the term to H and b
+            H[edge['fromIdx']:edge['fromIdx']+3, edge['fromIdx']:edge['fromIdx']+3] += scipy.dot(A.T,scipy.dot(edge['information'],
+                                                                                                              A))
+            H[edge['toIdx']:edge['toIdx']+2, edge['toIdx']:edge['toIdx']+2] += scipy.dot(B.T,scipy.dot(edge['information'],
+                                                                                                              B))
+            temp = scipy.dot(A.T, scipy.dot(edge['information'], B))
+            H[edge['fromIdx']:edge['fromIdx']+3, edge['toIdx']:edge['toIdx']+2] += temp
+            H[edge['toIdx']:edge['toIdx']+2, edge['fromIdx']:edge['fromIdx']+3] += temp.T
+
+            ein = scipy.atleast_2d(e)
+            b[edge['fromIdx']:edge['fromIdx']+3] += scipy.dot(ein, scipy.dot(edge['information'], A)).T
+            b[edge['toIdx']:edge['toIdx']+2] += scipy.dot(ein, scipy.dot(edge['information'], B)).T
 
     print('solving system')
 
     # TODO: solve the linear system, whereas the solution should be stored in dx
     # Remember to use the backslash operator instead of inverting H
-
+    dx = scipy.sparse.linalg.spsolve(H,-b)
+    
     return dx
 
 
@@ -170,7 +208,16 @@ def linearize_pose_landmark_constraint(x, l, z):
     A = scipy.zeros((2,3))
     B = scipy.zeros((2,2))
     # TODO compute the error and the Jacobians of the error
-    
+    X = main.v2t(x)
+    R = X[:2,:2]
+    e = scipy.dot(R.T, l - X[:2,2]) - z
+    deriv = scipy.array([[0.,-1.],
+                         [1.,0.]])
+    dRdtheta = scipy.dot(deriv, R)
+    A[:,:2] = -1*R.T
+    A[:,2] = scipy.dot(dRdtheta.T, l - X[:2,2])
+
+    B = R.T
     
     return e, A, B
 
@@ -193,5 +240,28 @@ def linearize_pose_pose_constraint(x1, x2, z):
     A = scipy.zeros((3,3))
     B = scipy.zeros((3,3))
     # TODO compute the error and the Jacobians of the error
+    X1 = main.v2t(x1)  # the first robot pose
+    X2 = main.v2t(x2)      # the second robot pose
+    Z = main.v2t(z)
+
+    R1 = X1[:2,:2]
+    RZ = Z[:2,:2]
+    deriv = scipy.array([[0.,-1.],
+                         [1.,0.]]) #fun story, the derivative of the rotation
+    # can be also valued from a proper matrix multiplication just as inv(R) = R.T
+    # dR/dtheta = scipy.dot(deriv, R). Do the math on a piece of paper, it works
+    dR1dtheta = scipy.dot(deriv, R1)
+    
+    e = main.t2v(scipy.dot(scipy.linalg.inv(Z),
+                           scipy.dot(scipy.linalg.inv(X1),
+                                     X2)))
+    
+    
+    A[:2,:2] = -1*scipy.dot(RZ.T, R1.T)
+    A[:2,2] = scipy.dot(RZ.T, scipy.dot(dR1dtheta.T, X2[:2,2]-X1[:2,2]))
+    A[2,2] = -1.
+
+    B[:2,:2] = -1*A[:2,:2].copy() #just to be sure
+    B[2,2] = 1.
     
     return e, A, B
