@@ -36,11 +36,9 @@ def test_jacobian_pose_pose():
         curX[d] += delta
         err = lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
         temp1 = lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
-        #print(temp1)
         curX[d] -= 2*delta
         err -= lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
         temp2 = lsslam.linearize_pose_pose_constraint(curX, x2, z)[0]
-        #print(err,(temp1-temp2))
         
         ANumeric[:, d] = scalar * err
 

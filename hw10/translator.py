@@ -9,7 +9,7 @@ def load(loc='simulation-pose-pose.dat'):
     temp = scipy.io.loadmat(loc)
 
     output = {'edges':[],'idLookup':{}}
-    output['x'] = temp['g'][0][0][0]
+    output['x'] = scipy.squeeze(temp['g'][0][0][0])
     
     edges = temp['g'][0][0][1]
     for p in edges:
@@ -17,8 +17,8 @@ def load(loc='simulation-pose-pose.dat'):
         output['edges'] += [{'type':str(inp[0][0]),
                              'from':int(inp[1][0][0]) - 1,
                              'to':int(inp[2][0][0]) - 1,
-                             'measurement':inp[3],
-                             'information':inp[4],
+                             'measurement':scipy.squeeze(inp[3]),
+                             'information':scipy.squeeze(inp[4]),
                              'fromIdx':int(inp[5][0][0]) - 1,
                              'toIdx':int(inp[6][0][0]) - 1}]
                             
