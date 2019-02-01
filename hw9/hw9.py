@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import scipy
 import matplotlib.pyplot as plt
-import calibrate2 as calibrate
+import calibrate
 
 # load the odometry measurements
 odom_motions = scipy.loadtxt('odom_motions.dat')
