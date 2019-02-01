@@ -131,25 +131,24 @@ def linearize_and_solve(g):
 
 
             # TODO: compute and add the term to H and b
-                  
-            H[edge['fromIdx']:edge['fromIdx']+3, edge['fromIdx']:edge['fromIdx']+3] += scipy.dot(A.T,scipy.dot(edge['information'],
-                                                                                                              A))
-            H[edge['toIdx']:edge['toIdx']+3, edge['toIdx']:edge['toIdx']+3] += scipy.dot(B.T,scipy.dot(edge['information'],
-                                                                                                              B))
+            i = edge['fromIdx']
+            j = edge['toIdx']                  
+            H[i:i+3, i:i+3] += scipy.dot(A.T,scipy.dot(edge['information'], A))
+            H[j:j+3, j:j+3] += scipy.dot(B.T,scipy.dot(edge['information'], B))
             temp = scipy.dot(A.T, scipy.dot(edge['information'], B))
-            H[edge['fromIdx']:edge['fromIdx']+3, edge['toIdx']:edge['toIdx']+3] += temp
-            H[edge['toIdx']:edge['toIdx']+3, edge['fromIdx']:edge['fromIdx']+3] += temp.T
+            H[i:i+3, j:j+3] += temp
+            H[j:j+3, i:i+3] += temp.T
 
             ein = scipy.atleast_2d(e)
-            b[edge['fromIdx']:edge['fromIdx']+3] += scipy.dot(ein, scipy.dot(edge['information'], A)).T
-            b[edge['toIdx']:edge['toIdx']+3] += scipy.dot(ein, scipy.dot(edge['information'], B)).T
+            b[i:i+3] += scipy.dot(ein, scipy.dot(edge['information'], A)).T
+            b[j:j+3] += scipy.dot(ein, scipy.dot(edge['information'], B)).T
     
             if needToAddPrior:
                 # TODO: add the prior for one pose of this edge
                 # This fixes one node to remain at its current location
-                H[0,0] += 1.
-                H[1,1] += 1.
-                H[2,2] += 1.
+                H[i,i] += 1.
+                H[i+1,i+1] += 1.
+                H[i+2,i+2] += 1.
                 
                 needToAddPrior = False
 
@@ -172,17 +171,17 @@ def linearize_and_solve(g):
 
 
             # TODO: compute and add the term to H and b
-            H[edge['fromIdx']:edge['fromIdx']+3, edge['fromIdx']:edge['fromIdx']+3] += scipy.dot(A.T,scipy.dot(edge['information'],
-                                                                                                              A))
-            H[edge['toIdx']:edge['toIdx']+2, edge['toIdx']:edge['toIdx']+2] += scipy.dot(B.T,scipy.dot(edge['information'],
-                                                                                                              B))
+            i = edge['fromIdx']
+            j = edge['toIdx']
+            H[i:i+3, i:i+3] += scipy.dot(A.T,scipy.dot(edge['information'], A))
+            H[j:j+2, j:j+2] += scipy.dot(B.T,scipy.dot(edge['information'], B))
             temp = scipy.dot(A.T, scipy.dot(edge['information'], B))
-            H[edge['fromIdx']:edge['fromIdx']+3, edge['toIdx']:edge['toIdx']+2] += temp
-            H[edge['toIdx']:edge['toIdx']+2, edge['fromIdx']:edge['fromIdx']+3] += temp.T
+            H[i:i+3, j:j+2] += temp
+            H[j:j+2, i:i+3] += temp.T
 
             ein = scipy.atleast_2d(e)
-            b[edge['fromIdx']:edge['fromIdx']+3] += scipy.dot(ein, scipy.dot(edge['information'], A)).T
-            b[edge['toIdx']:edge['toIdx']+2] += scipy.dot(ein, scipy.dot(edge['information'], B)).T
+            b[i:i+3] += scipy.dot(ein, scipy.dot(edge['information'], A)).T
+            b[j:j+2] += scipy.dot(ein, scipy.dot(edge['information'], B)).T
 
     print('solving system')
 
